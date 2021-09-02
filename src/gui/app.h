@@ -2,10 +2,16 @@
 #define APP_H
 
 #include <wx/wx.h>
+#include "browser.h"
 
-class BrowserApp : public wxApp
+class App : public wxApp
 {
+private:
+	Browser* browser;
 public:
+	App();
+	~App();
+
 	virtual bool OnInit();
 };
 

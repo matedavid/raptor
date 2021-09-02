@@ -1,12 +1,18 @@
 #include "app.h"
 
-#include "browser.h"
+IMPLEMENT_APP(App);
 
-IMPLEMENT_APP(BrowserApp);
-
-bool BrowserApp::OnInit()
+App::App()
 {
-	Browser* browser = new Browser(wxT("Raptor Browser"));
+}
+
+App::~App()
+{
+}
+
+bool App::OnInit()
+{
+	browser = new Browser(wxT("Raptor Browser"));
 	browser->Show(true);
 	return true;
 }
