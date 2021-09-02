@@ -4,6 +4,11 @@ Tokenizer::Tokenizer()
 {
 }
 
+Tokenizer::Tokenizer(const std::string& content)
+					: m_content(content)
+{
+}
+
 void Tokenizer::tokenize_text()
 {
 	std::string text_value = "";
@@ -46,6 +51,14 @@ void Tokenizer::tokenize_special_character()
 
 	++m_position; // Jump special character
 	m_tokens.push_back(token);
+}
+
+void Tokenizer::tokenize()
+{
+	if (m_content.empty())
+		std::cout << "HTML: Can't tokenize file, no HTML string provided" << std::endl;
+	else
+		tokenize(m_content);
 }
 
 void Tokenizer::tokenize(const std::string& content)

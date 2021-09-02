@@ -20,7 +20,9 @@ private:
 
 public:
 	Tokenizer();
+	Tokenizer(const std::string& content);
 
+	void tokenize();
 	void tokenize(const std::string& content);
 
 	const Token current() const;
