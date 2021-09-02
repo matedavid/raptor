@@ -3,6 +3,7 @@
 #include <filesystem>
 
 #include "tokenizer.h"
+#include "parser.h"
 
 std::string read_file(std::filesystem::path& file_path)
 {
@@ -26,14 +27,10 @@ int main()
 	Tokenizer tokenizer = Tokenizer();
 	tokenizer.tokenize(content);
 
-	for (int i = 0; i < tokenizer.m_tokens.size(); ++i)
-	{
-		Token token = tokenizer.m_tokens[i];
-		std::cout << token.type_as_string() << " " << token.value();
-		if (token.type() != TEXT_TOKEN)
-			std::cout << " " << "Is closing: " << token.is_closing_tag();
-		std::cout << std::endl;
-	}
+	Parser parser = Parser(tokenizer);
+	parser.parse();
+
+	parser.print_AST();
 
 	return 0;
 }

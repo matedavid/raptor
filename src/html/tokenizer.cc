@@ -74,16 +74,50 @@ void Tokenizer::tokenize(const std::string& content)
 	while (m_position < m_content.length())
 	{
 		if (m_content[m_position] == '<')
-		{
 			tokenize_tag();
-		}
 		else if (isalpha(m_content[m_position]) or isdigit(m_content[m_position]))
-		{
 			tokenize_text();
-		}
 		else
-		{
 			++m_position;
-		}
 	}
+
+	Token token_EOF = Token(EOF_TOKEN, "EOF", false);
+	m_tokens.push_back(token_EOF);
+
+	// Resets m_position for later use of Tokenizer
+	m_position = 0;
 }
+
+void Tokenizer::next()
+{
+	if (m_position+1 < m_tokens.size())
+		++m_position;
+}
+
+void Tokenizer::prev()
+{
+	if (m_position-1 >= 0)
+		--m_position;
+}
+
+const Token& Tokenizer::current() const
+{
+	return (Token&)m_tokens[m_position];
+}
+
+const Token& Tokenizer::peek_next() const
+{
+	if (m_position+1 < m_tokens.size())
+		return (Token&)m_tokens[m_position+1];
+	return (Token&)m_tokens[m_position];
+}
+
+const Token& Tokenizer::peek_prev() const
+{
+	if (m_position-1 >= 0)
+		return (Token&)m_tokens[m_position-1];
+	return (Token&)m_tokens[m_position];
+}
+
+
+

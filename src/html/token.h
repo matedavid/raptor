@@ -23,6 +23,7 @@ enum Token_Type
 	H5_TAG,
 	H6_TAG,
 
+	EOF_TOKEN,
 	UNKNOWN_TAG,
 };
 
@@ -35,6 +36,7 @@ private:
 	bool m_closing_tag;
 
 public:
+	Token();
 	Token(enum Token_Type type, std::string value, bool closing_tag);
 
 	enum Token_Type type() const;

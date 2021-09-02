@@ -1,5 +1,9 @@
 #include "token.h"
 
+Token::Token()
+{
+}
+
 Token::Token(enum Token_Type type, std::string value, bool closing_tag)
 			: m_type(type), m_value(value), m_closing_tag(closing_tag)
 {
@@ -48,6 +52,8 @@ std::string Token::type_as_string() const
 			return "H5_TAG";
 		case H6_TAG:
 			return "H6_TAG";
+		case EOF_TOKEN:
+			return "EOF_TOKEN";
 		case UNKNOWN_TAG:
 			return "UNKNOWN_TAG";
 	}

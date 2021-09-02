@@ -9,22 +9,23 @@ class Tokenizer
 {
 
 private:
+	std::vector<Token> m_tokens;
+	int m_position;
 
 	std::string m_content;
-	int m_position;
 
 	void tokenize_tag();
 	void tokenize_text();
 
 public:
-	std::vector<Token> m_tokens;
 	Tokenizer();
 
 	void tokenize(const std::string& content);
 
 	void next();
 	void prev();
+	const Token& current() const;
 
-	void peek_next();
-	void peek_prev();
+	const Token& peek_next() const;
+	const Token& peek_prev() const;
 };
