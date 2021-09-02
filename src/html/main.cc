@@ -2,9 +2,6 @@
 #include <fstream>
 #include <filesystem>
 
-#include "tokenizer.h"
-#include "parser.h"
-
 std::string read_file(std::filesystem::path& file_path)
 {
 	std::ifstream file(file_path);
@@ -23,14 +20,6 @@ int main()
 {
 	std::filesystem::path file_path("/home/david/workspace/raptor/src/html/examples/index.html");
 	std::string content = read_file(file_path);
-
-	Tokenizer tokenizer = Tokenizer();
-	tokenizer.tokenize(content);
-
-	Parser parser = Parser(tokenizer);
-	parser.parse();
-
-	parser.print_AST();
 
 	return 0;
 }
