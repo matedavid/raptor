@@ -1,6 +1,6 @@
 #include "app.h"
 
-IMPLEMENT_APP(App);
+// IMPLEMENT_APP(App);
 
 App::App()
 {

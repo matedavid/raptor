@@ -1,5 +1,4 @@
-#ifndef BROWSER_H
-#define BROWSER_H
+#pragma once
 
 #include <wx/wx.h>
 
@@ -10,5 +9,3 @@ public:
 
 	wxStaticText* m_text1 = nullptr;
 };
-
-#endif // BROWSER_H

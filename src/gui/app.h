@@ -1,5 +1,4 @@
-#ifndef APP_H
-#define APP_H
+#pragma once
 
 #include <wx/wx.h>
 #include "browser.h"
@@ -14,6 +13,3 @@ public:
 
 	virtual bool OnInit();
 };
-
-
-#endif // APP_H
