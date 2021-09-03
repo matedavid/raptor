@@ -3,6 +3,7 @@
 #include <filesystem>
 
 #include "tokenizer.h"
+#include "parser.h"
 
 std::string read_file(std::filesystem::path& file_path)
 {
@@ -26,12 +27,17 @@ int main()
 	Tokenizer tokenizer = Tokenizer();
 	tokenizer.tokenize(content);
 
+	/*
 	while (tokenizer.current().type != EOF_TOKEN)
 	{
 		const Token token = tokenizer.current();
-		std::cout << "(" << type_as_string(token) << ", " << token.value << ")" << std::endl;
+		std::cout << "(" << type_as_string(token.type) << ", " << token.value << ")" << std::endl;
 		tokenizer.next();
 	}
+	*/
+
+	Parser parser = Parser(tokenizer);
+	parser.parse();
 
 	return 0;
 }

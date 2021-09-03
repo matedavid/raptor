@@ -1,8 +1,7 @@
 #include "token.h"
 
-std::string type_as_string(const Token& token)
+std::string type_as_string(TOKEN_TYPE type)
 {
-	TOKEN_TYPE type = token.type;
 	switch (type)
 	{
 		case LESS_THAN_TOKEN: return "LESS_THAN_TOKEN";

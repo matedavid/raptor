@@ -12,7 +12,8 @@ Tokenizer::Tokenizer(const std::string& content)
 void Tokenizer::tokenize_text()
 {
 	std::string text_value = "";
-	while (isalpha(m_content[m_position]) or isdigit(m_content[m_position]) or (m_tokens[m_tokens.size()-1].type == GREATER_THAN_TOKEN and m_content[m_position] == ' '))
+	while (isalpha(m_content[m_position]) or isdigit(m_content[m_position]) or
+				 (m_tokens[m_tokens.size()-1].type == GREATER_THAN_TOKEN and m_content[m_position] == ' '))
 	{
 		text_value += m_content[m_position];
 		++m_position;

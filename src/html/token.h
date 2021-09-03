@@ -47,7 +47,7 @@ struct Token
 	std::string value;
 };
 
-std::string type_as_string(const Token& token);
+std::string type_as_string(TOKEN_TYPE type);
 
 TOKEN_TYPE TOKEN_TYPE_from_string(const std::string& str);
 
