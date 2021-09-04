@@ -12,8 +12,10 @@ Tokenizer::Tokenizer(const std::string& content)
 void Tokenizer::tokenize_text()
 {
 	std::string text_value = "";
-	while (isalpha(m_content[m_position]) or isdigit(m_content[m_position]) or
-				 (m_tokens[m_tokens.size()-1].type == GREATER_THAN_TOKEN and m_content[m_position] == ' '))
+	while (isalpha(m_content[m_position]) or // for string characters
+				 isdigit(m_content[m_position]) or // for numbers
+				 (m_tokens[m_tokens.size()-1].type == GREATER_THAN_TOKEN and ispunct(m_content[m_position]) and m_content[m_position] != '<') or // for punctuations inside the TEXT_TOKEN
+				 (m_tokens[m_tokens.size()-1].type == GREATER_THAN_TOKEN and m_content[m_position] == ' ')) // for spaces (making sure that it is not inside a tag to account for attributes)
 	{
 		text_value += m_content[m_position];
 		++m_position;
