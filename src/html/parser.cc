@@ -42,7 +42,7 @@ Tag Parser::parse_tag(Tokenizer& tokenizer)
 	return tag;
 }
 
-void Parser::convert_into_tags()
+void Parser::convert_tokens_into_tags()
 {
 	while (m_tokenizer.current().type != EOF_TOKEN)
 	{
@@ -51,24 +51,47 @@ void Parser::convert_into_tags()
 	}
 }
 
-void Parser::parse_tags_rec(const std::vector<Tag>& tags)
+Tag Parser::parse_tags_rec(const std::vector<Tag>& tags, int& i)
 {
+	Tag tag = tags[i];
+	if (tag.type() == tags[i+1].type() and tags[i+1].is_closing())
+	{
+		++i;
+		return tag;
+	}
+
+	while (tag.type() != tags[i+1].type() or not tags[i+1].is_closing())
+	{
+		Tag child_tag = parse_tags_rec(tags, ++i);
+		tag.add_child(child_tag);
+	}
+
+	++i; // Jumps exit tag
+	return tag;
+}
+
+void Parser::print_tags_recursive(const Tag& tag, int spaces)
+{
+	for (int i = 0; i < spaces; ++i)
+		std::cout << "\t";
+
+	if (tag.type() == TEXT_TOKEN)
+		std::cout << tag << std::endl;
+	else
+	{
+		std::cout << tag << std::endl;
+		std::vector<Tag> children = tag.innerHTML();
+		for (int i = 0; i < children.size(); ++i)
+			print_tags_recursive(children[i], spaces+1);
+	}
 }
 
 void Parser::parse()
 {
-	convert_into_tags();
-	for (int i = 0; i < m_tags.size(); ++i)
-	{
-		Tag tag = m_tags[i];
-		std::cout << type_as_string(tag.type());
-		if (tag.is_closing())
-			std::cout << " (closing)";
-		if (tag.attribute(ID_TOKEN).first)
-			std::cout << " [Attributes: " << tag.attribute(ID_TOKEN).second << "]";
+	convert_tokens_into_tags();
 
-		std::cout << " " << tag.text() << std::endl;
-	}
+	int i = 0;
+	Tag tag = parse_tags_rec(m_tags, i);
 
-	parse_tags_rec(m_tags);
+	print_tags_recursive(tag, 0);
 }

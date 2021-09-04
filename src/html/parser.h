@@ -16,8 +16,9 @@ private:
 private:
 	static Tag parse_tag(Tokenizer& tokenizer);
 
-	void convert_into_tags();
-	static void parse_tags_rec(const std::vector<Tag>& tags);
+	void convert_tokens_into_tags();
+	static Tag parse_tags_rec(const std::vector<Tag>& tags, int& i);
+	void print_tags_recursive(const Tag& tag, int spaces);
 
 public:
 	Parser(Tokenizer& tokeznizer);

@@ -31,4 +31,7 @@ public:
 	TOKEN_TYPE type() const;
 	bool is_closing() const;
 	std::pair<bool, std::string> attribute(TOKEN_TYPE attr_type) const;
+	std::map<TOKEN_TYPE, std::string> attributes() const;
+
+	friend std::ostream& operator<<(std::ostream& os, const Tag& tag);
 };

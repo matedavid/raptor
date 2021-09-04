@@ -57,3 +57,29 @@ std::pair<bool, std::string> Tag::attribute(TOKEN_TYPE attr_type) const
 		return *it;
 	return std::make_pair<bool, std::string>(false, "");
 }
+
+std::map<TOKEN_TYPE, std::string> Tag::attributes() const
+{
+	return m_attributes;
+}
+
+std::ostream& operator<<(std::ostream& os, const Tag& tag)
+{
+	os << "[" << type_as_string(tag.type());
+	if (tag.attributes().size() != 0)
+	{
+		os << " ";
+		auto attrs = tag.attributes();
+
+		auto it = attrs.begin();
+		while (it != attrs.end())
+		{
+			os << "(" << type_as_string(it->first) << "=" << it->second << ")";
+			++it;
+		}
+	}
+	os << "]";
+	if (not tag.text().empty())
+		os << ": " << tag.text();
+	return os;
+}
