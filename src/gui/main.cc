@@ -1,22 +1,15 @@
 #include <iostream>
 #include <gtkmm.h>
 
-class Browser : public Gtk::Window
-{
-public:
-	Browser();
-};
-
-Browser::Browser()
-{
-	set_title("Raptor Browser");
-	set_default_size(1280, 960);
-}
+#include "browser.h"
 
 int main(int argc, char* argv[])
 {
+	// Creates Gtk app
 	auto app = Gtk::Application::create();
+
+	// Create window
 	auto window = Browser();
 
-	return app->run(window);
+	return app->run(window, argc, argv);
 }
