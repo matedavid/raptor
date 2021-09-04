@@ -26,4 +26,5 @@ public:
 	Parser(Tokenizer& tokeznizer);
 
 	void parse();
+	const Tag get_AST() const;
 };

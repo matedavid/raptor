@@ -16,6 +16,8 @@ private:
 	std::map<TOKEN_TYPE, std::string> m_attributes;
 	bool m_closing = false;
 
+	static void find_tags_rec(const Tag& ast, const TOKEN_TYPE type, std::vector<Tag>& tags);
+
 public:
 	Tag();
 	Tag(TOKEN_TYPE type, bool is_closing);
@@ -23,15 +25,16 @@ public:
 
 	void set_value(const std::string& value);
 	void add_child(Tag child);
-	void add_atribute(TOKEN_TYPE attr_type, const std::string& attr_value);
+	void add_atribute(TOKEN_TYPE attr_type, const std::string& attr_value);	
 
-	std::vector<Tag> innerHTML() const;
 	std::string text() const;
-
 	TOKEN_TYPE type() const;
 	bool is_closing() const;
+	std::vector<Tag> innerHTML() const;
+	std::vector<Tag> tag(const TOKEN_TYPE type) const;
 	std::pair<bool, std::string> attribute(TOKEN_TYPE attr_type) const;
 	std::map<TOKEN_TYPE, std::string> attributes() const;
+
 
 	friend std::ostream& operator<<(std::ostream& os, const Tag& tag);
 };

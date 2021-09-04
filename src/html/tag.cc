@@ -1,5 +1,17 @@
 #include "tag.h"
 
+void Tag::find_tags_rec(const Tag& ast, const TOKEN_TYPE type, std::vector<Tag>& tags)
+{
+	if (ast.type() == type)
+		tags.push_back(ast);
+
+	if (not ast.text().empty())
+		return;
+
+	for (int i = 0; i < ast.m_children.size(); ++i)
+		find_tags_rec(ast.m_children[i], type, tags);
+}
+
 Tag::Tag()
 		: m_type(UNKNOWN_TOKEN), m_value("")
 {
@@ -30,11 +42,6 @@ void Tag::add_atribute(TOKEN_TYPE attr_type, const std::string& attr_value)
 	m_attributes[attr_type] = attr_value;
 }
 
-std::vector<Tag> Tag::innerHTML() const
-{
-	return m_children;
-}
-
 std::string Tag::text() const
 {
 	return m_value;
@@ -48,6 +55,21 @@ TOKEN_TYPE Tag::type() const
 bool Tag::is_closing() const
 {
 	return m_closing;
+}
+
+std::vector<Tag> Tag::innerHTML() const
+{
+	return m_children;
+}
+
+std::vector<Tag> Tag::tag(const TOKEN_TYPE type) const
+{
+	if (type == m_type)
+		return std::vector<Tag>{*this};
+
+	std::vector<Tag> results;
+	find_tags_rec(*this, type, results);
+	return results;
 }
 
 std::pair<bool, std::string> Tag::attribute(TOKEN_TYPE attr_type) const

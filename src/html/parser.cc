@@ -95,3 +95,8 @@ void Parser::parse()
 
 	print_tags_recursive(m_ast, 0);
 }
+
+const Tag Parser::get_AST() const
+{
+	return m_ast;
+}
