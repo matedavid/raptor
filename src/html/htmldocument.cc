@@ -4,7 +4,6 @@ HTMLDocument::HTMLDocument()
 {
 }
 
-
 void HTMLDocument::load_from_file(const std::filesystem::path& file_path)
 {
 	std::ifstream file(file_path);

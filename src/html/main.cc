@@ -20,6 +20,7 @@ void print_tags_recursive(const Tag& tag, int spaces)
 	}
 }
 
+/*
 int main()
 {
 	std::filesystem::path path = std::filesystem::path("/home/david/workspace/raptor/src/html/examples/index.html");
@@ -37,3 +38,4 @@ int main()
 
 	return 0;
 }
+*/
