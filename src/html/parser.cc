@@ -70,30 +70,12 @@ Tag Parser::parse_tags_rec(const std::vector<Tag>& tags, int& i)
 	return tag;
 }
 
-void Parser::print_tags_recursive(const Tag& tag, int spaces)
-{
-	for (int i = 0; i < spaces; ++i)
-		std::cout << "\t";
-
-	if (tag.type() == TEXT_TOKEN)
-		std::cout << tag << std::endl;
-	else
-	{
-		std::cout << tag << std::endl;
-		std::vector<Tag> children = tag.innerHTML();
-		for (int i = 0; i < children.size(); ++i)
-			print_tags_recursive(children[i], spaces+1);
-	}
-}
-
 void Parser::parse()
 {
 	convert_tokens_into_tags();
 
 	int i = 0;
 	m_ast = parse_tags_rec(m_tags, i);
-
-	print_tags_recursive(m_ast, 0);
 }
 
 const Tag Parser::get_AST() const

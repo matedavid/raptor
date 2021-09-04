@@ -20,7 +20,6 @@ private:
 
 	void convert_tokens_into_tags();
 	static Tag parse_tags_rec(const std::vector<Tag>& tags, int& i);
-	void print_tags_recursive(const Tag& tag, int spaces);
 
 public:
 	Parser(Tokenizer& tokeznizer);

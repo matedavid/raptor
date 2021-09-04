@@ -2,34 +2,38 @@
 #include <fstream>
 #include <filesystem>
 
-#include "tokenizer.h"
-#include "parser.h"
-#include "tag.h"
+#include "htmldocument.h"
 
-std::string read_file(std::filesystem::path& file_path)
+void print_tags_recursive(const Tag& tag, int spaces)
 {
-	std::ifstream file(file_path);
-	if (!file.is_open())
-	{
-		std::cout << "Error opening file!" << std::endl;
-		return "";
-	}
-	std::string content( (std::istreambuf_iterator<char>(file) ),
-											 (std::istreambuf_iterator<char>()     ));
+	for (int i = 0; i < spaces; ++i)
+		std::cout << "\t";
 
-	return content;
+	if (tag.type() == TEXT_TOKEN)
+		std::cout << tag << std::endl;
+	else
+	{
+		std::cout << tag << std::endl;
+		std::vector<Tag> children = tag.innerHTML();
+		for (int i = 0; i < children.size(); ++i)
+			print_tags_recursive(children[i], spaces+1);
+	}
 }
 
 int main()
 {
-	std::filesystem::path file_path("/home/david/workspace/raptor/src/html/examples/index.html");
-	std::string content = read_file(file_path);
+	std::filesystem::path path = std::filesystem::path("/home/david/workspace/raptor/src/html/examples/index.html");
 
-	Tokenizer tokenizer = Tokenizer();
-	tokenizer.tokenize(content);
+	HTMLDocument html = HTMLDocument();
+	html.load_from_file(path);
 
-	Parser parser = Parser(tokenizer);
-	parser.parse();
+	std::cout << "Title: " << html.title << std::endl;
+
+	std::cout << "Printing Head:" << std::endl;
+	print_tags_recursive(html.head, 0);
+
+	std::cout << "Printing Body:" << std::endl;
+	print_tags_recursive(html.body, 0);
 
 	return 0;
 }

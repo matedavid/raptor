@@ -5,7 +5,7 @@ void Tag::find_tags_rec(const Tag& ast, const TOKEN_TYPE type, std::vector<Tag>&
 	if (ast.type() == type)
 		tags.push_back(ast);
 
-	if (not ast.text().empty())
+	if (ast.m_children.size() == 0)
 		return;
 
 	for (int i = 0; i < ast.m_children.size(); ++i)
