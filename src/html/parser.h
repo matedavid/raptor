@@ -13,6 +13,8 @@ private:
 	Tokenizer& m_tokenizer;
 	std::vector<Tag> m_tags;
 
+	Tag m_ast;
+
 private:
 	static Tag parse_tag(Tokenizer& tokenizer);
 

@@ -91,7 +91,7 @@ void Parser::parse()
 	convert_tokens_into_tags();
 
 	int i = 0;
-	Tag tag = parse_tags_rec(m_tags, i);
+	m_ast = parse_tags_rec(m_tags, i);
 
-	print_tags_recursive(tag, 0);
+	print_tags_recursive(m_ast, 0);
 }
