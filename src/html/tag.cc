@@ -64,9 +64,6 @@ std::vector<Tag> Tag::innerHTML() const
 
 std::vector<Tag> Tag::tag(const TOKEN_TYPE type) const
 {
-	if (type == m_type)
-		return std::vector<Tag>{*this};
-
 	std::vector<Tag> results;
 	find_tags_rec(*this, type, results);
 	return results;
