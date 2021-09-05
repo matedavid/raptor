@@ -1,6 +1,5 @@
 #include "browser.h"
 
-
 Gtk::Label* label_from_tag(const Tag& tag)
 {
 	auto label = Gtk::make_managed<Gtk::Label>();
@@ -13,7 +12,7 @@ Gtk::Label* label_from_tag(const Tag& tag)
 }
 
 Browser::Browser()
-	: m_scrolled_window(), m_grid()
+	: m_container(Gtk::ORIENTATION_VERTICAL), m_scrolled_window(), m_search_bar(), m_content(Gtk::ORIENTATION_VERTICAL)
 {
 	std::filesystem::path path = std::filesystem::path("/home/david/workspace/raptor/src/html/examples/index.html");
 
@@ -23,17 +22,25 @@ Browser::Browser()
 	set_title(html.title);
 	set_default_size(800, 480);
 
-	add(m_scrolled_window);
+	add(m_container);
 
-	m_scrolled_window.add(m_grid);
-	m_grid.set_border_width(10);
+	m_search_bar.set_margin_top(10);
+	m_search_bar.set_margin_bottom(10);
+	m_search_bar.set_margin_left(10);
+	m_search_bar.set_margin_right(10);
+
+	m_container.add(m_search_bar);
+	m_container.pack_start(m_scrolled_window);
+
+	m_scrolled_window.add(m_content);
 
 	std::vector<Tag> ps = html.body.tag(P_TOKEN);
 	for (int i = 0; i < ps.size(); ++i)
 	{
 		auto label = label_from_tag(ps[i]);
-		m_grid.attach(*label, 0, i);
+		m_content.add(*label);
 	}
 
+	m_container.show();
 	show_all_children();
 }

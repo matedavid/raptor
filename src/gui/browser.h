@@ -10,6 +10,9 @@ class Browser : public Gtk::Window
 public:
 	Browser();
 
+	Gtk::Box m_container;
+	Gtk::Entry m_search_bar;
+
 	Gtk::ScrolledWindow m_scrolled_window;
-	Gtk::Grid m_grid;
+	Gtk::Box m_content;
 };
