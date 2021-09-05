@@ -12,14 +12,11 @@ Gtk::Label* label_from_tag(const Tag& tag)
 }
 
 Browser::Browser()
-	: m_container(Gtk::ORIENTATION_VERTICAL), m_scrolled_window(), m_search_bar(), m_content(Gtk::ORIENTATION_VERTICAL)
+	: m_container(Gtk::ORIENTATION_VERTICAL), m_search_bar(), content()
 {
-	std::filesystem::path path = std::filesystem::path("/home/david/workspace/raptor/src/html/examples/index.html");
+	std::string title = "Raptor Browser";
 
-	HTMLDocument html = HTMLDocument();
-	html.load_from_file(path);
-
-	set_title(html.title);
+	set_title(title);
 	set_default_size(800, 480);
 
 	add(m_container);
@@ -30,16 +27,7 @@ Browser::Browser()
 	m_search_bar.set_margin_right(10);
 
 	m_container.add(m_search_bar);
-	m_container.pack_start(m_scrolled_window);
-
-	m_scrolled_window.add(m_content);
-
-	std::vector<Tag> ps = html.body.tag(P_TOKEN);
-	for (int i = 0; i < ps.size(); ++i)
-	{
-		auto label = label_from_tag(ps[i]);
-		m_content.add(*label);
-	}
+	m_container.pack_start(content);
 
 	m_container.show();
 	show_all_children();
