@@ -1,5 +1,17 @@
 #include "browser.h"
 
+
+Gtk::Label* label_from_tag(const Tag& tag)
+{
+	auto label = Gtk::make_managed<Gtk::Label>();
+	label->set_text(tag.text());
+	// Wraps text to new line if it's horizontally bigger than the window
+	label->set_line_wrap(true);
+	// Aligns the widget to the left
+	label->set_xalign(0.0f);
+	return label;
+}
+
 Browser::Browser()
 	: m_scrolled_window(), m_grid()
 {
@@ -14,12 +26,12 @@ Browser::Browser()
 	add(m_scrolled_window);
 
 	m_scrolled_window.add(m_grid);
+	m_grid.set_border_width(10);
 
 	std::vector<Tag> ps = html.body.tag(P_TOKEN);
 	for (int i = 0; i < ps.size(); ++i)
 	{
-		std::string str = ps[i].text();
-		auto label = Gtk::make_managed<Gtk::Label>(str);
+		auto label = label_from_tag(ps[i]);
 		m_grid.attach(*label, 0, i);
 	}
 
