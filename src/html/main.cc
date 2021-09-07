@@ -1,41 +1,26 @@
 #include <iostream>
+#include <vector>
 #include <fstream>
 #include <filesystem>
 
-#include "htmldocument.h"
-
-void print_tags_recursive(const Tag& tag, int spaces)
+std::string read_file(const std::filesystem::path& file_path)
 {
-	for (int i = 0; i < spaces; ++i)
-		std::cout << "\t";
-
-	if (tag.type() == TEXT_TOKEN)
-		std::cout << tag << std::endl;
-	else
+  std::ifstream file(file_path);
+	if (!file.is_open())
 	{
-		std::cout << tag << std::endl;
-		std::vector<Tag> children = tag.innerHTML();
-		for (int i = 0; i < children.size(); ++i)
-			print_tags_recursive(children[i], spaces+1);
+		std::cout << "Error opening file: " << file_path << std::endl;
+    exit(0);
 	}
+	std::string content( (std::istreambuf_iterator<char>(file) ),
+											 (std	::istreambuf_iterator<char>()     ));
+
+  return content;
 }
 
-
-int main()
+int main(int argc, const char* argv[])
 {
-	std::filesystem::path path = std::filesystem::path("/home/david/workspace/raptor/src/html/examples/index.html");
+  std::filesystem::path file_path = "/home/david/workspace/raptor/src/html/examples/index.html";
+  std::string content = read_file(file_path);
 
-	HTMLDocument html = HTMLDocument();
-	html.load_from_file(path);
-
-	std::cout << "Title: " << html.title << std::endl;
-
-	std::cout << "Printing Head:" << std::endl;
-	print_tags_recursive(html.head, 0);
-	std::cout << std::endl;
-
-	std::cout << "Printing Body:" << std::endl;
-	print_tags_recursive(html.body, 0);
-
-	return 0;
+  return 0;
 }

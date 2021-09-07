@@ -5,8 +5,6 @@
 
 #include "content.h"
 
-#include "html/htmldocument.h"
-
 class Browser : public Gtk::Window
 {
 public:
