@@ -3,6 +3,8 @@
 #include <fstream>
 #include <filesystem>
 
+#include "tokenizer.h"
+
 std::string read_file(const std::filesystem::path& file_path)
 {
   std::ifstream file(file_path);
@@ -21,6 +23,9 @@ int main(int argc, const char* argv[])
 {
   std::filesystem::path file_path = "/home/david/workspace/raptor/src/html/examples/index.html";
   std::string content = read_file(file_path);
+
+  Tokenizer tokenizer = Tokenizer();
+  tokenizer.tokenize(content);
 
   return 0;
 }

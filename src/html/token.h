@@ -1,5 +1,11 @@
 #pragma once
 
+#include <iostream>
+#include <vector>
+#include <utility>
+
+typedef std::pair<std::string, std::string> Attribute;
+
 enum TokenType
 {
   DOCTYPE,
@@ -7,5 +13,16 @@ enum TokenType
   EndTag,
   Comment,
   Character,
-  EOF
+	EOFToken
 };
+
+struct Token
+{
+	TokenType type;
+	std::string value;
+	bool self_closing = false;
+
+	std::vector<Attribute> attributes;
+};
+
+std::string token_type_as_string(TokenType type);
