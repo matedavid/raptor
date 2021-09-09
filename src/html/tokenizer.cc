@@ -16,37 +16,31 @@ void Tokenizer::consume_tag_open_state()
 		current_state = State::MarkupDeclarationOpenState;
 	else if (c == '/')
 		current_state = State::EndTagOpen;
-	else if (c >= 'A' and c <= 'Z') // Is capital letter
+	else if (isalpha(c))
 	{
-		char lower_case = (c - 'A') + 'a';
-		current_token = Token{TokenType::StartTag, std::string(1, lower_case)};
-		current_state = State::TagName;
-	}
-	else if (c >= 'a' and c <= 'z') // Is lowercase letter
-	{
-		current_token = Token{TokenType::StartTag, std::string(1, c)};
+		current_token = Token{TokenType::StartTag, ""};
+
+		reconsume();
 		current_state = State::TagName;
 	}
 	else
 	{
 		std::cerr << "Parsing error: " << c << std::endl;
-		--m_position;
-		consume_data_state();
+		m_tokens.push_back(Token{TokenType::Character, "<"});
+
+		reconsume();
+		current_state = State::Data;
 	}
 }
 
 void Tokenizer::consume_end_tag_open_state()
 {
 	char c = consume();
-	if (c >= 'A' and c <= 'Z') // Is capital letter
+	if (isalpha(c))
 	{
-		char lower_case = (c - 'A') + 'a';
-		current_token = Token{TokenType::EndTag, std::string(1, lower_case)};
-		current_state = State::TagName;
-	}
-	else if (c >= 'a' and c <= 'z')
-	{
-		current_token = Token{TokenType::EndTag, std::string(1, c)};
+		current_token = Token{TokenType::EndTag, ""};
+
+		reconsume();
 		current_state = State::TagName;
 	}
 	else if (c == '>')
@@ -57,7 +51,7 @@ void Tokenizer::consume_end_tag_open_state()
 	else
 	{
 		std::cerr << "Parsing error: " << c << std::endl;
-		exit(1);
+		exit(1); // TODO: this is not really the appropiate behaviour, bocus_comment_state not implemented
 	}
 }
 
@@ -75,7 +69,7 @@ void Tokenizer::consume_tag_name_state()
 	}
 	else if (c >= 'A' and c <= 'Z')
 	{
-		char lower_case = (c - 'A') + 'a';
+		char lower_case = std::tolower(c);
 		current_token.value += lower_case;
 	}
 	else
@@ -87,27 +81,23 @@ void Tokenizer::consume_before_attribute_name_state()
 	char c = consume();
 	if (c == '\t' or c == '\n' or c == '\f' or c == ' ')
 		return;
-	else if (c == '/')
-		current_state = State::SelfClosingStartTag;
-	else if (c == '>')
+	else if (c == '/' or c == '>')
 	{
-		current_state = State::Data;
-		m_tokens.push_back(current_token);
+		reconsume();
+		current_state = State::AfterAttributeName;
 	}
-	else if (c >= 'A' and c <= 'Z')
-	{
-		char lower_case = (c - 'A') + 'a';
-		current_attribute = Attribute{std::string(1, lower_case), ""};
-	}
-	else if (c == '"' or c == '\'' or c == '<' or c == '=')
+	else if (c == '=')
 	{
 		std::cerr << "Parsing error: " << c << std::endl;
-		current_attribute = Attribute{std::string(1, c), ""};
+
+		current_token.attributes.push_back( Attribute{std::string(1, c), ""} );
 		current_state = State::AttributeName;
 	}
 	else
 	{
-		current_attribute = Attribute{std::string(1, c), ""};
+		current_token.attributes.push_back( Attribute{"", ""} );
+
+		reconsume();
 		current_state = State::AttributeName;
 	}
 }
@@ -115,26 +105,27 @@ void Tokenizer::consume_before_attribute_name_state()
 void Tokenizer::consume_attribute_name_state()
 {
 	char c = consume();
-	if (c == '\t' or c == '\n' or c == '\f' or c == ' ')
+	if (c == '\t' or c == '\n' or c == '\f' or c == ' ' or c == '/' or c == '>')
+	{
+		reconsume();
 		current_state = State::AfterAttributeName;
-	else if (c == '/')
-		current_state = State::SelfClosingStartTag;
+	}
 	else if (c == '=')
 		current_state = State::BeforeAttributeValue;
 	else if (c == '>')
 		current_state = State::Data;
 	else if (c >= 'A' and c <= 'Z')
 	{
-		char lower_case = (c - 'A') + 'a';
-		current_attribute.first += lower_case;
+		char lower_case = std::tolower(c);
+		current_token.attributes[current_token.attributes.size()-1].first += c;
 	}
 	else if (c == '"' or c == '\'' or c == '<')
 	{
 		std::cerr << "Parsing error: " << c << std::endl;
-		current_attribute.first += c;
+		current_token.attributes[current_token.attributes.size()-1].first += c;
 	}
 	else
-		current_attribute.first += c;
+		current_token.attributes[current_token.attributes.size()-1].first += c;
 }
 
 void Tokenizer::consume_after_attribute_name_state()
@@ -145,27 +136,17 @@ void Tokenizer::consume_after_attribute_name_state()
 	else if (c == '/')
 		current_state = State::SelfClosingStartTag;
 	else if (c == '=')
-		current_state = State::BeforeAttributeName;
+		current_state = State::BeforeAttributeValue;
 	else if (c == '>')
 	{
 		current_state = State::Data;
 		m_tokens.push_back(current_token);
 	}
-	else if (c >= 'A' and c <= 'Z')
-	{
-		char lower_case = (c - 'A') + 'a';
-		current_attribute = Attribute{std::string(1, lower_case), ""};
-		current_state = State::AttributeName;
-	}
-	else if (c == '"' or c == '\'' or c == '<')
-	{
-		std::cerr << "Parsing error: " << c << std::endl;
-		current_attribute = Attribute{std::string(1, c), ""};
-		current_state = State::AttributeName;
-	}
 	else
 	{
-		current_attribute = Attribute{std::string(1, c), ""};
+		current_token.attributes.push_back( Attribute{"", ""} );
+
+		reconsume();
 		current_state = State::AttributeName;
 	}
 }
@@ -185,15 +166,9 @@ void Tokenizer::consume_before_attribute_value_state()
 		current_state = State::Data;
 		m_tokens.push_back(current_token);
 	}
-	else if (c == '<' or c == '=' or c == '`')
-	{
-		std::cerr << "Parsing error: " << c << std::endl;
-		current_attribute.second += c;
-		current_state = State::UnquotedAttributeValue;
-	}
 	else
 	{
-		current_attribute.second += c;
+		reconsume();
 		current_state = State::UnquotedAttributeValue;
 	}
 }
@@ -204,7 +179,7 @@ void Tokenizer::consume_double_quoted_attribute_value_state()
 	if (c == '"')
 		current_state = State::AfterQuotedAttributeValue;
 	else
-		current_attribute.second += c;
+		current_token.attributes[current_token.attributes.size()-1].second += c;
 }
 
 void Tokenizer::consume_single_quoted_attribute_value_state()
@@ -213,7 +188,7 @@ void Tokenizer::consume_single_quoted_attribute_value_state()
 	if (c == '\'')
 		current_state = State::AfterQuotedAttributeValue;
 	else
-		current_attribute.second += c;
+		current_token.attributes[current_token.attributes.size()-1].second += c;
 }
 
 void Tokenizer::consume_unquoted_attribute_value_state()
@@ -229,10 +204,10 @@ void Tokenizer::consume_unquoted_attribute_value_state()
 	else if (c == '"' or c == '\'' or c == '<' or c == '=' or c == '`')
 	{
 		std::cerr << "Parsing error: " << c << std::endl;
-		current_attribute.second += c;
+		current_token.attributes[current_token.attributes.size()-1].second += c;
 	}
 	else
-		current_attribute.second += c;
+		current_token.attributes[current_token.attributes.size()-1].second += c;
 }
 
 void Tokenizer::consume_after_quoted_attribute_value_state()
@@ -243,13 +218,16 @@ void Tokenizer::consume_after_quoted_attribute_value_state()
 	else if (c == '/')
 		current_state = State::SelfClosingStartTag;
 	else if (c == '>')
+	{
 		current_state = State::Data;
+		m_tokens.push_back(current_token);
+	}
 	else
 	{
 		std::cerr << "Parsing error: " << c << std::endl;
 
-		--m_position;
-		consume_before_attribute_name_state();
+		reconsume();
+		current_state = State::BeforeAttributeName;
 	}
 }
 
@@ -260,14 +238,17 @@ void Tokenizer::consume_self_closing_start_tag_state()
 	{
 		current_token.self_closing = true;
 		current_state = State::Data;
+		m_tokens.push_back(current_token);
 	}
 	else
 	{
 		std::cerr << "Parsing error: " << c << std::endl;
-		--m_position;
-		consume_before_attribute_name_state();
+
+		reconsume();
+		current_state = State::BeforeAttributeValue;
 	}
 }
+
 
 
 
@@ -299,6 +280,12 @@ char Tokenizer::consume()
 {
   ++m_position;
   return m_content[m_position];
+}
+
+void Tokenizer::reconsume()
+{
+	if (m_position-1 >= 0)
+		--m_position;
 }
 
 std::string Tokenizer::peek_consume_forward(int n_chars)
@@ -385,7 +372,15 @@ void Tokenizer::tokenize(const std::string& content)
 	for (int i = 0; i < m_tokens.size(); ++i)
 	{
 		Token token = m_tokens[i];
-		std::cout << token_type_as_string(token.type) << " " << token.value << " " << token.self_closing << std::endl;
+		std::cout << token_type_as_string(token.type) << " " << token.value;
+		if (token.attributes.size() != 0)
+		{
+			std::cout << " [";
+			for (int i = 0; i < token.attributes.size(); ++i)
+				std::cout << "(" << token.attributes[i].first << ", " << token.attributes[i].second << ")";
+			std::cout << "]";
+		}
+		std::cout << std::endl;
 	}
 
 }

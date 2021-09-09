@@ -9,8 +9,8 @@
 class Tokenizer
 {
 private:
-  // Reference: https://www.w3.org/TR/2011/WD-html5-20110113/tokenization.html#tokenization
-	//            https://html.spec.whatwg.org/multipage/parsing.html#tokenization
+	// Reference: https://html.spec.whatwg.org/multipage/parsing.html#tokenization
+	//            https://www.w3.org/TR/2011/WD-html5-20110113/tokenization.html#tokenization
   enum State
   {
     Data,
@@ -63,12 +63,6 @@ private:
 	// Current Tokenizing token
 	Token current_token;
 
-	// Current Tokenizing attribute
-	Attribute current_attribute;
-
-	// Current Attribute
-	Attribute current_atrribute;
-
   // The current state of the tokenization process
   State current_state = State::Data;
 
@@ -79,7 +73,7 @@ private:
   int m_position;
 
 private:
-  void consume_data_state();
+	void consume_data_state();
 	void consume_tag_open_state();
 	void consume_end_tag_open_state();
 	void consume_tag_name_state();
@@ -98,6 +92,9 @@ private:
 
 	// Consumes next input character
 	char consume();
+	// Returns to previous input character
+	void reconsume();
+
 	// Consumes n_chars forward, without modifying the m_position variable
 	std::string peek_consume_forward(int n_chars);
 	// Consumes n_chars backwards, without modifying the m_position variable
