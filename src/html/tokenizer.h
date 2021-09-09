@@ -35,7 +35,7 @@ private:
     CommentStartDash,
     Comment,
     CommentEndDash,
-    CommentEndState,
+    CommentEnd,
 
     DOCTYPE,
     BeforeDoctypeName,
@@ -85,10 +85,15 @@ private:
 	void consume_single_quoted_attribute_value_state();
 	void consume_unquoted_attribute_value_state();
 	void consume_after_quoted_attribute_value_state();
+
 	void consume_self_closing_start_tag_state();
-
-
 	void consume_markup_declaration_open_state();
+
+  void consume_comment_start_state();
+  void consume_comment_start_dash_state();
+  void consume_comment_state();
+  void consume_comment_end_dash_state();
+  void consume_comment_end_state();
 
 	// Consumes next input character
 	char consume();

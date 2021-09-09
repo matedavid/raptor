@@ -242,33 +242,121 @@ void Tokenizer::consume_self_closing_start_tag_state()
 	}
 	else
 	{
-		std::cerr << "Parsing error: " << c << std::endl;
+		std::cerr << "Parsing error (self_closing_start_tag): " << c << std::endl;
 
 		reconsume();
 		current_state = State::BeforeAttributeValue;
 	}
 }
 
-
-
-
-
 void Tokenizer::consume_markup_declaration_open_state()
 {
 	if (peek_consume_forward(2) == "--")
 	{
+		m_position += 2+1;
 		current_token = Token{TokenType::Comment, ""};
 		current_state = State::CommentStart;
 	}
 	else if (peek_consume_forward(7) == "DOCTYPE")
 	{
-		m_position += 7;
+		m_position += 7+1;
 		current_state = State::DOCTYPE;
 	}
 	else
 	{
-		std::cerr << "Parsing error: " << m_content[m_position] << std::endl;
+		std::cerr << "Parsing error (markup_declaration_open): " << m_content[m_position] << std::endl;
 		exit(1);
+	}
+}
+
+void Tokenizer::consume_comment_start_state()
+{
+	char c = consume();
+	if (c == '-')
+		current_state = State::CommentStartDash;
+	else if (c == '>')
+	{
+		std::cerr << "Parsing error (start_state): " << c << std::endl;
+
+		current_state = State::Data;
+		m_tokens.push_back(current_token);
+	}
+	else
+	{
+		reconsume();
+		current_state = State::Comment;
+	}
+}
+
+void Tokenizer::consume_comment_start_dash_state()
+{
+	char c = consume();
+	if (c == '-')
+		current_state = State::CommentEnd;
+	else if (c == '>')
+	{
+		std::cerr << "Parsing error (comment_start_dash): " << c << std::endl;
+
+		current_state = State::Data;
+		m_tokens.push_back(current_token);
+	}
+	else
+	{
+		current_token.value += '-';
+
+		reconsume();
+		current_state = State::Comment;
+	}
+}
+
+void Tokenizer::consume_comment_state()
+{
+	char c = consume();
+	if (c == '<')
+	{
+		current_token.value += c;
+		// Note(david): Should change to CommentLessThanSignState, but this state does not exist for the moment
+	}
+	else if (c == '-')
+		current_state = State::CommentEndDash;
+	else
+		current_token.value += c;
+}
+
+void Tokenizer::consume_comment_end_dash_state()
+{
+	char c = consume();
+	if (c == '-')
+		current_state = State::CommentEnd;
+	else
+	{
+		current_token.value += '-';
+
+		reconsume();
+		current_state = State::Comment;
+	}
+}
+
+void Tokenizer::consume_comment_end_state()
+{
+	char c = consume();
+	if (c == '>')
+	{
+		current_state = State::Data;
+		m_tokens.push_back(current_token);
+	}
+	else if (c == '!')
+	{
+		// Note(david): CommentEndBangState is not implemented
+	}
+	else if (c == '-')
+		current_token.value += '-';
+	else
+	{
+		current_token.value += "--";
+
+		reconsume();
+		current_state = State::Comment;
 	}
 }
 
@@ -291,7 +379,7 @@ void Tokenizer::reconsume()
 std::string Tokenizer::peek_consume_forward(int n_chars)
 {
 	std::string peek_string = "";
-	for (int i = 0; i < n_chars; ++i)
+	for (int i = 1; i <= n_chars; ++i)
 	{
 		if (m_position+i >= m_content.length())
 			break;
@@ -304,7 +392,7 @@ std::string Tokenizer::peek_consume_forward(int n_chars)
 std::string Tokenizer::peek_consume_backwards(int n_chars)
 {
 	std::string peek_string = "";
-	for (int i = 0; i < n_chars; ++i)
+	for (int i = 1; i <= n_chars; ++i)
 	{
 		if (m_position-i < 0)
 			break;
@@ -363,6 +451,24 @@ void Tokenizer::tokenize(const std::string& content)
 				break;
 			case State::SelfClosingStartTag:
 				consume_self_closing_start_tag_state();
+				break;
+			case State::MarkupDeclarationOpenState:
+				consume_markup_declaration_open_state();
+				break;
+			case State::CommentStart:
+				consume_comment_state();
+				break;
+			case State::CommentStartDash:
+				consume_comment_start_dash_state();
+				break;
+			case State::Comment:
+				consume_comment_state();
+				break;
+			case State::CommentEndDash:
+				consume_comment_end_dash_state();
+				break;
+			case State::CommentEnd:
+				consume_comment_end_state();
 				break;
 			default:
 				std::cout << "State not recognized" << std::endl;
