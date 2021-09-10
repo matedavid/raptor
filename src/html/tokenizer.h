@@ -38,10 +38,11 @@ private:
     CommentEnd,
 
     DOCTYPE,
-    BeforeDoctypeName,
+    BeforeDOCTYPEName,
     DOCTYPEName,
     AfterDOCTYPEName,
 
+		/*
     AfterDOCTYPEPublicKeyword,
     BeforeDOCTYPEPublicIdentifier,
     DoubleQuotedDOCTYPEPublicIdentifier,
@@ -55,6 +56,7 @@ private:
     DoubleQuotedDOCTYPESystemIdentifier,
     SingleQuotedDOCTYPESystemIdentifier,
     AfterDOCTYPESystemIdentifier
+		*/
   };
   
 	// Tokens
@@ -94,6 +96,11 @@ private:
   void consume_comment_state();
   void consume_comment_end_dash_state();
   void consume_comment_end_state();
+
+  void consume_DOCTYPE_state();
+  void consume_before_DOCTYPE_name_state();
+  void consume_DOCTYPE_name_state();
+  void consume_after_DOCTYPE_name_state();
 
 	// Consumes next input character
 	char consume();

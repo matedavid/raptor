@@ -117,7 +117,7 @@ void Tokenizer::consume_attribute_name_state()
 	else if (c >= 'A' and c <= 'Z')
 	{
 		char lower_case = std::tolower(c);
-		current_token.attributes[current_token.attributes.size()-1].first += c;
+		current_token.attributes[current_token.attributes.size()-1].first += lower_case;
 	}
 	else if (c == '"' or c == '\'' or c == '<')
 	{
@@ -360,6 +360,86 @@ void Tokenizer::consume_comment_end_state()
 	}
 }
 
+void Tokenizer::consume_DOCTYPE_state()
+{
+	char c = consume();
+	if (c == '\t' or c == '\n' or c == '\f' or c == ' ')
+		current_state = State::BeforeDOCTYPEName;
+	else if (c == '>')
+	{
+		reconsume();
+		current_state = State::BeforeDOCTYPEName;
+	}
+	else
+	{
+		reconsume();
+		current_state = BeforeDOCTYPEName;
+	}
+}
+
+void Tokenizer::consume_before_DOCTYPE_name_state()
+{
+	char c = consume();
+	if (c == '\t' or c == '\n' or c == '\f' or c == ' ')
+		return;
+	else if (c >= 'A' and c <= 'Z')
+	{
+		char lower_case = std::tolower(c);
+		current_token = Token{TokenType::DOCTYPE, std::string(1, lower_case)};
+		current_state = State::DOCTYPEName;
+	}
+	else if (c == '>')
+	{
+		std::cout << "Parsing error (before_DOCTYPE_name): " << c << std::endl;
+
+		// TODO(david): Set force-quirks of token to on ???
+		current_token = Token{TokenType::DOCTYPE};
+		m_tokens.push_back(current_token);
+
+		current_state = State::Data;
+	}
+	else
+	{
+		current_token = Token{TokenType::DOCTYPE, std::string(1, c)};
+		current_state = State::DOCTYPEName;
+	}
+}
+
+void Tokenizer::consume_DOCTYPE_name_state()
+{
+	char c = consume();
+	if (c == '\t' or c == '\n' or c == '\f' or c == ' ')
+		current_state = State::DOCTYPEName;
+	else if (c == '>')
+	{
+		current_state = State::Data;
+		m_tokens.push_back(current_token);
+	}
+	else if (c >= 'A' and c <= 'Z')
+	{
+		char lower_case = std::tolower(c);
+		current_token.value += lower_case;
+	}
+	else
+		current_token.value += c;
+}
+
+void Tokenizer::consume_after_DOCTYPE_name_state()
+{
+	char c = consume();
+	if (c == '\t' or c == '\n' or c == '\f' or c == ' ')
+		return;
+	else if (c == '>')
+	{
+		current_state = State::Data;
+		m_tokens.push_back(current_token);
+	}
+	else
+	{
+		// TODO(david): Implement this part
+	}
+}
+
 Tokenizer::Tokenizer()
 {
 }
@@ -469,6 +549,18 @@ void Tokenizer::tokenize(const std::string& content)
 				break;
 			case State::CommentEnd:
 				consume_comment_end_state();
+				break;
+    	case State::DOCTYPE:
+				consume_DOCTYPE_state();
+				break;
+			case State::BeforeDOCTYPEName:
+				consume_before_DOCTYPE_name_state();
+				break;
+			case State::DOCTYPEName:
+				consume_DOCTYPE_name_state();
+				break;
+    	case State::AfterDOCTYPEName:
+				consume_after_DOCTYPE_name_state();
 				break;
 			default:
 				std::cout << "State not recognized" << std::endl;
