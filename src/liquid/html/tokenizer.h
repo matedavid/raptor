@@ -116,4 +116,11 @@ public:
   Tokenizer();
 
   void tokenize(const std::string& content);
+
+	// Returns the current Token
+	Token current();
+	// Advances forward on the token list
+	void next();
+	// Advances backwards on the token list
+	void prev();
 };

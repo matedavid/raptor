@@ -23,8 +23,6 @@ struct Token
 	bool self_closing = false;
 
 	std::vector<Attribute> attributes;
-
-	std::string public_identifier;
 };
 
 std::string token_type_as_string(TokenType type);
