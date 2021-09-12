@@ -3,15 +3,16 @@
 #include <iostream>
 #include <vector>
 
-typedef std::vector<Node*> NodeList;
+#include "element.h"
+#include "document.h"
 
 enum NodeType
 {
-  Element,
-  Attribute,
-  Text,
-  CDataSection,
-  ProcessingInstruction,
+  ElementNode,
+  AttributeNode,
+  TextNode,
+  CDataSectionNode,
+  ProcessingInstructionNode,
   CommentNode,
   DocumentNode,
   DocumentTypeNode,
@@ -20,7 +21,9 @@ enum NodeType
 
 class Node
 {
-private:
+private:  
+  typedef std::vector<Node*> NodeList;
+  
   enum DocumentPosition
   {
     Disconnected,

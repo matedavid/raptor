@@ -6,13 +6,13 @@ Module that defines all DOM related browser rendering responsability.
 Definitions:
 * [x] Node
 * [x] NodeList
-* [ ] NamedNodeMap ???
+* [x] NamedNodeMap
 * [x] Element
-* [ ] Attr
-* [ ] CharacterData
-* [ ] Text
-* [ ] Comment
-* [ ] DocumentType
-* [ ] Document
+* [x] Attr
+* [x] CharacterData
+* [x] Text
+* [x] Comment
+* [x] DocumentType
+* [x] Document
 
 Definitions: https://www.w3.org/TR/DOM-Level-2-Core/idl-definitions.html

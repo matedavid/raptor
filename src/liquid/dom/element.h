@@ -4,8 +4,9 @@
 #include <vector>
 
 #include "node.h"
+#include "named_node_map.h"
 
-class Element : public Node
+class Element : public Node 
 {
 private:
   std::string namespace_URI;
@@ -13,7 +14,7 @@ private:
   std::string local_name;
   std::string tag_name;
 
-  DOMTokenList class_list;
+  // DOMTokenList class_list; // TODO(david): Implement DOMTokenList
   NamedNodeMap attributes;
 
 public:
@@ -22,6 +23,8 @@ public:
   std::string slot;
 
 public:
+  Element();
+
   bool has_attributes();
   std::vector<std::string> get_attribute_names();
   std::string get_attribute(std::string name);
@@ -40,6 +43,6 @@ public:
   Element* closest(std::string selectors);
   bool matches(std::string selectors);
   
-  HTMLCollection get_elements_by_tag_name(std::string name);
-  HTMLCollection get_elements_by_class_name(std::string name);
+  // HTMLCollection get_elements_by_tag_name(std::string name);
+  // HTMLCollection get_elements_by_class_name(std::string name);
 };
