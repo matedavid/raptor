@@ -6,6 +6,8 @@
 #include "node.h"
 #include "named_node_map.h"
 
+#include "liquid/html/html_collection.h"
+
 class Element : public Node 
 {
 private:
@@ -14,7 +16,7 @@ private:
   std::string local_name;
   std::string tag_name;
 
-  // DOMTokenList class_list; // TODO(david): Implement DOMTokenList
+  DOMTokenList class_list; // TODO(david): Implement DOMTokenList
   NamedNodeMap attributes;
 
 public:
@@ -43,6 +45,6 @@ public:
   Element* closest(std::string selectors);
   bool matches(std::string selectors);
   
-  // HTMLCollection get_elements_by_tag_name(std::string name);
-  // HTMLCollection get_elements_by_class_name(std::string name);
+  HTMLCollection get_elements_by_tag_name(std::string name);
+  HTMLCollection get_elements_by_class_name(std::string name);
 };

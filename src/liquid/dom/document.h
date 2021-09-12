@@ -23,7 +23,6 @@ private:
   DocumentType doctype;
   Element* document_element;
 
-
 public:
   Document();
 
@@ -41,7 +40,4 @@ public:
   Node* adopt_node(Node* node);
 
   Attr* create_attribute(const std::string& name);
-
-  
-
 };
