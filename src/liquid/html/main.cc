@@ -3,7 +3,8 @@
 #include <fstream>
 #include <filesystem>
 
-#include "tokenizer.h"
+#include "liquid/html/tokenizer.h"
+#include "liquid/html/parser.h"
 
 std::string read_file(const std::filesystem::path& file_path)
 {
@@ -26,6 +27,9 @@ int main(int argc, const char* argv[])
 
   Tokenizer tokenizer = Tokenizer();
   tokenizer.tokenize(content);
+
+  Parser parser = Parser();
+  parser.parse(tokenizer);
 
   return 0;
 }

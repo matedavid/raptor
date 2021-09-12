@@ -587,7 +587,7 @@ void Tokenizer::tokenize(const std::string& content)
 	*/
 }
 
-Token Tokenizer::current()
+Token Tokenizer::current() const
 {
 	return m_tokens[m_position];
 }
@@ -602,4 +602,9 @@ void Tokenizer::prev()
 {
 	if (m_position-1 >= 0)
 		--m_position;
+}
+
+bool Tokenizer::is_last() const 
+{
+	return m_position >= m_tokens.size();
 }

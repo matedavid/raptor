@@ -118,9 +118,11 @@ public:
   void tokenize(const std::string& content);
 
 	// Returns the current Token
-	Token current();
+	Token current() const;
 	// Advances forward on the token list
 	void next();
 	// Advances backwards on the token list
 	void prev();
+  // Returns if the current position of the tokenizer is the last position
+  bool is_last() const;
 };
