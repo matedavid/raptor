@@ -4,7 +4,7 @@
 #include <vector>
 #include <utility>
 
-typedef std::pair<std::string, std::string> Attribute;
+typedef std::pair<std::string, std::string> Attr;
 
 enum TokenType
 {
@@ -22,7 +22,7 @@ struct Token
 	std::string value;
 	bool self_closing = false;
 
-	std::vector<Attribute> attributes;
+	std::vector<Attr> attributes;
 };
 
 std::string token_type_as_string(TokenType type);

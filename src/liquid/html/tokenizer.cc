@@ -90,12 +90,12 @@ void Tokenizer::consume_before_attribute_name_state()
 	{
 		std::cerr << "Parsing error: " << c << std::endl;
 
-		current_token.attributes.push_back( Attribute{std::string(1, c), ""} );
+		current_token.attributes.push_back( Attr{std::string(1, c), ""} );
 		current_state = State::AttributeName;
 	}
 	else
 	{
-		current_token.attributes.push_back( Attribute{"", ""} );
+		current_token.attributes.push_back( Attr{"", ""} );
 
 		reconsume();
 		current_state = State::AttributeName;
@@ -144,7 +144,7 @@ void Tokenizer::consume_after_attribute_name_state()
 	}
 	else
 	{
-		current_token.attributes.push_back( Attribute{"", ""} );
+		current_token.attributes.push_back( Attr{"", ""} );
 
 		reconsume();
 		current_state = State::AttributeName;

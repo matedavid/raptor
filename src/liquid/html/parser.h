@@ -4,6 +4,7 @@
 #include <stack>
 
 #include "liquid/html/tokenizer.h"
+#include "liquid/html/html_document.h"
 #include "liquid/html/html_element.h"
 
 class Parser
@@ -42,8 +43,11 @@ private:
   // Object resulting of a previous tokenization
   Tokenizer m_tokenizer;
 
-  // The Document being created
-  //Document document;
+	// Indicates if the parser should reconsume the last consumed token
+	bool reconsume_token;
+
+	// Pointer to the last referenced element
+	HTMLElement* current_element;
 
   std::stack<HTMLElement> open_elements;
 
