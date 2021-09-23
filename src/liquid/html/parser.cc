@@ -16,6 +16,11 @@ void Parser::initial_mode()
   }
 }
 
+void Parser::before_html_mode()
+{
+
+}
+
 Parser::Parser()
 {
 }

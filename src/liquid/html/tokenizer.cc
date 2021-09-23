@@ -570,7 +570,6 @@ void Tokenizer::tokenize(const std::string& content)
 	// Restarts the position for further use of the tokenizer object
 	m_position = 0;
 
-	/*
 	for (int i = 0; i < m_tokens.size(); ++i)
 	{
 		Token token = m_tokens[i];
@@ -584,7 +583,6 @@ void Tokenizer::tokenize(const std::string& content)
 		}
 		std::cout << std::endl;
 	}
-	*/
 }
 
 Token Tokenizer::current() const
