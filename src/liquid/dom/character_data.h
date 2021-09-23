@@ -4,7 +4,7 @@
 
 #include "node.h"
 
-class CharacterData : public Node
+class CharacterData : public Node 
 {
 public:
   CharacterData();

@@ -2,15 +2,14 @@
 
 #include <iostream>
 
-#include "node.h"
 #include "document_type.h"
-#include "text.h"
 #include "comment.h"
 #include "attr.h"
+#include "text.h"
 
-class HTMLCollection;
+class Node;
 
-class Document : public Node 
+class Document : public Node
 {
 private:
 

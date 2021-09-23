@@ -17,5 +17,5 @@ public:
   Attr* item(uint index);
   Attr* get_named_item(const std::string& name);
   Attr* set_named_item(Attr attr);
-  Attr* remove_named_item(const std::string& name)
+	Attr* remove_named_item(const std::string& name);
 };

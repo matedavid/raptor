@@ -8,7 +8,9 @@
 
 #include "liquid/html/html_collection.h"
 
-class Element : public Node 
+class DOMTokenList;
+
+class Element : public Node
 {
 private:
   std::string namespace_URI;
@@ -16,7 +18,8 @@ private:
   std::string local_name;
   std::string tag_name;
 
-  DOMTokenList class_list; // TODO(david): Implement DOMTokenList
+  // TODO(david): Implement DOMTokenList
+  DOMTokenList class_list;
   NamedNodeMap attributes;
 
 public:

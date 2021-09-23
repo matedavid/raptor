@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "element.h"
+class Element;
 
 class Attr
 {
