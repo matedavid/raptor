@@ -5,7 +5,10 @@
 
 #include "liquid/html/tokenizer.h"
 #include "liquid/html/html_document.h"
+
 #include "liquid/html/html_element.h"
+#include "liquid/html/html_html_element.h"
+
 
 class Parser
 {
@@ -46,8 +49,8 @@ private:
 	// Indicates if the parser should reconsume the last consumed token
 	bool reconsume_token;
 
-	// Pointer to the last referenced element
-	HTMLElement* current_element;
+	// The document being constructed
+	HTMLDocument document;
 
   std::stack<HTMLElement> open_elements;
 

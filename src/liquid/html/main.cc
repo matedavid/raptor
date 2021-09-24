@@ -28,5 +28,8 @@ int main(int argc, const char* argv[])
   Tokenizer tokenizer = Tokenizer();
   tokenizer.tokenize(content);
 
+	Parser html_parser = Parser();
+	html_parser.parse(tokenizer);
+
   return 0;
 }

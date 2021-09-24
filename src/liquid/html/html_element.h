@@ -4,7 +4,15 @@
 #include <vector>
 #include <map>
 
+#include "liquid/html/token.h"
 #include "liquid/html/attribute.h"
+
+enum HTMLElementType
+{
+	ElementType,
+	TextType,
+	AttribyteType
+};
 
 class HTMLElement
 {
@@ -18,12 +26,15 @@ private:
 	std::string outer_html;
 
 public:
+	HTMLElementType type;
+
 	std::string class_name;
 	std::string id;
 
 public:
 	HTMLElement();
 	HTMLElement(HTMLElement* parent);
+	HTMLElement(const Token& token, HTMLElement* parent);
 
 	HTMLElement* parent_element();
 	std::vector<HTMLElement*> child_elements();

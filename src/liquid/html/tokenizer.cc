@@ -604,5 +604,5 @@ void Tokenizer::prev()
 
 bool Tokenizer::is_last() const 
 {
-	return m_position >= m_tokens.size();
+	return m_position == m_tokens.size()-1;
 }
