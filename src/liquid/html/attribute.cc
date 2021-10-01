@@ -16,6 +16,6 @@ std::string Attribute::name() const
 
 std::string Attribute::value() const
 {
-	return m_name;
+	return m_value;
 }
 

@@ -7,13 +7,6 @@
 #include "liquid/html/token.h"
 #include "liquid/html/attribute.h"
 
-enum HTMLElementType
-{
-	ElementType,
-	TextType,
-	AttribyteType
-};
-
 class HTMLElement
 {
 private:
@@ -26,8 +19,7 @@ private:
 	std::string outer_html;
 
 public:
-	HTMLElementType type;
-
+	std::string element_value;
 	std::string class_name;
 	std::string id;
 
@@ -39,10 +31,14 @@ public:
 	HTMLElement* parent_element();
 	std::vector<HTMLElement*> child_elements();
 
-	void insert_child(const HTMLElement* element);
+	void insert_child(HTMLElement* element);
+	void insert_child_last(HTMLElement* element);
 	void replace_child(const HTMLElement* element, const HTMLElement* child);
 	void remove_child(const HTMLElement* element);
 	bool contains(const HTMLElement* element) const;
+
+	void set_parent(HTMLElement* new_parent);
+	void insert_character(const std::string& str);
 
 	std::vector<HTMLElement*> get_elements_by_tag_name(const std::string& tag);
 	std::vector<HTMLElement*> get_elements_by_id(const std::string& id);
@@ -53,4 +49,11 @@ public:
 	void toggle_attribute(const std::string& name);
 	bool contains_attribute(const std::string& attribute_name);
 
+
+	// Returns the last child of the provided element
+	static HTMLElement* get_last_element(HTMLElement* element);
+
+	/* DEBUG */
+	static void print_rec(HTMLElement* element, int tab_num);
+	void print();
 };

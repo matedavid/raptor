@@ -101,7 +101,6 @@ void Parser::before_head_mode()
 
 void Parser::in_head_mode()
 {
-
 }
 
 Parser::Parser()

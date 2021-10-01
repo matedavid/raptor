@@ -2,5 +2,4 @@
 
 HTMLHeadElement::HTMLHeadElement()
 {
-
 }

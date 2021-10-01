@@ -31,5 +31,21 @@ int main(int argc, const char* argv[])
 	Parser html_parser = Parser();
 	html_parser.parse(tokenizer);
 
+	/* Tests: */
+	HTMLBodyElement* body = new HTMLBodyElement(nullptr);
+	body->element_value = "body";
+
+	HTMLElement* element = new HTMLElement();
+	element->element_value = "ptag";
+	element->set_attribute("class", "super");
+	element->set_attribute("style", "no style bitch");
+
+	HTMLElement* div = new HTMLElement();
+	div->element_value = "div";
+
+	body->insert_child_last(element);
+	body->insert_child(div);
+	body->print();
+
   return 0;
 }

@@ -6,4 +6,6 @@ class HTMLBodyElement : public HTMLElement
 {
 public:
 	HTMLBodyElement();
+
+	using HTMLElement::HTMLElement;
 };
