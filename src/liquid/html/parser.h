@@ -8,6 +8,7 @@
 
 #include "liquid/html/html_element.h"
 #include "liquid/html/html_html_element.h"
+#include "liquid/html/text.h"
 
 
 class Parser
@@ -22,7 +23,7 @@ private:
     InHeadNoscript,
     AfterHead,
     InBody,
-    Text,
+    TextMode,
     InTable,
     InTableText,
     InCaption,

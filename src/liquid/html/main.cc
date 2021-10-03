@@ -31,7 +31,8 @@ int main(int argc, const char* argv[])
 	Parser html_parser = Parser();
 	html_parser.parse(tokenizer);
 
-	/* Tests: */
+	/*
+	// ===== Tests: ===== 
 	HTMLBodyElement* body = new HTMLBodyElement(nullptr);
 	body->element_value = "body";
 
@@ -43,9 +44,24 @@ int main(int argc, const char* argv[])
 	HTMLElement* div = new HTMLElement();
 	div->element_value = "div";
 
+	Text* text = new Text("This is a text example.");
+	text->element_value = "text";
+	div->insert_child(text);
+
 	body->insert_child_last(element);
 	body->insert_child(div);
 	body->print();
+
+	HTMLElement* last_element = body->get_last_element();
+	if (last_element->type() == HTMLElementType::TextType)
+	{
+		Text* text_element = dynamic_cast<Text*>(last_element);
+		text_element->append_string(" Appended text");
+		std::cout << "Is a text element: " << text_element->content() << std::endl;
+	}
+	// ===== ===== 
+	*/
+
 
   return 0;
 }

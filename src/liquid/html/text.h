@@ -13,6 +13,8 @@ public:
 	Text();
 	Text(const std::string& content);
 
+	HTMLElementType type() override { return HTMLElementType::TextType; }
+
 	std::string content() const;
 	void append_string(const std::string& str);
 };

@@ -2,5 +2,4 @@
 
 HTMLBodyElement::HTMLBodyElement()
 {
-
 }

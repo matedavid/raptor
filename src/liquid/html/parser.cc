@@ -81,6 +81,8 @@ void Parser::before_head_mode()
 	else if (token.type == TokenType::StartTag and token.value == "head")
 	{
 		HTMLHeadElement* head_element = new HTMLHeadElement(token, document.html);
+		document.html->insert_child(head_element);
+
 		document.head = head_element;
 		current_insertion_mode = InsertionMode::InHead;
 	}
@@ -92,8 +94,9 @@ void Parser::before_head_mode()
 	else
 	{
 		HTMLHeadElement* head_element = new HTMLHeadElement(document.html);
-		document.head = head_element;
+		document.html->insert_child(head_element);
 
+		document.head = head_element;
 		reconsume_token = true;
 		current_insertion_mode = InsertionMode::InHead;
 	}
@@ -101,6 +104,23 @@ void Parser::before_head_mode()
 
 void Parser::in_head_mode()
 {
+  Token token = m_tokenizer.current();
+
+	if ( token.type == TokenType::Character and (token.value == "\t" or token.value == "\n" or token.value == "\f" or token.value == " ") )
+  {
+    HTMLElement* last_element = document.head->get_last_element();
+		if (last_element->type() == HTMLElementType::TextType)
+		{
+			Text* text_last_element = dynamic_cast<Text*>(last_element);
+			text_last_element->append_string(token.value);
+		}
+		else
+		{
+			Text* text_element = new Text(token.value);
+			document.head->insert_child_last(text_element);
+		}
+  }
+
 }
 
 Parser::Parser()
@@ -139,4 +159,7 @@ void Parser::parse(Tokenizer& tokenizer)
 		else
 			reconsume_token = false;
   }
+
+	std::cout << "Printing AST result from parsing:" << std::endl;
+	document.html->print();
 }
