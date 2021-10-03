@@ -16,8 +16,14 @@ std::string read_file(const std::filesystem::path& file_path)
 	}
 	std::string content( (std::istreambuf_iterator<char>(file) ),
 											 (std	::istreambuf_iterator<char>()     ));
+  
+  std::string final_content = "";
+  for (int i = 0; i < content.length(); ++i)
+  {
+    if (content[i] != '\n') final_content += content[i];
+  }
 
-  return content;
+  return final_content;
 }
 
 int main(int argc, const char* argv[])

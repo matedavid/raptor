@@ -65,8 +65,7 @@ public:
 	// Returns the last child of the provided element
 	// The last child is the 'deepest' and right-most element in the tree
 	HTMLElement* get_last_element();
-
-	/* DEBUG */
-	static void print_rec(HTMLElement* element, int tab_num);
-	void print();
+  
+  /* === DEBUG === */
+	std::map<std::string, Attribute*> get_attributes() { return attributes; }
 };

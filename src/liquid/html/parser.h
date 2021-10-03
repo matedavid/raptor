@@ -3,12 +3,17 @@
 #include <iostream>
 #include <stack>
 
+#include "liquid/html/debug.h"
+
 #include "liquid/html/tokenizer.h"
 #include "liquid/html/html_document.h"
+#include "liquid/html/text.h"
 
 #include "liquid/html/html_element.h"
 #include "liquid/html/html_html_element.h"
-#include "liquid/html/text.h"
+#include "liquid/html/html_head_element.h"
+#include "liquid/html/html_title_element.h"
+
 
 
 class Parser
@@ -16,6 +21,7 @@ class Parser
 private:
   enum InsertionMode
   {
+    TextMode,
     Initial,
     BeforeHTML,
     BeforeHead,
@@ -23,7 +29,6 @@ private:
     InHeadNoscript,
     AfterHead,
     InBody,
-    TextMode,
     InTable,
     InTableText,
     InCaption,
@@ -43,6 +48,9 @@ private:
 
   // The current insertion mode of the parser
   InsertionMode current_insertion_mode;
+  
+  // The insertion mode to which, after processing, the parser will return
+  InsertionMode original_insertion_mode;
 
   // Object resulting of a previous tokenization
   Tokenizer m_tokenizer;
@@ -56,14 +64,14 @@ private:
   std::stack<HTMLElement> open_elements;
 
   /* Functions to resolve InsertionModes */
+  void text_mode();
   void initial_mode();
   void before_html_mode();
   void before_head_mode();
   void in_head_mode();
-  void in_head_no_script_mode();
+  //void in_head_no_script_mode();
   void after_head_mode();
   void in_body_mode();
-  void text_mode();
 
 public:
   Parser();
