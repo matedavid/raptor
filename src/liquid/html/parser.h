@@ -42,8 +42,8 @@ private:
     AfterBody,
     InFrameset,
     AfterFrameset,
-    AfterAfterBody,
-    AfterAfterFrameset
+		AfterAfterBody,
+		AfterAfterFrameset
   };
 
   // The current insertion mode of the parser
@@ -61,7 +61,10 @@ private:
 	// The document being constructed
 	HTMLDocument document;
 
-  std::stack<HTMLElement> open_elements;
+	std::stack<HTMLElement*> open_elements;
+
+	// Inserts a character under the element at the top of open elements
+	void insert_character(const Token& token, HTMLElement* element);
 
   /* Functions to resolve InsertionModes */
   void text_mode();

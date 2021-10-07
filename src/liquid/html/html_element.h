@@ -60,7 +60,7 @@ public:
 	void set_attribute(const std::string& name, const std::string& value);
 	void remove_attribute(const std::string& name);
 	void toggle_attribute(const std::string& name);
-	bool contains_attribute(const std::string& attribute_name);
+	bool contains_attribute(const std::string& name) const;
 
 	// Returns the last child of the provided element
 	// The last child is the 'deepest' and right-most element in the tree

@@ -74,6 +74,11 @@ void HTMLElement::set_attribute(const std::string& name, const std::string& valu
 	attributes.insert(std::make_pair(name, attr));
 }
 
+bool HTMLElement::contains_attribute(const std::string& name) const
+{
+	return attributes.find(name) != attributes.end();
+}
+
 HTMLElement* HTMLElement::get_last_element()
 {
 	return get_last_element_recursive(this);
