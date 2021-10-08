@@ -51,7 +51,7 @@ void Tokenizer::consume_end_tag_open_state()
 	else
 	{
 		std::cerr << "Parsing error: " << c << std::endl;
-		exit(1); // TODO: this is not really the appropiate behaviour, bocus_comment_state not implemented
+		exit(1); // TODO: this is not really the appropiate behaviour, bogus_comment_state not implemented
 	}
 }
 
@@ -315,7 +315,7 @@ void Tokenizer::consume_comment_state()
 	if (c == '<')
 	{
 		current_token.value += c;
-		// Note(david): Should change to CommentLessThanSignState, but this state does not exist for the moment
+		// TODO: Should change to CommentLessThanSignState, but this state does not exist for the moment
 	}
 	else if (c == '-')
 		current_state = State::CommentEndDash;
@@ -347,7 +347,7 @@ void Tokenizer::consume_comment_end_state()
 	}
 	else if (c == '!')
 	{
-		// Note(david): CommentEndBangState is not implemented
+		// TODO: CommentEndBangState is not implemented
 	}
 	else if (c == '-')
 		current_token.value += '-';
@@ -392,7 +392,7 @@ void Tokenizer::consume_before_DOCTYPE_name_state()
 	{
 		std::cout << "Parsing error (before_DOCTYPE_name): " << c << std::endl;
 
-		// TODO(david): Set force-quirks of token to on ???
+		// TODO: Set force-quirks of token to on ???
 		current_token = Token{TokenType::DOCTYPE};
 		m_tokens.push_back(current_token);
 
@@ -436,7 +436,7 @@ void Tokenizer::consume_after_DOCTYPE_name_state()
 	}
 	else
 	{
-		// TODO(david): Implement this part
+		// TODO: Implement this part
 	}
 }
 
@@ -550,7 +550,7 @@ void Tokenizer::tokenize(const std::string& content)
 			case State::CommentEnd:
 				consume_comment_end_state();
 				break;
-    	case State::DOCTYPE:
+			case State::DOCTYPE:
 				consume_DOCTYPE_state();
 				break;
 			case State::BeforeDOCTYPEName:
@@ -559,7 +559,7 @@ void Tokenizer::tokenize(const std::string& content)
 			case State::DOCTYPEName:
 				consume_DOCTYPE_name_state();
 				break;
-    	case State::AfterDOCTYPEName:
+			case State::AfterDOCTYPEName:
 				consume_after_DOCTYPE_name_state();
 				break;
 			default:
@@ -569,22 +569,6 @@ void Tokenizer::tokenize(const std::string& content)
 
 	// Restarts the position for further use of the tokenizer object
 	m_position = 0;
-
-	/*
-	for (int i = 0; i < m_tokens.size(); ++i)
-	{
-		Token token = m_tokens[i];
-		std::cout << token_type_as_string(token.type) << " " << token.value;
-		if (token.attributes.size() != 0)
-		{
-			std::cout << " [";
-			for (int i = 0; i < token.attributes.size(); ++i)
-				std::cout << "(" << token.attributes[i].first << ", " << token.attributes[i].second << ")";
-			std::cout << "]";
-		}
-		std::cout << std::endl;
-	}
-	*/
 }
 
 Token Tokenizer::current() const

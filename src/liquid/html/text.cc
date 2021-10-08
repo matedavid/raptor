@@ -2,11 +2,13 @@
 
 Text::Text()
 {
+  element_value = "text";
 }
 
 Text::Text(const std::string& content)
 	: m_content(content)
 {
+  element_value = "text";
 }
 
 std::string Text::content() const

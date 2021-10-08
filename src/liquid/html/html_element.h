@@ -32,6 +32,9 @@ public:
 	virtual HTMLElementType type() { return HTMLElementType::ElementType; }
 
 private:
+	static void replace_child_recursive(HTMLElement* element, HTMLElement* target, HTMLElement* new_child);
+	static void remove_child_recursive(HTMLElement* element, HTMLElement* target);
+	static void get_elements_by_tag_name_recursive(HTMLElement* element, const std::string& tag, std::vector<HTMLElement*>& element_list);
 	static HTMLElement* get_last_element_recursive(HTMLElement* element);
 
 public:
@@ -46,12 +49,11 @@ public:
 	void insert_child(HTMLElement* element);
 	// Inserts child to the last element in the tree
 	void insert_child_last(HTMLElement* element);
-	void replace_child(const HTMLElement* element, const HTMLElement* child);
-	void remove_child(const HTMLElement* element);
+	void replace_child(HTMLElement* element, HTMLElement* new_child);
+	void remove_child(HTMLElement* element);
 	bool contains(const HTMLElement* element) const;
 
 	void set_parent(HTMLElement* new_parent);
-	void insert_character(const std::string& str);
 
 	std::vector<HTMLElement*> get_elements_by_tag_name(const std::string& tag);
 	std::vector<HTMLElement*> get_elements_by_id(const std::string& id);

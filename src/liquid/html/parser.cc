@@ -15,6 +15,7 @@ void Parser::insert_character(const Token& token, HTMLElement* element)
 	}
 }
 
+// ===== Parsing modes =====
 void Parser::text_mode()
 {
   Token token = m_tokenizer.current();
@@ -153,8 +154,8 @@ void Parser::in_head_mode()
 
 	if ( token.type == TokenType::Character and (token.value == "\t" or token.value == "\n" or token.value == "\f" or token.value == " ") )
   {
-		HTMLElement* insert_element = open_elements.top();
-		insert_character(token, insert_element);
+		//HTMLElement* insert_element = open_elements.top();
+		//insert_character(token, insert_element);
   }
   else if (token.type == TokenType::Comment)
     return;
@@ -170,11 +171,11 @@ void Parser::in_head_mode()
   }
   else if ( token.type == TokenType::StartTag and (token.value == "base" or token.value == "basefont" or token.value == "bgsound" or token.value == "link") )
   {
-    // TODO(david): Implement
+		// TODO: Implement
   }
   else if (token.type == TokenType::StartTag and token.value == "meta")
   {
-    // TODO(david): Implement
+		// TODO: Implement
   }
   else if (token.type == TokenType::StartTag and token.value == "title")
   {
@@ -188,7 +189,7 @@ void Parser::in_head_mode()
     original_insertion_mode = current_insertion_mode;
     current_insertion_mode = InsertionMode::TextMode;
   }
-  // TODO(david): Missing multple parts, not implementing at the moment
+	// TODO: Missing multple parts, not implementing at the moment
   else if (token.type == TokenType::EndTag and token.value == "head")
   {
     open_elements.pop();
@@ -294,7 +295,6 @@ void Parser::in_body_mode()
 	else if (token.type == TokenType::Character)
 	{
 		HTMLElement* insert_element = open_elements.top();
-		std::cout << "Insert element in character in_body: " << insert_element->element_value << " " << insert_element << std::endl;
 		insert_character(token, insert_element);
 	}
 	else if (token.type == TokenType::Comment)
@@ -372,9 +372,63 @@ void Parser::in_body_mode()
 	}
 }
 
+void Parser::after_body_mode()
+{
+	Token token = m_tokenizer.current();
+
+	if ( token.type == TokenType::Character and (token.value == "\t" or token.value == "\n" or token.value == "\f" or token.value == " ") )
+	{
+		reconsume_token = true;
+		current_insertion_mode = InsertionMode::InBody;
+	}
+	else if (token.type == TokenType::Comment)
+		return;
+	else if (token.type == TokenType::DOCTYPE)
+	{
+		std::cerr << "Parsing error: DOCTYPE token in after_body mode" << std::endl;
+		return;
+	}
+	else if (token.type == TokenType::StartTag and token.value == "html")
+	{
+		reconsume_token = true;
+		current_insertion_mode = InsertionMode::InBody;
+	}
+	else if (token.type == TokenType::EndTag and token.value == "html")
+	{
+		current_insertion_mode = InsertionMode::AfterAfterBody;
+	}
+	else
+	{
+		std::cerr << "Parsing error: else clause reached in after_body mode" << std::endl;
+
+		reconsume_token = true;
+		current_insertion_mode = InsertionMode::InBody;
+	}
+}
+
 Parser::Parser()
 {
 }
+
+// === TEMPORAL ===
+const std::string WHITESPACE = " \n\r\t\f\v";
+
+std::string ltrim(const std::string &s)
+{
+		size_t start = s.find_first_not_of(WHITESPACE);
+		return (start == std::string::npos) ? "" : s.substr(start);
+}
+
+std::string rtrim(const std::string &s)
+{
+		size_t end = s.find_last_not_of(WHITESPACE);
+		return (end == std::string::npos) ? "" : s.substr(0, end + 1);
+}
+
+std::string trim(const std::string &s) {
+		return rtrim(ltrim(s));
+}
+// ================
 
 void Parser::parse(Tokenizer& tokenizer)
 {
@@ -384,7 +438,6 @@ void Parser::parse(Tokenizer& tokenizer)
 
   while (not m_tokenizer.is_last())
   {
-		std::cout << "(" << m_tokenizer.current().value << ") Number of open elements: " << open_elements.size() << std::endl;
     switch (current_insertion_mode)
     {
       case InsertionMode::TextMode:
@@ -408,6 +461,8 @@ void Parser::parse(Tokenizer& tokenizer)
 			case InsertionMode::InBody:
 				in_body_mode();
 				break;
+			case InsertionMode::AfterBody:
+				after_body_mode();
       // ...
       default:
         std::cout << "Insertion Mode Unknown" << std::endl;
@@ -418,6 +473,19 @@ void Parser::parse(Tokenizer& tokenizer)
 		else
 			reconsume_token = false;
   }
+
+	// Removes text elements which have empty strings
+	std::vector<HTMLElement*> text_elements = document.html->get_elements_by_tag_name("text");
+	for (HTMLElement* element : text_elements)
+	{
+		Text* text_element = dynamic_cast<Text*>(element);
+		if (text_element == nullptr) continue;
+
+		std::string trimmed_string = trim(text_element->content());
+		std::cout << "Text element: " << text_element->content() << " " << trimmed_string.empty() << std::endl;
+		if (trimmed_string.empty())
+			document.html->remove_child(text_element);
+	}
 
 	std::cout << "Printing AST result from parsing:" << std::endl;
   print_html_element(document.html, 0);

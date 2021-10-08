@@ -75,6 +75,7 @@ private:
   //void in_head_no_script_mode();
   void after_head_mode();
   void in_body_mode();
+	void after_body_mode();
 
 public:
   Parser();
