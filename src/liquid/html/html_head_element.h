@@ -4,6 +4,8 @@
 
 #include "liquid/html/html_element.h"
 
+namespace liquid {
+
 class HTMLHeadElement : public HTMLElement
 {
 public:
@@ -11,3 +13,4 @@ public:
 	using HTMLElement::HTMLElement;
 };
 
+}

@@ -6,6 +6,8 @@
 
 #include "token.h"
 
+namespace liquid {
+
 class Tokenizer
 {
 private:
@@ -126,3 +128,5 @@ public:
   // Returns if the current position of the tokenizer is the last position
   bool is_last() const;
 };
+
+}

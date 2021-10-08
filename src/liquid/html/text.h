@@ -4,6 +4,8 @@
 
 #include "liquid/html/html_element.h"
 
+namespace liquid {
+
 class Text : public HTMLElement
 {
 private:
@@ -19,3 +21,4 @@ public:
 	void append_string(const std::string& str);
 };
 
+}

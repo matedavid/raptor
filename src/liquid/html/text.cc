@@ -1,5 +1,7 @@
 #include "text.h"
 
+namespace liquid {
+
 Text::Text()
 {
   element_value = "text";
@@ -21,4 +23,4 @@ void Text::append_string(const std::string& str)
 	m_content += str;
 }
 
-
+}

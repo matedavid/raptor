@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+namespace liquid {
+
 class Attribute
 {
 private:
@@ -16,3 +18,4 @@ public:
 	std::string value() const;
 };
 
+}

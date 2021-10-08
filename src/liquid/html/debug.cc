@@ -1,5 +1,7 @@
 #include "debug.h"
 
+namespace liquid {
+
 void print_html_element(HTMLElement* element, int tab_num)
 {
 	if (element == nullptr)
@@ -31,4 +33,6 @@ void print_html_element(HTMLElement* element, int tab_num)
   std::vector<HTMLElement*> children = element->child_elements();
 	for (int i = 0; i < children.size(); ++i)
 		print_html_element(children[i], tab_num+1);
+}
+
 }

@@ -6,4 +6,8 @@
 #include "liquid/html/text.h"
 #include "liquid/html/html_element.h"
 
+namespace liquid {
+
 void print_html_element(HTMLElement* element, int tab_num);
+
+}

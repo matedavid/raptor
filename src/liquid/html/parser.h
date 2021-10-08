@@ -6,15 +6,15 @@
 #include "liquid/html/debug.h"
 
 #include "liquid/html/tokenizer.h"
-#include "liquid/html/html_document.h"
 #include "liquid/html/text.h"
 
 #include "liquid/html/html_element.h"
 #include "liquid/html/html_html_element.h"
 #include "liquid/html/html_head_element.h"
+#include "liquid/html/html_body_element.h"
 #include "liquid/html/html_title_element.h"
 
-
+namespace liquid {
 
 class Parser
 {
@@ -59,8 +59,9 @@ private:
 	bool reconsume_token;
 
 	// The document being constructed
-	HTMLDocument document;
+	HTMLHtmlElement* html;
 
+	// Stack of elements that are currently open
 	std::stack<HTMLElement*> open_elements;
 
 	// Inserts a character under the element at the top of open elements
@@ -68,7 +69,7 @@ private:
 
   /* Functions to resolve InsertionModes */
   void text_mode();
-  void initial_mode();
+	void initial_mode();
   void before_html_mode();
   void before_head_mode();
   void in_head_mode();
@@ -80,5 +81,7 @@ private:
 public:
   Parser();
 
-  void parse(Tokenizer& tokenizer);
+	HTMLHtmlElement* parse(Tokenizer& tokenizer);
 };
+
+}

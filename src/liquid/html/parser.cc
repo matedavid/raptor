@@ -1,5 +1,7 @@
 #include "parser.h"
 
+namespace liquid {
+
 void Parser::insert_character(const Token& token, HTMLElement* element)
 {
 	HTMLElement* last_element = element->get_last_element();
@@ -75,7 +77,7 @@ void Parser::before_html_mode()
 	else if (token.type == TokenType::StartTag and token.value == "html")
 	{
 		HTMLHtmlElement* html_element = new HTMLHtmlElement(token, nullptr);
-		document.html = html_element;
+		html = html_element;
 		open_elements.push(html_element);
 
 		current_insertion_mode = InsertionMode::BeforeHead;
@@ -85,7 +87,7 @@ void Parser::before_html_mode()
 	else if ( token.type == TokenType::EndTag and (token.value == "head" or token.value == "body" or token.value == "html" or token.value == "br") )
 	{
 		HTMLHtmlElement* html_element = new HTMLHtmlElement(nullptr);
-		document.html = html_element;
+		html = html_element;
 		open_elements.push(html_element);
 
 		reconsume_token = true;
@@ -94,7 +96,7 @@ void Parser::before_html_mode()
 	else
 	{
 		HTMLHtmlElement* html_element = new HTMLHtmlElement(nullptr);
-		document.html = html_element;
+		html = html_element;
 		open_elements.push(html_element);
 
 		reconsume_token = true;
@@ -122,12 +124,12 @@ void Parser::before_head_mode()
 	}
 	else if (token.type == TokenType::StartTag and token.value == "head")
 	{
-		HTMLHeadElement* head_element = new HTMLHeadElement(token, document.html);
-		document.html->insert_child(head_element);
+		HTMLHeadElement* head_element = new HTMLHeadElement(token, html);
+		html->insert_child(head_element);
 
     open_elements.push(head_element);
 
-		document.head = head_element;
+		//document.head = head_element;
 		current_insertion_mode = InsertionMode::InHead;
 	}
 	else if (token.type == TokenType::EndTag)
@@ -137,12 +139,12 @@ void Parser::before_head_mode()
 	}
 	else
 	{
-		HTMLHeadElement* head_element = new HTMLHeadElement(document.html);
-		document.html->insert_child(head_element);
+		HTMLHeadElement* head_element = new HTMLHeadElement(html);
+		html->insert_child(head_element);
 
     open_elements.push(head_element);
 
-		document.head = head_element;
+		//document.head = head_element;
 		reconsume_token = true;
 		current_insertion_mode = InsertionMode::InHead;
 	}
@@ -171,7 +173,15 @@ void Parser::in_head_mode()
   }
   else if ( token.type == TokenType::StartTag and (token.value == "base" or token.value == "basefont" or token.value == "bgsound" or token.value == "link") )
   {
-		// TODO: Implement
+		HTMLElement* element = new HTMLElement(token, nullptr);
+		element->element_value = token.value;
+
+		HTMLElement* insert_element = open_elements.top();
+		insert_element->insert_child(element);
+
+		if (not token.self_closing)
+			open_elements.push(element);
+
   }
   else if (token.type == TokenType::StartTag and token.value == "meta")
   {
@@ -238,9 +248,9 @@ void Parser::after_head_mode()
 	}
 	else if (token.type == TokenType::StartTag and token.value == "body")
 	{
-		HTMLBodyElement* body_element = new HTMLBodyElement(token, document.html);
-		document.html->insert_child(body_element);
-		document.body = body_element;
+		HTMLBodyElement* body_element = new HTMLBodyElement(token, html);
+		html->insert_child(body_element);
+		//document.body = body_element;
 
 		open_elements.push(body_element);
 
@@ -260,9 +270,9 @@ void Parser::after_head_mode()
 	}
 	else if ( token.type == TokenType::EndTag and (token.value == "body" or token.value == "html" or token.value == "br") )
 	{
-		HTMLBodyElement* body_element = new HTMLBodyElement(document.html);
-		document.html->insert_child(body_element);
-		document.body = body_element;
+		HTMLBodyElement* body_element = new HTMLBodyElement(html);
+		html->insert_child(body_element);
+		//document.body = body_element;
 
 		open_elements.push(body_element);
 
@@ -271,9 +281,9 @@ void Parser::after_head_mode()
 	}
 	else
 	{
-		HTMLBodyElement* body_element = new HTMLBodyElement(document.html);
-		document.html->insert_child(body_element);
-		document.body = body_element;
+		HTMLBodyElement* body_element = new HTMLBodyElement(html);
+		html->insert_child(body_element);
+		// document.body = body_element;
 
 		open_elements.push(body_element);
 
@@ -327,8 +337,10 @@ void Parser::in_body_mode()
 		// if one of them is not, add it to the body element
 		for (Attr& attribute : token.attributes)
 		{
-			if (not document.body->contains_attribute(attribute.first))
-				document.body->set_attribute(attribute.first, attribute.second);
+			// NOTE: Not sure this is a good idea (no checking that it actually exists...)
+			HTMLElement* body = html->get_elements_by_tag_name("body")[0];
+			if (not body->contains_attribute(attribute.first))
+				body->set_attribute(attribute.first, attribute.second);
 		}
 	}
 	// TODO: Frameset
@@ -430,7 +442,7 @@ std::string trim(const std::string &s) {
 }
 // ================
 
-void Parser::parse(Tokenizer& tokenizer)
+HTMLHtmlElement* Parser::parse(Tokenizer& tokenizer)
 {
   m_tokenizer = tokenizer;
 	reconsume_token = false;
@@ -475,7 +487,7 @@ void Parser::parse(Tokenizer& tokenizer)
   }
 
 	// Removes text elements which have empty strings
-	std::vector<HTMLElement*> text_elements = document.html->get_elements_by_tag_name("text");
+	std::vector<HTMLElement*> text_elements = html->get_elements_by_tag_name("text");
 	for (HTMLElement* element : text_elements)
 	{
 		Text* text_element = dynamic_cast<Text*>(element);
@@ -484,9 +496,15 @@ void Parser::parse(Tokenizer& tokenizer)
 		std::string trimmed_string = trim(text_element->content());
 		std::cout << "Text element: " << text_element->content() << " " << trimmed_string.empty() << std::endl;
 		if (trimmed_string.empty())
-			document.html->remove_child(text_element);
+			html->remove_child(text_element);
 	}
 
+	/*
 	std::cout << "Printing AST result from parsing:" << std::endl;
   print_html_element(document.html, 0);
+	*/
+
+	return html;
+}
+
 }

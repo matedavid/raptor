@@ -1,5 +1,7 @@
 #include "token.h"
 
+namespace liquid {
+
 std::string token_type_as_string(TokenType type)
 {
 	switch (type)
@@ -19,4 +21,6 @@ std::string token_type_as_string(TokenType type)
 		default:
 			return "NOT KNOWN";
 	}
+}
+
 }

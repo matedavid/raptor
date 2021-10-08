@@ -4,6 +4,8 @@
 #include <vector>
 #include <utility>
 
+namespace liquid {
+
 typedef std::pair<std::string, std::string> Attr;
 
 enum TokenType
@@ -26,3 +28,5 @@ struct Token
 };
 
 std::string token_type_as_string(TokenType type);
+
+}

@@ -7,6 +7,8 @@
 #include "liquid/html/token.h"
 #include "liquid/html/attribute.h"
 
+namespace liquid {
+
 enum HTMLElementType
 {
 	ElementType,
@@ -71,3 +73,5 @@ public:
   /* === DEBUG === */
 	std::map<std::string, Attribute*> get_attributes() { return attributes; }
 };
+
+}

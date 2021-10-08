@@ -1,5 +1,7 @@
 #include "tokenizer.h"
 
+namespace liquid {
+
 void Tokenizer::consume_data_state()
 {
 	char c = consume();
@@ -591,4 +593,6 @@ void Tokenizer::prev()
 bool Tokenizer::is_last() const 
 {
 	return m_position == m_tokens.size()-1;
+}
+
 }

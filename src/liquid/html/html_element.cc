@@ -1,5 +1,7 @@
 #include "html_element.h"
 
+namespace liquid {
+
 void HTMLElement::replace_child_recursive(HTMLElement* element, HTMLElement* target, HTMLElement* new_child)
 {
 	if (element->children.size() == 0)
@@ -144,3 +146,4 @@ HTMLElement* HTMLElement::get_last_element()
 	return get_last_element_recursive(this);
 }
 
+}
