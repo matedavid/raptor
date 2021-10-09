@@ -12,7 +12,7 @@ void HTMLDocument::from_string(const std::string& content)
 	Tokenizer tokenizer = Tokenizer();
 	tokenizer.tokenize(content);
 
-	Parser parser = Parser();
+	HTMLParser parser = HTMLParser();
 	html = parser.parse(tokenizer);
 
 	HTMLElement* head_element = html->get_elements_by_tag_name("head")[0];

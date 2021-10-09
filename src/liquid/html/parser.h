@@ -16,7 +16,7 @@
 
 namespace liquid {
 
-class Parser
+class HTMLParser
 {
 private:
   enum InsertionMode
@@ -79,7 +79,7 @@ private:
 	void after_body_mode();
 
 public:
-  Parser();
+	HTMLParser();
 
 	HTMLHtmlElement* parse(Tokenizer& tokenizer);
 };

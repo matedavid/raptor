@@ -2,7 +2,7 @@
 
 namespace liquid {
 
-void Parser::insert_character(const Token& token, HTMLElement* element)
+void HTMLParser::insert_character(const Token& token, HTMLElement* element)
 {
 	HTMLElement* last_element = element->get_last_element();
 	if (last_element->type() == HTMLElementType::TextType)
@@ -18,7 +18,7 @@ void Parser::insert_character(const Token& token, HTMLElement* element)
 }
 
 // ===== Parsing modes =====
-void Parser::text_mode()
+void HTMLParser::text_mode()
 {
   Token token = m_tokenizer.current();
 
@@ -42,7 +42,7 @@ void Parser::text_mode()
   }
 }
 
-void Parser::initial_mode()
+void HTMLParser::initial_mode()
 {
   Token token = m_tokenizer.current();
 
@@ -64,7 +64,7 @@ void Parser::initial_mode()
 	}
 }
 
-void Parser::before_html_mode()
+void HTMLParser::before_html_mode()
 {
 	Token token = m_tokenizer.current();
 
@@ -104,7 +104,7 @@ void Parser::before_html_mode()
 	}
 }
 
-void Parser::before_head_mode()
+void HTMLParser::before_head_mode()
 {
 	Token token = m_tokenizer.current();
 
@@ -150,7 +150,7 @@ void Parser::before_head_mode()
 	}
 }
 
-void Parser::in_head_mode()
+void HTMLParser::in_head_mode()
 {
   Token token = m_tokenizer.current();
 
@@ -226,7 +226,7 @@ void Parser::in_head_mode()
   }
 }
 
-void Parser::after_head_mode()
+void HTMLParser::after_head_mode()
 {
 	Token token = m_tokenizer.current();
 	if ( token.type == TokenType::Character and (token.value == "\t" or token.value == "\n" or token.value == "\f" or token.value == " ") )
@@ -292,7 +292,7 @@ void Parser::after_head_mode()
 	}
 }
 
-void Parser::in_body_mode()
+void HTMLParser::in_body_mode()
 {
 	Token token = m_tokenizer.current();
 
@@ -384,7 +384,7 @@ void Parser::in_body_mode()
 	}
 }
 
-void Parser::after_body_mode()
+void HTMLParser::after_body_mode()
 {
 	Token token = m_tokenizer.current();
 
@@ -418,7 +418,7 @@ void Parser::after_body_mode()
 	}
 }
 
-Parser::Parser()
+HTMLParser::HTMLParser()
 {
 }
 
@@ -442,7 +442,7 @@ std::string trim(const std::string &s) {
 }
 // ================
 
-HTMLHtmlElement* Parser::parse(Tokenizer& tokenizer)
+HTMLHtmlElement* HTMLParser::parse(Tokenizer& tokenizer)
 {
   m_tokenizer = tokenizer;
 	reconsume_token = false;
