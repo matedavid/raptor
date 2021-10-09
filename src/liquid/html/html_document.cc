@@ -15,8 +15,6 @@ void HTMLDocument::from_string(const std::string& content)
 	Parser parser = Parser();
 	html = parser.parse(tokenizer);
 
-	std::cout << "Parsed succesfully" << std::endl;
-
 	HTMLElement* head_element = html->get_elements_by_tag_name("head")[0];
 	if (head_element != nullptr)
 		head = dynamic_cast<HTMLHeadElement*>(head_element);
@@ -39,9 +37,7 @@ void HTMLDocument::from_file(const std::filesystem::path& file_path)
 
 	std::string final_content = "";
 	for (int i = 0; i < content.length(); ++i)
-	{
 		if (content[i] != '\n') final_content += content[i];
-	}
 
 	from_string(final_content);
 }

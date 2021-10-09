@@ -494,7 +494,6 @@ HTMLHtmlElement* Parser::parse(Tokenizer& tokenizer)
 		if (text_element == nullptr) continue;
 
 		std::string trimmed_string = trim(text_element->content());
-		std::cout << "Text element: " << text_element->content() << " " << trimmed_string.empty() << std::endl;
 		if (trimmed_string.empty())
 			html->remove_child(text_element);
 	}
