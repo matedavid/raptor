@@ -125,6 +125,97 @@ void CSSTokenizer::consume_in_selector()
 	}
 }
 
+void CSSTokenizer::consume_in_block()
+{
+	char c = consume();
+
+	if (isalpha(c) or isdigit(c))
+	{
+		m_tokens.push_back(CSSToken{CSSTokenType::DeclarationStart});
+		m_current_token = CSSToken{CSSTokenType::Property, ""};
+
+		reconsume();
+		m_current_state = State::InProperty;
+	}
+	else if (c == ':')
+	{
+		std::cout << "Parsing error: ':' character before property" << std::endl;
+		// Exiting on parse error because of concerns on how to deal with it
+		exit(1);
+	}
+	else if (c == '}')
+	{
+		// Exit out of block
+		m_tokens.push_back(CSSToken{CSSTokenType::BlockEnd});
+		m_current_state = State::BeforeSelector;
+	}
+	else if (c == ';')
+	{
+		// Ignore token
+	}
+	else if (c == ' ' or c == '\t' or c == '\f' or c == '\n')
+	{
+		// Ignore token
+	}
+}
+
+void CSSTokenizer::consume_in_property()
+{
+	char c = consume();
+
+	if (isalpha(c) or isdigit(c) or c == '-')
+	{
+		m_current_token.value += c;
+	}
+	else if (c == ':')
+	{
+		m_tokens.push_back(m_current_token);
+
+		m_current_token = CSSToken{CSSTokenType::Value, ""};
+		m_current_state = State::InValue;
+	}
+	else if (c == ';')
+	{
+		std::cout << "Parsing error: no value for property " << m_current_token.value << std::endl;
+		m_current_state = State::InBlock;
+	}
+	else if (c == ' ' or c == '\t' or c == '\f' or c == '\n')
+	{
+		// Ignore token
+	}
+}
+
+void CSSTokenizer::consume_in_value()
+{
+	char c = consume();
+	char next_nw = next_non_white_character();
+
+	if (isalpha(c) or isdigit(c) or c == '-')
+	{
+		m_current_token.value += c;
+	}
+	else if (c == ';')
+	{
+		m_tokens.push_back(m_current_token);
+		m_tokens.push_back(CSSToken{CSSTokenType::DeclarationEnd});
+
+		m_current_state = State::InBlock;
+	}
+	else if (c == ' ' and (isalpha(next_nw) or isdigit(next_nw) or next_nw == '-') and peek_consume_backwards(1) != ":")
+	{
+		m_tokens.push_back(m_current_token);
+		m_current_token = CSSToken{CSSTokenType::Value, ""};
+	}
+	else if (c == ' ' or c == '\t' or c == '\f' or c == '\n')
+	{
+		// Ignore token
+	}
+	else
+	{
+		std::cout << "Parsing error: Unknwon token (" << c << ") in in_value state" << std::endl;
+	}
+}
+
 CSSTokenizer::CSSTokenizer()
 {
 }
@@ -137,7 +228,7 @@ void CSSTokenizer::tokenize(const std::string& content)
 	m_current_state = State::BeforeSelector;
 
 	int length = m_content.length();
-  while (m_position < length)
+  while (m_position < length-1) // -1 to ignore EOF token
   {
 		switch (m_current_state)
 		{
@@ -146,6 +237,15 @@ void CSSTokenizer::tokenize(const std::string& content)
 				break;
 			case State::InSelector:
 				consume_in_selector();
+				break;
+			case State::InBlock:
+				consume_in_block();
+				break;
+			case State::InProperty:
+				consume_in_property();
+				break;
+			case State::InValue:
+				consume_in_value();
 				break;
 
 			default:

@@ -10,6 +10,8 @@ enum CSSTokenType
   SelectorOption,
   BlockStart,
   BlockEnd,
+  DeclarationStart,
+  DeclarationEnd,
   Property,
   Value,
   Colon,

@@ -49,6 +49,9 @@ private:
 
   void consume_before_selector();
   void consume_in_selector();
+  void consume_in_block();
+  void consume_in_property();
+  void consume_in_value();
 
 public:
 	CSSTokenizer();
