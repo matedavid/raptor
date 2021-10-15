@@ -30,7 +30,7 @@ void css_tests()
 	std::string content = read_file(file_path);
 
 	liquid::CSSTokenizer tokenizer = liquid::CSSTokenizer();
-	tokenizer.tokenize();
+	tokenizer.tokenize(content);
 }
 
 int main(int argc, const char* argv[])

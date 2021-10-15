@@ -6,26 +6,22 @@ namespace liquid {
 
 enum CSSTokenType
 {
-  Whitespace,
-  Ident,
-  Function,
-  AtKeyword,
-  Hash,
-  String,
-  Url,
-  Number,
-  Dimension,
-  Percentage,
-  CDO,
-  CDC
+  Selector,
+  SelectorOption,
+  BlockStart,
+  BlockEnd,
+  Property,
+  Value,
+  Colon,
+  Semicolon
 };
 
 struct CSSToken
 {
   CSSTokenType type;
-  std::string type_flag;
-
   std::string value;
 };
+
+std::string css_token_type_as_string(const CSSTokenType type);
 
 }

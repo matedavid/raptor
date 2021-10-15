@@ -10,7 +10,7 @@ char CSSTokenizer::consume()
 
 void CSSTokenizer::reconsume()
 {
-  if (m_position-1 >= 0)
+  if (m_position-1 >= -1)
     --m_position;
 }
 
@@ -40,103 +40,89 @@ std::string CSSTokenizer::peek_consume_backwards(int n_chars)
 	return peek_string;
 }
 
-/* ===== Helper tokenization functions ===== */
-bool CSSTokenizer::is_name_start_code_point(const char c)
+
+char CSSTokenizer::next_non_white_character()
 {
-  return isalpha((int)c) or c == '_';
+	int tmp_position = m_position;
+	while (m_content[tmp_position] == ' ')
+		++tmp_position;
+
+	return m_content[tmp_position];
 }
 
-bool CSSTokenizer::is_name_code_point(const char c)
+void CSSTokenizer::consume_before_selector()
 {
-  return is_name_start_code_point(c) or isdigit(c) or c == '-';
+	char c = consume();
+
+	if (c == '*' or c == '.' or c == '#' or
+			isalpha(c) or isdigit(c))
+	{
+		reconsume();
+		m_current_token = CSSToken{CSSTokenType::Selector, ""};
+		m_current_state = State::InSelector;
+	}
+	else if (c == '{')
+	{
+		std::cout << "Parsing error: '{' character in before_selector mode" << std::endl;
+
+		m_tokens.push_back(CSSToken{CSSTokenType::Selector, "*"});
+		m_current_state = State::InBlock;
+	}
+	else if (c == ' ' or c == '\t' or c == '\f' or c == '\n')
+	{ 
+		//Ignore the token 
+	}
+	else if (c == '}')
+	{
+		// Ignore the token
+	}
+	else
+	{
+		// Unknown character
+		std::cout << "Parsing error: Unknown character (" << c << ") in before_selector mode" << std::endl;
+		exit(1);
+	}
 }
 
-/* ===== Tokenization algorithms ===== */
-CSSToken CSSTokenizer::consume_token()
+void CSSTokenizer::consume_in_selector()
 {
-  char c = consume();
+	char c = consume();
 
-  // Consume all whitespace characters
-  while (c != ' ')
-    c = consume();
-  
-  // Treat character depending on it's value
-  if (c == '"')
-    return consume_string_token();
-  else if (c == '#')
-  {
-    char next_char = peek_consume_forward(1)[0];
-    std::string next_two_chars = peek_consume_forward(2);
+	if (isalpha(c) or isdigit(c) or c == '.')
+	{
+		m_current_token.value += c;
+	}
+	else if (c == ',')
+	{
+		// Add currently tokenizing token 
+		m_tokens.push_back(m_current_token);
+		// Add comma character as a Selector Option, to identify that block applies to group of selectors
+		m_tokens.push_back(CSSToken{CSSTokenType::SelectorOption, ","});
 
-    if (is_name_code_point(next_char) or are_valid_escape(next_two_chars)) 
-    {
-      CSSToken token;
-      token.type = CSSTokenType::Hash;
+		m_current_state = State::BeforeSelector;
+	}
+	else if (c == ' ' and next_non_white_character() != '{')
+	{
+		// Add currently tokenizing token 
+		m_tokens.push_back(m_current_token);
+		// Add space character as a Selector Option, to identify that block applies to group of selectors
+		m_tokens.push_back(CSSToken{CSSTokenType::SelectorOption, " "});
 
-      std::string next_three_chars = peek_consume_forward(3);
-      if (would_start_identifier(next_three_chars))
-        token.type_flag = "id";
-      
-      token.value = consume_name();
-      return token;
-    }
-  }
-}
+		m_current_state = State::BeforeSelector;
+	}
+	else if (c == '{')
+	{
+		m_tokens.push_back(m_current_token);
+		
+		// Insert BlockStart token
+		m_tokens.push_back(CSSToken{CSSTokenType::BlockStart});
 
-CSSToken CSSTokenizer::consume_comment()
-{
-
-}
-
-bool CSSTokenizer::are_valid_escape(const std::string& str)
-{
-  if (str.length() != 2)
-    return false;
-
-  if (str[0] != '/')
-    return false;
-  if (str[1] == '\n')
-    return false;
-
-  return true;
-}
-
-bool CSSTokenizer::would_start_identifier(const std::string& str)
-{
-  if (str.length() != 3)
-    return false;
-
-  if (str[0] == '-')
-    return is_name_start_code_point(str[1]) or str[1] == '-' or are_valid_escape(str.substr(1, 3));
-
-  else if (is_name_start_code_point(str[0]))
-    return true;
-
-  else if (str[0] == '\\')
-  {
-    if (are_valid_escape(str.substr(0,2))) 
-      return true;
-    return false
-  }
-
-  return false;
-}
-
-bool CSSTokenizer::would_start_number(const std::string& str)
-{
-
-}
-
-std::string CSSTokenizer::consume_name()
-{
-  std::string result = "";
-
-  char c;
-  while (c = consume())
-  {
-
-  }
-  return result;
+		m_current_state = State::InBlock;
+	}
+	else
+	{
+		// Ignore character
+	}
 }
 
 CSSTokenizer::CSSTokenizer()
@@ -148,12 +134,28 @@ void CSSTokenizer::tokenize(const std::string& content)
   m_content = content;
   m_position = -1;
 
-  while (m_content[m_position] < m_content.size())
+	m_current_state = State::BeforeSelector;
+
+	int length = m_content.length();
+  while (m_position < length)
   {
-    CSSToken token = consume_token();
-    m_tokens.push_back(token);
+		switch (m_current_state)
+		{
+			case State::BeforeSelector:
+				consume_before_selector();
+				break;
+			case State::InSelector:
+				consume_in_selector();
+				break;
+
+			default:
+				std::cout << "Unknown Token" << std::endl;
+				++m_position;
+		}
   }
+
+	for (auto token : m_tokens) 
+		std::cout << css_token_type_as_string(token.type) << ": '" << token.value << "'" << std::endl;
 }
 
 }
-

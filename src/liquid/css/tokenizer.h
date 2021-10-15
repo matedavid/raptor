@@ -11,17 +11,29 @@ namespace liquid {
 class CSSTokenizer
 {
 private:
+  enum State
+  {
+    BeforeSelector,
+    InSelector,
+    InBlock,
+    InProperty,
+    InValue
+  };
+
 	// Tokens
 	std::vector<CSSToken> m_tokens;
-
-	// The current state of the Tokenizer	
-	State current_state;
   
   // String content to tokenize
   std::string m_content;
 
 	// Position of the tokenizer
 	int m_position;
+
+  // Current state of the tokenizer
+  State m_current_state;
+
+  // The current token being created
+  CSSToken m_current_token;
   
   // Returns the nearest not-yet consumed token
   char consume();
@@ -32,29 +44,16 @@ private:
   std::string peek_consume_forward(int n_chars);
   // Consumes n_chars backwards, without modifying the m_position variable
   std::string peek_consume_backwards(int n_chars);
+  // Returns the next character that is not a space
+  char next_non_white_character();
 
-  /* Helper tokenization functions */
-  bool is_name_start_code_point(const char c);
-  bool is_name_code_point(const char c);
-
-
-  /* Tokenization algorithms */
-  CSSToken consume_token();
-  CSSToken consume_comment();
-
-  bool are_valid_escape(const std::string& str);
-  bool would_start_identifier(const std::string& str);
-  bool would_start_number(const std::string& str);
-
-  std::string consume_name();
-  void consume_number();
-  void convert_string_to_number();
-  void consume_remnants_bad_url();
+  void consume_before_selector();
+  void consume_in_selector();
 
 public:
 	CSSTokenizer();
 
-	void tokenize();
+	void tokenize(const std::string& content);
   
   CSSToken current() const;
   void next();
