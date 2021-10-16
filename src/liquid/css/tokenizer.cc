@@ -54,12 +54,16 @@ void CSSTokenizer::consume_before_selector()
 {
 	char c = consume();
 
-	if (c == '*' or c == '.' or c == '#' or
-			isalpha(c) or isdigit(c))
+	if (isalpha(c) or isdigit(c))
 	{
 		reconsume();
 		m_current_token = CSSToken{CSSTokenType::Selector, ""};
 		m_current_state = State::InSelector;
+	}
+	else if (c == '*' or c == '.' or c == '#')
+	{
+		std::string str_c = std::string(1, c);
+		m_tokens.push_back(CSSToken{CSSTokenType::SelectorOption, str_c});
 	}
 	else if (c == '{')
 	{
@@ -254,8 +258,39 @@ void CSSTokenizer::tokenize(const std::string& content)
 		}
   }
 
+	// Reset position for further use of the Tokenizer class
+	m_position = 0;
+
+	/*
 	for (auto token : m_tokens) 
 		std::cout << css_token_type_as_string(token.type) << ": '" << token.value << "'" << std::endl;
+	*/
+}
+
+CSSToken CSSTokenizer::current() const
+{
+	return m_tokens[m_position];
+}
+
+CSSToken CSSTokenizer::next()
+{
+	if (m_position+1 < m_tokens.size())
+		++m_position;
+
+	return m_tokens[m_position];
+}
+
+CSSToken CSSTokenizer::prev()
+{
+	if (m_position-1 >= 0)
+		--m_position;
+
+	return m_tokens[m_position];
+}
+
+bool CSSTokenizer::is_last() const 
+{
+	return m_position == m_tokens.size()-1;
 }
 
 }

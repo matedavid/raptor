@@ -59,8 +59,9 @@ public:
 	void tokenize(const std::string& content);
   
   CSSToken current() const;
-  void next();
-  void prev();
+  CSSToken next();
+  CSSToken prev();
+  bool is_last() const;
 };
 
 }

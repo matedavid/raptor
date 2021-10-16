@@ -10,6 +10,7 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
 
 file(GLOB Sources
+    "src/liquid/*.cc"
     "src/liquid/html/*.cc"
     "src/liquid/css/*.cc"
     "src/liquid/dom/*.cc"

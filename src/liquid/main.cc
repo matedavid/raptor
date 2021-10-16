@@ -5,6 +5,7 @@
 
 #include "liquid/html/html_document.h"
 #include "liquid/css/tokenizer.h"
+#include "liquid/css/parser.h"
 
 std::string read_file(const std::filesystem::path& path)
 {
@@ -31,6 +32,9 @@ void css_tests()
 
 	liquid::CSSTokenizer tokenizer = liquid::CSSTokenizer();
 	tokenizer.tokenize(content);
+
+	liquid::CSSParser parser = liquid::CSSParser();
+	parser.parse(tokenizer);
 }
 
 int main(int argc, const char* argv[])
