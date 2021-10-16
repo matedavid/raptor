@@ -41,7 +41,7 @@ struct CSSBlock
   SelectorRelation selector_relation;
   std::vector<SelectorValue> selector_targets;
 
-  std::map<std::string, std::string> declarations;
+  std::map< std::string, std::vector<std::string> > declarations;
 };
 /* =========================== */
 
@@ -51,7 +51,7 @@ private:
   CSSTokenizer m_tokenizer;
 
   // Vector of Parsed blocks
-  std::vector<CSSBlock*> m_blocks;
+  std::vector<CSSBlock> m_blocks;
 
   void parse_selector(CSSBlock& block);
   void parse_block(CSSBlock& block);

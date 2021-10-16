@@ -13,9 +13,9 @@ void CSSParser::parse_selector(CSSBlock& block)
     if (token.type == CSSTokenType::SelectorOption and (token.value == " " or token.value == ","))
     {
       if (token.value == " ")
-        block.selector_relation = SelectorRelation::Grouping;
-      else if (token.value == ",")
         block.selector_relation = SelectorRelation::Descendant;
+      else if (token.value == ",")
+        block.selector_relation = SelectorRelation::Grouping;
     }
     else if (token.type == CSSTokenType::SelectorOption)
     {
@@ -54,13 +54,41 @@ void CSSParser::parse_block(CSSBlock& block)
   CSSToken token = m_tokenizer.current();
   while (token.type != CSSTokenType::BlockEnd)
   {
-
+    if (token.type == CSSTokenType::DeclarationStart)
+    {
+      // Jump the DeclarationStart token
+      m_tokenizer.next();
+      parse_declaration(block);
+      token = m_tokenizer.current();
+    }
+    else
+    {
+      token = m_tokenizer.next();
+    }
   }
 }
 
 void CSSParser::parse_declaration(CSSBlock& block)
 {
+  std::pair<std::string, std::vector<std::string>> declaration;
+  CSSToken token;
 
+  token = m_tokenizer.current();
+  declaration.first = token.value;
+
+  // Jump the ':' token
+  m_tokenizer.next();
+  token = m_tokenizer.current();
+  while (token.type != CSSTokenType::DeclarationEnd)
+  {
+    declaration.second.push_back(token.value);
+    token = m_tokenizer.next();
+  }
+
+  block.declarations.insert(declaration);
+
+  // Jump the DeclarationEnd token
+  m_tokenizer.next();
 }
 
 CSSParser::CSSParser()
@@ -75,6 +103,8 @@ void CSSParser::parse(CSSTokenizer& tokenizer)
   {
     CSSBlock block;
     parse_selector(block);
+
+    m_blocks.push_back(block);
   }
 }
 
