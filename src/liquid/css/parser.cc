@@ -108,4 +108,31 @@ void CSSParser::parse(CSSTokenizer& tokenizer)
   }
 }
 
+std::vector<CSSBlock> CSSParser::from_string(const std::string& content)
+{
+  CSSTokenizer tokenizer;
+  tokenizer.tokenize(content);
+
+  parse(tokenizer);
+  return m_blocks;
+}
+
+std::vector<CSSBlock> CSSParser::from_file(const std::filesystem::path& path)
+{
+	std::ifstream file(path);
+	if (!file.is_open())
+	{
+		std::cout << "Error opening file: " << path << std::endl;
+		exit(0);
+	}
+	std::string content( (std::istreambuf_iterator<char>(file) ),
+											 (std	::istreambuf_iterator<char>()     ));
+
+	std::string final_content = "";
+	for (int i = 0; i < content.length(); ++i)
+		if (content[i] != '\n') final_content += content[i];
+
+  return from_string(final_content);
+}
+
 }

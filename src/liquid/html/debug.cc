@@ -28,7 +28,8 @@ void print_html_element(HTMLElement* element, int tab_num)
     std::cout << " Content=" << text_element->content();
   }
 
-	std::cout << "]" << std::endl;
+	std::cout << "]";
+	std::cout << "(" << element->number_style_properties() << ")" << std::endl;
   
   std::vector<HTMLElement*> children = element->child_elements();
 	for (int i = 0; i < children.size(); ++i)

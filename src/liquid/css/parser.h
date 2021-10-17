@@ -3,11 +3,11 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <filesystem>
+#include <fstream>
 #include <utility>
 
 #include "liquid/css/tokenizer.h"
-
-
 
 namespace liquid {
 
@@ -61,6 +61,8 @@ public:
   CSSParser();
 
   void parse(CSSTokenizer& tokenizer);
+  std::vector<CSSBlock> from_string(const std::string& content);
+  std::vector<CSSBlock> from_file(const std::filesystem::path& path);
 };
 
 }

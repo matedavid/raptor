@@ -49,6 +49,30 @@ void HTMLElement::get_elements_by_tag_name_recursive(HTMLElement* element, const
 		get_elements_by_tag_name_recursive(element->children[i], tag, element_list);
 }
 
+void HTMLElement::get_elements_by_class_name_recursive(HTMLElement* element, const std::string& name, std::vector<HTMLElement*>& element_list)
+{
+	if (element->class_name == name)
+		element_list.push_back(element);
+
+	if (element->children.size() == 0)
+		return;
+
+	for (int i = 0; i < element->children.size(); ++i)
+		get_elements_by_class_name_recursive(element->children[i], name, element_list);
+}
+
+void HTMLElement::get_elements_by_id_recursive(HTMLElement* element, const std::string& id, std::vector<HTMLElement*>& element_list)
+{
+	if (element->id == id)
+		element_list.push_back(element);
+
+	if (element->children.size() == 0)
+		return;
+
+	for (int i = 0; i < element->children.size(); ++i)
+		get_elements_by_id_recursive(element->children[i], id, element_list);
+}
+
 HTMLElement* HTMLElement::get_last_element_recursive(HTMLElement* element)
 {
 	if (element == nullptr)
@@ -81,6 +105,11 @@ HTMLElement::HTMLElement(const Token& token, HTMLElement* parent)
 
     Attribute* attribute = new Attribute(attr.first, attr.second);
     attributes.insert(std::make_pair(attr.first, attribute));
+
+		if (attribute->name() == "class")
+			class_name = attribute->value();
+		else if (attribute->name() == "id")
+			id = attribute->value();
   }
 }
 
@@ -130,15 +159,63 @@ std::vector<HTMLElement*> HTMLElement::get_elements_by_tag_name(const std::strin
 	return element_list;
 }
 
+std::vector<HTMLElement*> HTMLElement::get_elements_by_class_name(const std::string& name)
+{
+	std::vector<HTMLElement*> element_list;
+	get_elements_by_class_name_recursive(this, name, element_list);
+	return element_list;
+}
+
+std::vector<HTMLElement*> HTMLElement::get_elements_by_id(const std::string& id)
+{
+	std::vector<HTMLElement*> element_list;
+	get_elements_by_id_recursive(this, id, element_list);
+	return element_list;
+}
+
 void HTMLElement::set_attribute(const std::string& name, const std::string& value)
 {
 	Attribute* attr = new Attribute(name, value);
 	attributes.insert(std::make_pair(name, attr));
 }
 
+Attribute* HTMLElement::get_attribute(const std::string& name) const
+{
+	if (contains_attribute(name))
+		return attributes.find(name)->second;
+	return nullptr;
+}
+
 bool HTMLElement::contains_attribute(const std::string& name) const
 {
 	return attributes.find(name) != attributes.end();
+}
+
+void HTMLElement::set_style_property(const std::string& property, const std::string& value)
+{
+	if (contains_style(property))
+		return;
+	styles.insert(std::make_pair(property, std::vector<std::string>{value}));
+}
+
+
+void HTMLElement::set_style_property(const std::string& property, const std::vector<std::string>& value)
+{
+	if (contains_style(property))
+		return;
+	styles.insert(std::make_pair(property, value));
+}
+
+std::vector<std::string> HTMLElement::get_style_property_value(const std::string& property) const
+{
+	if (not contains_style(property))
+		return std::vector<std::string>{};
+	return styles.find(property)->second;
+}
+
+bool HTMLElement::contains_style(const std::string& property) const
+{
+	return styles.find(property) != styles.end();
 }
 
 HTMLElement* HTMLElement::get_last_element()

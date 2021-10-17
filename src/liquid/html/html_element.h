@@ -22,21 +22,26 @@ private:
 	std::vector<HTMLElement*> children;
 
 	std::map<std::string, Attribute*> attributes;
-
-	std::string inner_html;
-	std::string outer_html;
+	std::map< std::string, std::vector<std::string> > styles;
 
 public:
 	std::string element_value;
 	std::string class_name;
 	std::string id;
 
+	std::string inner_html;
+	std::string outer_html;
+
 	virtual HTMLElementType type() { return HTMLElementType::ElementType; }
 
 private:
 	static void replace_child_recursive(HTMLElement* element, HTMLElement* target, HTMLElement* new_child);
 	static void remove_child_recursive(HTMLElement* element, HTMLElement* target);
+
 	static void get_elements_by_tag_name_recursive(HTMLElement* element, const std::string& tag, std::vector<HTMLElement*>& element_list);
+	static void get_elements_by_class_name_recursive(HTMLElement* element, const std::string& name, std::vector<HTMLElement*>& element_list);
+	static void get_elements_by_id_recursive(HTMLElement* element, const std::string& name, std::vector<HTMLElement*>& element_list);
+
 	static HTMLElement* get_last_element_recursive(HTMLElement* element);
 
 public:
@@ -62,9 +67,15 @@ public:
 	std::vector<HTMLElement*> get_elements_by_class_name(const std::string& name);
 
 	void set_attribute(const std::string& name, const std::string& value);
+	Attribute* get_attribute(const std::string& name) const;
 	void remove_attribute(const std::string& name);
 	void toggle_attribute(const std::string& name);
 	bool contains_attribute(const std::string& name) const;
+
+	void set_style_property(const std::string& property, const std::string& value);
+	void set_style_property(const std::string& property, const std::vector<std::string>& value);
+	std::vector<std::string> get_style_property_value(const std::string& property) const;
+	bool contains_style(const std::string& property) const;
 
 	// Returns the last child of the provided element
 	// The last child is the 'deepest' and right-most element in the tree
@@ -72,6 +83,7 @@ public:
   
   /* === DEBUG === */
 	std::map<std::string, Attribute*> get_attributes() { return attributes; }
+	int number_style_properties() const { return styles.size(); }
 };
 
 }
