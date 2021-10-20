@@ -3,6 +3,8 @@
 #include <iostream>
 #include <gtkmm.h>
 
+#include "gui/test_renderer.h"
+
 #include "liquid/html/html_document.h"
 
 class Content : public Gtk::ScrolledWindow
