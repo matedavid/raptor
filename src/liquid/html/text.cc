@@ -32,7 +32,7 @@ Text::Text(const std::string& content)
 
 std::string Text::content() 
 {
-	if (not trimmed)
+	if (not trimmed and parent_element()->child_elements().size() == 1)
 	{
 		trim(m_content);
 		trimmed = true;

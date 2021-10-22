@@ -39,14 +39,16 @@ void HTMLElement::remove_child_recursive(HTMLElement* element, HTMLElement* targ
 
 void HTMLElement::get_elements_by_tag_name_recursive(HTMLElement* element, const std::string& tag, std::vector<HTMLElement*>& element_list)
 {
+	std::cout << "Element: " << element->element_value << " " << element->children.size() << std::endl;
 	if (element->element_value == tag)
 		element_list.push_back(element);
 
 	if (element->children.size() == 0)
 		return;
 
-	for (int i = 0; i < element->children.size(); ++i)
-		get_elements_by_tag_name_recursive(element->children[i], tag, element_list);
+	//for (int i = 0; i < element->children.size(); ++i)
+	for (auto child : element->children)
+		get_elements_by_tag_name_recursive(child, tag, element_list);
 }
 
 void HTMLElement::get_elements_by_class_name_recursive(HTMLElement* element, const std::string& name, std::vector<HTMLElement*>& element_list)

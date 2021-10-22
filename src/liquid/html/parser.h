@@ -13,6 +13,7 @@
 #include "liquid/html/html_head_element.h"
 #include "liquid/html/html_body_element.h"
 #include "liquid/html/html_title_element.h"
+#include "liquid/html/html_paragraph_element.h"
 
 
 namespace liquid {

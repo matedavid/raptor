@@ -371,9 +371,19 @@ void HTMLParser::in_body_mode()
 	}
 	else if (token.type == TokenType::StartTag)
 	{
-		HTMLElement* new_element = new HTMLElement(token, nullptr);
-		HTMLElement* insert_element = open_elements.top();
+		/*
+			HTMLElement* new_element = new HTMLElement(token, nullptr);
+		*/
+		HTMLElement* new_element;
+		if (token.value == "p")
+			new_element = new HTMLParagraphElement(token, nullptr);
+		//else if (token.value == "span")
+			//new_element = new HTMLSpanElement(token, nullptr);
+		else 
+			new_element = new HTMLElement(token, nullptr);
 
+
+		HTMLElement* insert_element = open_elements.top();
 		insert_element->insert_child(new_element);
 		open_elements.push(new_element);
 	}
