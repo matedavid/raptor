@@ -43,6 +43,16 @@ void HTMLDocument::from_string(const std::string& content)
 	if (body_element != nullptr)
 		body = dynamic_cast<HTMLBodyElement*>(body_element);
 
+	/* === TODO: This is a temporal solution === */
+	// Default css attributes from file
+	CSSParser default_parser;
+	std::vector<CSSBlock> default_blocks = default_parser.from_file("/home/david/workspace/raptor/src/default.css");
+	for (CSSBlock block : default_blocks)
+	{
+		add_css_block(block);
+	}
+	/* ========================================= */
+
 	// Include CSS into HTMLElements
 	CSSParser css_parser;
 

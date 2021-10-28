@@ -39,7 +39,6 @@ void HTMLElement::remove_child_recursive(HTMLElement* element, HTMLElement* targ
 
 void HTMLElement::get_elements_by_tag_name_recursive(HTMLElement* element, const std::string& tag, std::vector<HTMLElement*>& element_list)
 {
-	std::cout << "Element: " << element->element_value << " " << element->children.size() << std::endl;
 	if (element->element_value == tag)
 		element_list.push_back(element);
 
@@ -204,7 +203,7 @@ void HTMLElement::set_style_property(const std::string& property, const std::str
 void HTMLElement::set_style_property(const std::string& property, const std::vector<std::string>& value)
 {
 	if (contains_style(property))
-		return;
+		styles[property] = value;
 	styles.insert(std::make_pair(property, value));
 }
 

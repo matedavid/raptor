@@ -1,0 +1,16 @@
+body {
+  display: block;
+  margin: 8px;
+}
+
+div {
+  display: block;
+}
+
+p {
+  display: block;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: 0;
+  margin-right: 0;
+}

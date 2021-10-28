@@ -375,7 +375,9 @@ void HTMLParser::in_body_mode()
 			HTMLElement* new_element = new HTMLElement(token, nullptr);
 		*/
 		HTMLElement* new_element;
-		if (token.value == "p")
+		if (token.value == "div")
+			new_element = new HTMLDivElement(token, nullptr);
+		else if (token.value == "p")
 			new_element = new HTMLParagraphElement(token, nullptr);
 		//else if (token.value == "span")
 			//new_element = new HTMLSpanElement(token, nullptr);
