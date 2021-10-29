@@ -22,9 +22,8 @@ enum ParseIntType
 std::pair<int, ParseIntType> parse_int_value(const std::string& value);
 
 void add_margin_style(Gtk::Box* box, const HTMLElement* element);
-void add_margin_top_style(Gtk::Box* box, const HTMLElement* element);
-void add_margin_right_style(Gtk::Box* box, const HTMLElement* element);
-void add_margin_bottom_style(Gtk::Box* box, const HTMLElement* element);
-void add_margin_left_style(Gtk::Box* box, const HTMLElement* element);
+void add_margin_side_style(Gtk::Box* box, const HTMLElement* element);
+
+void add_background_color_style(Gtk::Box* box, const HTMLElement* element);
 
 }

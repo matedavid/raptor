@@ -49,24 +49,53 @@ void add_margin_style(Gtk::Box* box, const HTMLElement* element)
   }
 }
 
-void add_margin_top_style(Gtk::Box* box, const HTMLElement* element)
+void add_margin_side_style(Gtk::Box* box, const HTMLElement* element)
 {
+  if (element->contains_style("margin-top"))
+  {
+    std::string margin_top_str = element->get_style_property_value("margin-top")[0];
+    std::pair<int, ParseIntType> margin_top_value = parse_int_value(margin_top_str);
+    if (margin_top_value.second == ParseIntType::Px)
+      box->set_margin_top(margin_top_value.first);
+    else if (margin_top_value.second == ParseIntType::Em)
+      box->set_margin_top(margin_top_value.first * DEFAULT_FONT_SIZE);
+  }
 
+  if (element->contains_style("margin-right"))
+  {
+    std::string margin_right_str = element->get_style_property_value("margin-right")[0];
+    std::pair<int, ParseIntType> margin_right_value = parse_int_value(margin_right_str);
+    if (margin_right_value.second == ParseIntType::Px)
+      box->set_margin_right(margin_right_value.first);
+    else if (margin_right_value.second == ParseIntType::Em)
+      box->set_margin_right(margin_right_value.first * DEFAULT_FONT_SIZE);
+  }
+
+  if (element->contains_style("margin-bottom"))
+  {
+    std::string margin_bottom_str = element->get_style_property_value("margin-bottom")[0];
+    std::pair<int, ParseIntType> margin_bottom_value = parse_int_value(margin_bottom_str);
+    if (margin_bottom_value.second == ParseIntType::Px)
+      box->set_margin_bottom(margin_bottom_value.first);
+    else if (margin_bottom_value.second == ParseIntType::Em)
+      box->set_margin_bottom(margin_bottom_value.first * DEFAULT_FONT_SIZE);
+  }
+
+  if (element->contains_style("margin-left"))
+  {
+    std::string margin_left_str = element->get_style_property_value("margin-left")[0];
+    std::pair<int, ParseIntType> margin_left_value = parse_int_value(margin_left_str);
+    if (margin_left_value.second == ParseIntType::Px)
+      box->set_margin_left(margin_left_value.first);
+    else if (margin_left_value.second == ParseIntType::Em)
+      box->set_margin_left(margin_left_value.first * DEFAULT_FONT_SIZE);
+  }
 }
 
-void add_margin_right_style(Gtk::Box* box, const HTMLElement* element)
+void add_background_color_style(Gtk::Box* box, const HTMLElement* element)
 {
-
-}
-
-void add_margin_bottom_style(Gtk::Box* box, const HTMLElement* element)
-{
-
-}
-
-void add_margin_left_style(Gtk::Box* box, const HTMLElement* element)
-{
-
+  std::string background_color_str = element->get_style_property_value("background-color")[0];
+  box->override_background_color(Gdk::RGBA(background_color_str));
 }
 
 }

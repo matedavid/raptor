@@ -15,6 +15,7 @@
 #include "liquid/html/html_div_element.h"
 #include "liquid/html/html_title_element.h"
 #include "liquid/html/html_paragraph_element.h"
+#include "liquid/html/html_span_element.h"
 
 
 namespace liquid {

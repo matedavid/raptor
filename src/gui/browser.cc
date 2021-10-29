@@ -4,7 +4,7 @@ Browser::Browser()
 	: m_container(Gtk::ORIENTATION_VERTICAL), m_search_bar(), m_search_button()
 {
 	set_title(m_title);
-	set_default_size(800, 480);
+	set_default_size(1920, 1080);
 
 	add(m_container);
 
@@ -22,9 +22,6 @@ Browser::Browser()
 	m_toolbar_container->add(m_search_button);
 
 	m_container.add(*m_toolbar_container);
-
-	//m_container.add(m_search_bar);
-	//m_container.add(m_search_button);
 
 	m_container.pack_start(content);
 	content.render_from_file("/home/david/workspace/raptor/src/liquid/html/examples/index.html");
