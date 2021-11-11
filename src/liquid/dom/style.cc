@@ -28,68 +28,102 @@ std::pair<int, ParseIntType> parse_int_value(const std::string& value)
   return std::make_pair(value_number, type);
 }
 
+static void add_margin_padding(Gtk::Box* box, const HTMLElement* element, const std::string& property)
+{
+  std::string str = element->get_style_property_value(property)[0];
+  std::pair<int, ParseIntType> value = parse_int_value(str);
+  value.first *= PANGO_SCALE_LARGE;
+
+  if (value.second == ParseIntType::Px)
+  {
+    box->set_margin_top(value.first);
+    box->set_margin_right(value.first);
+    box->set_margin_bottom(value.first);
+    box->set_margin_left(value.first);
+  }
+  else if (value.second == ParseIntType::Em)
+  {
+    box->set_margin_top(value.first * DEFAULT_FONT_SIZE);
+    box->set_margin_right(value.first * DEFAULT_FONT_SIZE);
+    box->set_margin_bottom(value.first * DEFAULT_FONT_SIZE);
+    box->set_margin_left(value.first * DEFAULT_FONT_SIZE);
+  }
+}
+
+static void add_margin_padding_side(Gtk::Box* box, const HTMLElement* element, const std::string& property)
+{
+  std::string top = property + "-top";
+  std::string right = property + "-right";
+  std::string bottom = property + "-bottom";
+  std::string left = property + "-left";
+
+  if (element->contains_style(top))
+  {
+    std::string str = element->get_style_property_value(top)[0];
+    std::pair<int, ParseIntType> value = parse_int_value(str);
+    value.first *= PANGO_SCALE_LARGE;
+
+    if (value.second == ParseIntType::Px)
+      box->set_margin_top(value.first);
+    else if (value.second == ParseIntType::Em)
+      box->set_margin_top(value.first * DEFAULT_FONT_SIZE);
+  }
+
+  if (element->contains_style(right))
+  {
+    std::string str = element->get_style_property_value(right)[0];
+    std::pair<int, ParseIntType> value = parse_int_value(str);
+    value.first *= PANGO_SCALE_LARGE;
+
+    if (value.second == ParseIntType::Px)
+      box->set_margin_right(value.first);
+    else if (value.second == ParseIntType::Em)
+      box->set_margin_right(value.first * DEFAULT_FONT_SIZE);
+  }
+
+  if (element->contains_style(bottom))
+  {
+    std::string str = element->get_style_property_value(bottom)[0];
+    std::pair<int, ParseIntType> value = parse_int_value(str);
+    value.first *= PANGO_SCALE_LARGE;
+
+    if (value.second == ParseIntType::Px)
+      box->set_margin_bottom(value.first);
+    else if (value.second == ParseIntType::Em)
+      box->set_margin_bottom(value.first * DEFAULT_FONT_SIZE);
+  }
+
+  if (element->contains_style(left))
+  {
+    std::string str = element->get_style_property_value(left)[0];
+    std::pair<int, ParseIntType> value = parse_int_value(str);
+    value.first *= PANGO_SCALE_LARGE;
+
+    if (value.second == ParseIntType::Px)
+      box->set_margin_left(value.first);
+    else if (value.second == ParseIntType::Em)
+      box->set_margin_left(value.first * DEFAULT_FONT_SIZE);
+  }
+}
+
 void add_margin_style(Gtk::Box* box, const HTMLElement* element)
 {
-  std::string margin_str = element->get_style_property_value("margin")[0];
-  std::pair<int, ParseIntType> margin_value = parse_int_value(margin_str);
-
-  if (margin_value.second == ParseIntType::Px)
-  {
-    box->set_margin_top(margin_value.first);
-    box->set_margin_right(margin_value.first);
-    box->set_margin_bottom(margin_value.first);
-    box->set_margin_left(margin_value.first);
-  }
-  else if (margin_value.second == ParseIntType::Em)
-  {
-    box->set_margin_top(margin_value.first * DEFAULT_FONT_SIZE);
-    box->set_margin_right(margin_value.first * DEFAULT_FONT_SIZE);
-    box->set_margin_bottom(margin_value.first * DEFAULT_FONT_SIZE);
-    box->set_margin_left(margin_value.first * DEFAULT_FONT_SIZE);
-  }
+  add_margin_padding(box, element, "margin");
 }
 
 void add_margin_side_style(Gtk::Box* box, const HTMLElement* element)
 {
-  if (element->contains_style("margin-top"))
-  {
-    std::string margin_top_str = element->get_style_property_value("margin-top")[0];
-    std::pair<int, ParseIntType> margin_top_value = parse_int_value(margin_top_str);
-    if (margin_top_value.second == ParseIntType::Px)
-      box->set_margin_top(margin_top_value.first);
-    else if (margin_top_value.second == ParseIntType::Em)
-      box->set_margin_top(margin_top_value.first * DEFAULT_FONT_SIZE);
-  }
+  add_margin_padding_side(box, element, "margin");
+}
 
-  if (element->contains_style("margin-right"))
-  {
-    std::string margin_right_str = element->get_style_property_value("margin-right")[0];
-    std::pair<int, ParseIntType> margin_right_value = parse_int_value(margin_right_str);
-    if (margin_right_value.second == ParseIntType::Px)
-      box->set_margin_right(margin_right_value.first);
-    else if (margin_right_value.second == ParseIntType::Em)
-      box->set_margin_right(margin_right_value.first * DEFAULT_FONT_SIZE);
-  }
+void add_padding_style(Gtk::Box* box, const HTMLElement* element)
+{
+  add_margin_padding(box, element, "padding");
+}
 
-  if (element->contains_style("margin-bottom"))
-  {
-    std::string margin_bottom_str = element->get_style_property_value("margin-bottom")[0];
-    std::pair<int, ParseIntType> margin_bottom_value = parse_int_value(margin_bottom_str);
-    if (margin_bottom_value.second == ParseIntType::Px)
-      box->set_margin_bottom(margin_bottom_value.first);
-    else if (margin_bottom_value.second == ParseIntType::Em)
-      box->set_margin_bottom(margin_bottom_value.first * DEFAULT_FONT_SIZE);
-  }
-
-  if (element->contains_style("margin-left"))
-  {
-    std::string margin_left_str = element->get_style_property_value("margin-left")[0];
-    std::pair<int, ParseIntType> margin_left_value = parse_int_value(margin_left_str);
-    if (margin_left_value.second == ParseIntType::Px)
-      box->set_margin_left(margin_left_value.first);
-    else if (margin_left_value.second == ParseIntType::Em)
-      box->set_margin_left(margin_left_value.first * DEFAULT_FONT_SIZE);
-  }
+void add_padding_side_style(Gtk::Box* box, const HTMLElement* element)
+{
+  add_margin_padding_side(box, element, "padding");
 }
 
 void add_background_color_style(Gtk::Box* box, const HTMLElement* element)

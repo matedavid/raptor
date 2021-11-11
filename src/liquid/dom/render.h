@@ -12,12 +12,23 @@
 
 namespace liquid {
 
-Gtk::Box* render_body_tag(HTMLBodyElement* body_element);
-Gtk::Box* render_div_tag(HTMLDivElement* div_element);
-Gtk::Box* render_p_tag(HTMLParagraphElement* p_element);
-Gtk::Box* render_span_element(HTMLSpanElement* span_element);
-Gtk::Box* render_text(Text* text);
+// Layout that "emulates" the Box Layout model in CSS
+// Used to represent rendered elements in DOM
+struct RenderBox
+{
+  Gtk::Box* outer_box;
+  Gtk::Box* inner_box;
+  std::string element_value;
+};
 
-Gtk::Box* render(HTMLElement* element);
+RenderBox* new_render_box(const std::string& element_value, Gtk::Orientation orientation);
+
+RenderBox* render_body_tag(HTMLBodyElement* body_element, Gtk::Box* parent);
+RenderBox* render_div_tag(HTMLDivElement* div_element);
+RenderBox* render_p_tag(HTMLParagraphElement* p_element);
+RenderBox* render_span_element(HTMLSpanElement* span_element);
+Gtk::Label* render_text(Text* text);
+
+void render(HTMLElement* element, Gtk::Box* parent);
 
 }

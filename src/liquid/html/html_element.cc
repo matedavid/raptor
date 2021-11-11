@@ -195,7 +195,10 @@ bool HTMLElement::contains_attribute(const std::string& name) const
 void HTMLElement::set_style_property(const std::string& property, const std::string& value)
 {
 	if (contains_style(property))
-		return;
+	{
+		std::vector<std::string> v = {value};
+		styles[property] = v; 
+	}
 	styles.insert(std::make_pair(property, std::vector<std::string>{value}));
 }
 

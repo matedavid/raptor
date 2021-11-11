@@ -18,6 +18,6 @@ void Content::render_from_file(const std::string& path)
 	liquid::HTMLDocument document;
 	document.from_file(path);
 
-	auto rendered_result = liquid::render(document.body);
-	m_content.add(*rendered_result);
+
+	liquid::render(document.body, &m_content);
 } 
