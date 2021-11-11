@@ -5,7 +5,7 @@ Content::Content()
 {
 	add(m_content);
 
-	// Change background color to white background and black widgets
+	// Change background color to white and black widgets
 	m_content.override_background_color(Gdk::RGBA("white"));
 	m_content.override_color(Gdk::RGBA("black"));
 
@@ -18,6 +18,7 @@ void Content::render_from_file(const std::string& path)
 	liquid::HTMLDocument document;
 	document.from_file(path);
 
-
 	liquid::render(document.body, &m_content);
+
+	liquid::print_html_element(document.body, 0);
 } 

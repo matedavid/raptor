@@ -98,6 +98,17 @@ RenderBox* render_p_tag(HTMLParagraphElement* p_element)
   {
     add_margin_side_style(box->outer_box,  p_element);
   }
+  if (p_element->contains_style("padding"))
+  {
+    add_padding_style(box->inner_box, p_element);
+  }
+  if (p_element->contains_style("padding-top") or 
+      p_element->contains_style("padding-right") or
+      p_element->contains_style("padding-bottom") or
+      p_element->contains_style("padding-left"))
+  {
+    add_padding_side_style(box->inner_box, p_element);
+  }
   if (p_element->contains_style("background-color"))
   {
     add_background_color_style(box->outer_box, p_element);
@@ -108,18 +119,48 @@ RenderBox* render_p_tag(HTMLParagraphElement* p_element)
 
 RenderBox* render_span_tag(HTMLSpanElement* span_element)
 {
+  RenderBox* box = new_render_box(span_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
+
+  if (span_element->contains_style("margin"))
+  {
+    add_margin_style(box->outer_box, span_element);
+  }
+  if (span_element->contains_style("margin-top") or 
+      span_element->contains_style("margin-right") or
+      span_element->contains_style("margin-bottom") or
+      span_element->contains_style("margin-left"))
+  {
+    add_margin_side_style(box->outer_box, span_element);
+  }
+  if (span_element->contains_style("padding"))
+  {
+    add_padding_style(box->inner_box, span_element);
+  }
+  if (span_element->contains_style("padding-top") or 
+      span_element->contains_style("padding-right") or
+      span_element->contains_style("padding-bottom") or
+      span_element->contains_style("padding-left"))
+  {
+    add_padding_side_style(box->inner_box, span_element);
+  }
+  if (span_element->contains_style("background-color"))
+  {
+    add_background_color_style(box->outer_box, span_element);
+  }
+
+  return box;
 }
 
 Gtk::Label* render_text(Text* text)
 {
-  //Gtk::Box* box = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_VERTICAL);
   Gtk::Label* label = Gtk::make_managed<Gtk::Label>();
   label->set_text(text->content());
   label->set_selectable(true);
 	label->set_line_wrap(true);
 	label->set_xalign(0.0f);
   label->set_padding(0, 0);
-
+  
+  // TODO: This should be dynamic (dependant on style)
   Pango::AttrList attr_list = Pango::AttrList();
   Pango::AttrInt font_size_attr = Pango::Attribute().create_attr_size_absolute(DEFAULT_FONT_SIZE*PANGO_SCALE*PANGO_SCALE_LARGE);
   Pango::AttrFontDesc font_description_attr = Pango::Attribute().create_attr_font_desc(Pango::FontDescription("Times New Roman"));
@@ -128,9 +169,6 @@ Gtk::Label* render_text(Text* text)
   attr_list.insert(font_description_attr);
   label->set_attributes(attr_list);
 
-  //box->pack_start(*label);
-
-  //return box;
   return label;
 }
 
@@ -144,7 +182,7 @@ void render(HTMLElement* element, Gtk::Box* parent)
       return;
     
     Gtk::Label* label = render_text(text);
-    parent->pack_start(*label);
+    parent->pack_start(*label, false, false);
     return;
   }
 
@@ -171,9 +209,15 @@ void render(HTMLElement* element, Gtk::Box* parent)
       return;
     rendered_element = render_p_tag(p_element);
   }
+  else if (element->element_value == "span")
+  {
+    HTMLSpanElement* span_element = dynamic_cast<HTMLSpanElement*>(element);
+    if (span_element == nullptr)
+      return;
+    rendered_element = render_span_tag(span_element);
+  }
 
-  //parent->pack_start(*rendered_element->outer_box, false, false);
-  parent->add(*rendered_element->outer_box);
+  parent->pack_start(*rendered_element->outer_box, false, false);
 
   std::vector<HTMLElement*> children = element->child_elements();
   for (HTMLElement* child : children)
