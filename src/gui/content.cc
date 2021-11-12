@@ -20,5 +20,6 @@ void Content::render_from_file(const std::string& path)
 
 	liquid::render(document.body, &m_content);
 
+	// DEBUG
 	liquid::print_html_element(document.body, 0);
 } 

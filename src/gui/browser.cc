@@ -24,7 +24,7 @@ Browser::Browser()
 	m_container.add(*m_toolbar_container);
 
 	m_container.pack_start(content);
-	content.render_from_file("/home/david/workspace/raptor/src/liquid/html/examples/index.html");
+	content.render_from_file("/home/david/workspace/raptor/examples/index.html");
 
 	m_container.show();
 	show_all_children();

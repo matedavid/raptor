@@ -194,7 +194,7 @@ void CSSTokenizer::consume_in_value()
 	char c = consume();
 	char next_nw = next_non_white_character();
 
-	if (isalpha(c) or isdigit(c) or c == '-')
+	if (isalpha(c) or isdigit(c) or c == '-' or c == '.' or c == '#')
 	{
 		m_current_token.value += c;
 	}
