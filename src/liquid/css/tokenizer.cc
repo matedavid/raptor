@@ -72,6 +72,14 @@ void CSSTokenizer::consume_before_selector()
 		m_tokens.push_back(CSSToken{CSSTokenType::Selector, "*"});
 		m_current_state = State::InBlock;
 	}
+	else if (c == '/' and peek_consume_forward(1) == "*") // Comment
+	{
+		m_previous_state = m_current_state;
+		m_current_state = State::InComment;
+
+		// Jump the '*' char
+		consume();
+	}
 	else if (c == ' ' or c == '\t' or c == '\f' or c == '\n')
 	{ 
 		//Ignore the token 
@@ -123,6 +131,14 @@ void CSSTokenizer::consume_in_selector()
 
 		m_current_state = State::InBlock;
 	}
+	else if (c == '/' and peek_consume_forward(1) == "*") // Comment
+	{
+		m_previous_state = m_current_state;
+		m_current_state = State::InComment;
+
+		// Jump the '*' char
+		consume();
+	}
 	else
 	{
 		// Ignore character
@@ -152,6 +168,14 @@ void CSSTokenizer::consume_in_block()
 		// Exit out of block
 		m_tokens.push_back(CSSToken{CSSTokenType::BlockEnd});
 		m_current_state = State::BeforeSelector;
+	}
+	else if (c == '/' and peek_consume_forward(1) == "*") // Comment
+	{
+		m_previous_state = m_current_state;
+		m_current_state = State::InComment;
+
+		// Jump the '*' char
+		consume();
 	}
 	else if (c == ';')
 	{
@@ -183,6 +207,14 @@ void CSSTokenizer::consume_in_property()
 		std::cout << "Parsing error: no value for property " << m_current_token.value << std::endl;
 		m_current_state = State::InBlock;
 	}
+	else if (c == '/' and peek_consume_forward(1) == "*") // Comment
+	{
+		m_previous_state = m_current_state;
+		m_current_state = State::InComment;
+
+		// Jump the '*' char
+		consume();
+	}
 	else if (c == ' ' or c == '\t' or c == '\f' or c == '\n')
 	{
 		// Ignore token
@@ -210,6 +242,14 @@ void CSSTokenizer::consume_in_value()
 		m_tokens.push_back(m_current_token);
 		m_current_token = CSSToken{CSSTokenType::Value, ""};
 	}
+	else if (c == '/' and peek_consume_forward(1) == "*") // Comment
+	{
+		m_previous_state = m_current_state;
+		m_current_state = State::InComment;
+
+		// Jump the '*' char
+		consume();
+	}
 	else if (c == ' ' or c == '\t' or c == '\f' or c == '\n')
 	{
 		// Ignore token
@@ -217,6 +257,19 @@ void CSSTokenizer::consume_in_value()
 	else
 	{
 		std::cout << "Parsing error: Unknwon token (" << c << ") in in_value state" << std::endl;
+	}
+}
+
+void CSSTokenizer::consume_in_comment()
+{
+	char c = consume();
+	if (c == '*' and peek_consume_forward(1) == "/") // End of comment 
+	{
+		// NOTE: Not saving comments, just ignoring
+		m_current_state = m_previous_state;
+
+		// Jump the '/' char
+		consume();
 	}
 }
 
@@ -251,6 +304,9 @@ void CSSTokenizer::tokenize(const std::string& content)
 			case State::InValue:
 				consume_in_value();
 				break;
+			case State::InComment:
+				consume_in_comment();
+				break;
 
 			default:
 				std::cout << "Unknown Token" << std::endl;
@@ -261,10 +317,8 @@ void CSSTokenizer::tokenize(const std::string& content)
 	// Reset position for further use of the Tokenizer class
 	m_position = 0;
 
-	/*
 	for (auto token : m_tokens) 
 		std::cout << css_token_type_as_string(token.type) << ": '" << token.value << "'" << std::endl;
-	*/
 }
 
 CSSToken CSSTokenizer::current() const

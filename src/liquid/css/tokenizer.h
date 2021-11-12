@@ -17,7 +17,8 @@ private:
     InSelector,
     InBlock,
     InProperty,
-    InValue
+    InValue,
+    InComment
   };
 
 	// Tokens
@@ -34,6 +35,12 @@ private:
 
   // The current token being created
   CSSToken m_current_token;
+
+  // Previous state if the Tokenizer needs to remember (eg. entering comment and then continue where it left of)
+  State m_previous_state;
+  // Previous Token if the Tokenizer needs to remember (eg. entering comment and then continue where it left of)
+  CSSToken m_previous_token;
+
   
   // Returns the nearest not-yet consumed token
   char consume();
@@ -52,6 +59,7 @@ private:
   void consume_in_block();
   void consume_in_property();
   void consume_in_value();
+  void consume_in_comment();
 
 public:
 	CSSTokenizer();
