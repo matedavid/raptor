@@ -4,16 +4,26 @@ namespace liquid {
 
 void HTMLParser::insert_character(const Token& token, HTMLElement* element)
 {
-	HTMLElement* last_element = element->get_last_element();
-	if (last_element->type() == HTMLElementType::TextType)
+	// Check if the element has a Text element as the "last child". 
+	// If it has, append the string to the already existing text element
+	// If not, create a new Text child 
+	std::vector<HTMLElement*> children = element->child_elements();
+
+	HTMLElement* text_element = nullptr;
+	if (children.size() != 0 and children[children.size()-1]->type() == HTMLElementType::TextType)
+		text_element = children[children.size()-1];
+
+	if (text_element != nullptr and text_element->type() == HTMLElementType::TextType)
 	{
-		Text* text_last_element = dynamic_cast<Text*>(last_element);
-		text_last_element->append_string(token.value);
+		Text* text = dynamic_cast<Text*>(text_element);
+		if (text == nullptr)
+			return;
+		text->append_string(token.value);
 	}
 	else
 	{
-		Text* text_element = new Text(token.value);
-		last_element->insert_child_last(text_element);
+		Text* text = new Text(token.value);;
+		element->insert_child(text);
 	}
 }
 
