@@ -1,6 +1,8 @@
 #pragma once
 
 #include <iostream>
+#include <string>
+#include <sstream>
 #include <utility>
 #include <regex>
 
@@ -12,14 +14,14 @@ namespace liquid {
 
 const int DEFAULT_FONT_SIZE = 16;
 
-enum ParseIntType
+enum ParseNumberType
 {
   Px,
   Em,
   Error
 };
 
-std::pair<int, ParseIntType> parse_int_value(const std::string& value);
+static std::pair<float, ParseNumberType> parse_number_value(const std::string& value);
 
 static void add_margin_padding(Gtk::Box* box, const HTMLElement* element, const std::string& property);
 static void add_margin_padding_side(Gtk::Box* box, const HTMLElement* element, const std::string& property);

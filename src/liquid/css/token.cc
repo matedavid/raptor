@@ -26,6 +26,8 @@ std::string css_token_type_as_string(const CSSTokenType type)
       return "Colon";
     case CSSTokenType::Semicolon:
       return "Semicolon";
+    case CSSTokenType::CSSComment:
+      return "Comment";
   }
   
   return "UNKNOWN";

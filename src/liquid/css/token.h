@@ -15,7 +15,8 @@ enum CSSTokenType
   Property,
   Value,
   Colon,
-  Semicolon
+  Semicolon,
+  CSSComment,
 };
 
 struct CSSToken
