@@ -35,6 +35,19 @@ void HTMLDocument::from_string(const std::string& content)
 	HTMLParser parser = HTMLParser();
 	html = parser.parse(tokenizer);
 
+	title = "New Tab";
+	std::vector<HTMLElement*> title_elements = html->get_elements_by_tag_name("title");
+	if (title_elements.size() != 0) 
+	{
+		std::vector<HTMLElement*> text_elements = title_elements[0]->get_elements_by_tag_name("text");
+		if (text_elements.size() != 0)
+		{
+			Text* text = dynamic_cast<Text*>(text_elements[0]);
+			if (text != nullptr)
+				title = text->content();
+		}
+	}
+
 	HTMLElement* head_element = html->get_elements_by_tag_name("head")[0];
 	if (head_element != nullptr)
 		head = dynamic_cast<HTMLHeadElement*>(head_element);

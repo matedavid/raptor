@@ -14,6 +14,9 @@ protected:
 	Gtk::Box m_content;
 
 public:
+	std::string title;
+
+public:
 	Content();
 
 	void render_from_file(const std::string& path);

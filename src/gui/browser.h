@@ -14,6 +14,7 @@ public:
 	Browser();
 
 	Gtk::Box m_container;
+	Gtk::Notebook m_notebook;
 	Gtk::Entry m_search_bar;
 	Gtk::Button m_search_button;
 

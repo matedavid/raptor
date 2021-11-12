@@ -317,8 +317,10 @@ void CSSTokenizer::tokenize(const std::string& content)
 	// Reset position for further use of the Tokenizer class
 	m_position = 0;
 
+	/*
 	for (auto token : m_tokens) 
 		std::cout << css_token_type_as_string(token.type) << ": '" << token.value << "'" << std::endl;
+	*/
 }
 
 CSSToken CSSTokenizer::current() const
