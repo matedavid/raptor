@@ -77,6 +77,42 @@ RenderBox* render_span_tag(HTMLSpanElement* span_element)
   return box;
 }
 
+RenderBox* render_ol_tag(HTMLOrderedListElement* ol_element)
+{
+  RenderBox* box = new_render_box(ol_element->element_value, Gtk::ORIENTATION_VERTICAL);
+  apply_common_style(box, ol_element);
+
+  return box;
+}
+
+RenderBox* render_ul_tag(HTMLUnorderedListElement* ul_element)
+{
+  RenderBox* box = new_render_box(ul_element->element_value, Gtk::ORIENTATION_VERTICAL);
+  apply_common_style(box, ul_element);
+
+  return box;
+}
+
+RenderBox* render_li_tag(HTMLListItemElement* li_element)
+{
+  RenderBox* box = new_render_box(li_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
+  apply_common_style(box, li_element);
+
+  HTMLElement* parent = li_element->parent_element();
+  if (parent->element_value == "ul")
+  {
+    Gtk::Label* label = Gtk::make_managed<Gtk::Label>("\t* ");
+    box->inner_box->pack_start(*label, false, false);
+  }
+  else if (parent->element_value == "ol")
+  {
+    Gtk::Label* label = Gtk::make_managed<Gtk::Label>("\t1. ");
+    box->inner_box->pack_start(*label, false, false);
+  }
+
+  return box;
+}
+
 Gtk::Label* render_text(Text* text)
 {
   Gtk::Label* label = Gtk::make_managed<Gtk::Label>();
@@ -141,6 +177,27 @@ void render(HTMLElement* element, Gtk::Box* parent)
     if (span_element == nullptr)
       return;
     rendered_element = render_span_tag(span_element);
+  }
+  else if (element->element_value == "ol")
+  {
+    HTMLOrderedListElement* ol_element = dynamic_cast<HTMLOrderedListElement*>(element);
+    if (ol_element == nullptr)
+      return;
+    rendered_element = render_ol_tag(ol_element);
+  }
+  else if (element->element_value == "ul")
+  {
+    HTMLUnorderedListElement* ul_element = dynamic_cast<HTMLUnorderedListElement*>(element);
+    if (ul_element == nullptr)
+      return;
+    rendered_element = render_ul_tag(ul_element);
+  }
+  else if (element->element_value == "li")
+  {
+    HTMLListItemElement* li_element = dynamic_cast<HTMLListItemElement*>(element);
+    if (li_element == nullptr)
+      return;
+    rendered_element = render_li_tag(li_element);
   }
 
   parent->pack_start(*rendered_element->outer_box, false, false);
