@@ -15,36 +15,40 @@ RenderBox* new_render_box(const std::string& element_value, Gtk::Orientation ori
   };
 }
 
+void apply_common_style(RenderBox* box, HTMLElement* element)
+{
+  if (element->contains_style("margin"))
+  {
+    add_margin_style(box->outer_box, element);
+  }
+  if (element->contains_style("margin-top") or 
+      element->contains_style("margin-right") or
+      element->contains_style("margin-bottom") or
+      element->contains_style("margin-left"))
+  {
+    add_margin_side_style(box->outer_box, element);
+  }
+  if (element->contains_style("padding"))
+  {
+    add_padding_style(box->inner_box, element);
+  }
+  if (element->contains_style("padding-top") or 
+      element->contains_style("padding-right") or
+      element->contains_style("padding-bottom") or
+      element->contains_style("padding-left"))
+  {
+    add_padding_side_style(box->inner_box, element);
+  }
+  if (element->contains_style("background-color"))
+  {
+    add_background_color_style(box->outer_box, element);
+  }
+}
+
 RenderBox* render_body_tag(HTMLBodyElement* body_element)
 {
   RenderBox* box = new_render_box(body_element->element_value, Gtk::ORIENTATION_VERTICAL);
-
-  if (body_element->contains_style("margin"))
-  {
-    add_margin_style(box->outer_box, body_element);
-  }
-  if (body_element->contains_style("margin-top") or 
-      body_element->contains_style("margin-right") or
-      body_element->contains_style("margin-bottom") or
-      body_element->contains_style("margin-left"))
-  {
-    add_margin_side_style(box->outer_box, body_element);
-  }
-  if (body_element->contains_style("padding"))
-  {
-    add_padding_style(box->inner_box, body_element);
-  }
-  if (body_element->contains_style("padding-top") or 
-      body_element->contains_style("padding-right") or
-      body_element->contains_style("padding-bottom") or
-      body_element->contains_style("padding-left"))
-  {
-    add_padding_side_style(box->inner_box, body_element);
-  }
-  if (body_element->contains_style("background-color"))
-  {
-    add_background_color_style(box->outer_box, body_element);
-  }
+  apply_common_style(box, body_element);
 
   return box;
 }
@@ -52,33 +56,7 @@ RenderBox* render_body_tag(HTMLBodyElement* body_element)
 RenderBox* render_div_tag(HTMLDivElement* div_element)
 {
   RenderBox* box = new_render_box(div_element->element_value, Gtk::ORIENTATION_VERTICAL);
-
-  if (div_element->contains_style("margin"))
-  {
-    add_margin_style(box->outer_box, div_element);
-  }
-  if (div_element->contains_style("margin-top") or 
-      div_element->contains_style("margin-right") or
-      div_element->contains_style("margin-bottom") or
-      div_element->contains_style("margin-left"))
-  {
-    add_margin_side_style(box->outer_box, div_element);
-  }
-  if (div_element->contains_style("padding"))
-  {
-    add_padding_style(box->inner_box, div_element);
-  }
-  if (div_element->contains_style("padding-top") or 
-      div_element->contains_style("padding-right") or
-      div_element->contains_style("padding-bottom") or
-      div_element->contains_style("padding-left"))
-  {
-    add_padding_side_style(box->inner_box, div_element);
-  }
-  if (div_element->contains_style("background-color"))
-  {
-    add_background_color_style(box->outer_box, div_element);
-  }
+  apply_common_style(box, div_element);
 
   return box;
 }
@@ -86,33 +64,7 @@ RenderBox* render_div_tag(HTMLDivElement* div_element)
 RenderBox* render_p_tag(HTMLParagraphElement* p_element)
 {
   RenderBox* box = new_render_box(p_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-
-  if (p_element->contains_style("margin"))
-  {
-    add_margin_style(box->outer_box, p_element);
-  }
-  if (p_element->contains_style("margin-top") or 
-      p_element->contains_style("margin-right") or
-      p_element->contains_style("margin-bottom") or
-      p_element->contains_style("margin-left"))
-  {
-    add_margin_side_style(box->outer_box,  p_element);
-  }
-  if (p_element->contains_style("padding"))
-  {
-    add_padding_style(box->inner_box, p_element);
-  }
-  if (p_element->contains_style("padding-top") or 
-      p_element->contains_style("padding-right") or
-      p_element->contains_style("padding-bottom") or
-      p_element->contains_style("padding-left"))
-  {
-    add_padding_side_style(box->inner_box, p_element);
-  }
-  if (p_element->contains_style("background-color"))
-  {
-    add_background_color_style(box->outer_box, p_element);
-  }
+  apply_common_style(box, p_element);
 
   return box;
 }
@@ -120,33 +72,7 @@ RenderBox* render_p_tag(HTMLParagraphElement* p_element)
 RenderBox* render_span_tag(HTMLSpanElement* span_element)
 {
   RenderBox* box = new_render_box(span_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-
-  if (span_element->contains_style("margin"))
-  {
-    add_margin_style(box->outer_box, span_element);
-  }
-  if (span_element->contains_style("margin-top") or 
-      span_element->contains_style("margin-right") or
-      span_element->contains_style("margin-bottom") or
-      span_element->contains_style("margin-left"))
-  {
-    add_margin_side_style(box->outer_box, span_element);
-  }
-  if (span_element->contains_style("padding"))
-  {
-    add_padding_style(box->inner_box, span_element);
-  }
-  if (span_element->contains_style("padding-top") or 
-      span_element->contains_style("padding-right") or
-      span_element->contains_style("padding-bottom") or
-      span_element->contains_style("padding-left"))
-  {
-    add_padding_side_style(box->inner_box, span_element);
-  }
-  if (span_element->contains_style("background-color"))
-  {
-    add_background_color_style(box->outer_box, span_element);
-  }
+  apply_common_style(box, span_element);
 
   return box;
 }

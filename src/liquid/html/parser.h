@@ -16,6 +16,12 @@
 #include "liquid/html/html_title_element.h"
 #include "liquid/html/html_paragraph_element.h"
 #include "liquid/html/html_span_element.h"
+#include "liquid/html/html_heading_element.h"
+#include "liquid/html/html_anchor_element.h"
+#include "liquid/html/html_ordered_list_element.h"
+#include "liquid/html/html_unordered_list_element.h"
+#include "liquid/html/html_list_item_element.h"
+#include "liquid/html/html_image_element.h"
 
 
 namespace liquid {

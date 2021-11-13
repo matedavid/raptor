@@ -391,9 +391,43 @@ void HTMLParser::in_body_mode()
 			new_element = new HTMLParagraphElement(token, nullptr);
 		else if (token.value == "span")
 			new_element = new HTMLSpanElement(token, nullptr);
+		else if (token.value == "h1" or
+						 token.value == "h2" or
+						 token.value == "h3" or
+						 token.value == "h4" or
+						 token.value == "h5" or
+						 token.value == "h6") 
+		{
+			auto heading = new HTMLHeadingElement(token, nullptr);
+			switch (token.value[1])
+			{
+				case '1':
+					heading->level = 1; break;
+				case '2':
+					heading->level = 2; break;
+				case '3':
+					heading->level = 3; break;
+				case '4': 
+					heading->level = 4; break;
+				case '5':
+					heading->level = 5; break;
+				case '6':
+					heading->level = 6; break;
+			}
+			new_element = heading;
+		} 
+		else if (token.value == "a")
+			new_element = new HTMLAnchorElement(token, nullptr);
+		else if (token.value == "ol")
+			new_element = new HTMLOrderedListElement(token, nullptr);
+		else if (token.value == "ul")
+			new_element = new HTMLUnorderedListElement(token, nullptr);
+		else if (token.value == "li")
+			new_element = new HTMLListItemElement(token, nullptr);
+		else if (token.value == "img")
+			new_element = new HTMLImageElement(token, nullptr);
 		else 
 			new_element = new HTMLElement(token, nullptr);
-
 
 		HTMLElement* insert_element = open_elements.top();
 		insert_element->insert_child(new_element);
