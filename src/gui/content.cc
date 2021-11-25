@@ -19,7 +19,7 @@ void Content::render_from_file(const std::string& path)
 	document.from_file(path);
 	title = document.title;
 
-	liquid::render(document.body, &m_content);
+	liquid::render(document.body, &m_content, liquid::RenderConfig{});
 
 	// DEBUG
 	liquid::print_html_element(document.body, 0);

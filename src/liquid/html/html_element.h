@@ -32,7 +32,7 @@ public:
 	std::string inner_html;
 	std::string outer_html;
 
-	virtual HTMLElementType type() { return HTMLElementType::ElementType; }
+	virtual HTMLElementType type() const { return HTMLElementType::ElementType; }
 
 private:
 	static void replace_child_recursive(HTMLElement* element, HTMLElement* target, HTMLElement* new_child);

@@ -1,5 +1,3 @@
-span {
-  /* Comment should not interfere */
-  background-color: #b27959;
-  margin-left: 10px; 
+p {
+  font-size: 30px;
 }

@@ -21,7 +21,13 @@ enum ParseNumberType
   Error
 };
 
-static std::pair<float, ParseNumberType> parse_number_value(const std::string& value);
+struct StyleNumber 
+{
+  float value;
+  ParseNumberType type;
+};
+
+StyleNumber parse_number_value(const std::string& value);
 
 static void add_margin_padding(Gtk::Box* box, const HTMLElement* element, const std::string& property);
 static void add_margin_padding_side(Gtk::Box* box, const HTMLElement* element, const std::string& property);
