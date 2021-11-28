@@ -8,31 +8,19 @@ Browser::Browser()
 
 	add(m_container);
 
-	m_search_bar.set_margin_top(10);
-	m_search_bar.set_margin_bottom(10);
-	m_search_bar.set_margin_left(10);
-	m_search_bar.set_margin_right(10);
+	//m_search_button.signal_clicked().connect([this] { this->search_bar_button_press(); } );
 
-	m_search_button.set_label("Search");
-	m_search_button.signal_clicked().connect([this] { this->search_bar_button_press(); } );
+	/*
+	Tab* tab1 = new Tab();
+	tab1->m_search_button.signal_clicked().connect([this] { this->search_bar_button_press(); });
+	tab1->m_new_tab_button.signal_clicked().connect([this] { this->new_tab(); });
+	m_notebook.append_page(*tab1, "Tab 1");
+	*/
 
-	Gtk::Box* m_toolbar_container = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_HORIZONTAL);
-
-	m_toolbar_container->pack_start(m_search_bar);
-	m_toolbar_container->add(m_search_button);
-
-	m_container.add(*m_toolbar_container);
-
-	Content* page1 = new Content();
-	page1->render_from_file("/home/david/workspace/raptor/examples/index.html");
-
-	m_notebook.append_page(*page1, "Example HTML");
-
-	//m_container.pack_start(content);
-	//content.render_from_file("/home/david/workspace/raptor/examples/index.html");
+	// First tab
+	new_tab();
 
 	m_container.pack_start(m_notebook);
-
 	m_container.show();
 	show_all_children();
 }
@@ -44,4 +32,16 @@ void Browser::search_bar_button_press()
 	{
 		content.render_from_file(value);
 	}
+}
+
+void Browser::new_tab()
+{
+	Tab* tab = new Tab();
+	tab->m_content.render_from_file("/home/david/workspace/raptor/src/gui/templates/new_tab.html");
+
+	//tab->m_search_button.signal_clicked().connect([this] { this->search_bar_button_press(); });
+	tab->m_new_tab_button.signal_clicked().connect([this] { this->new_tab(); });
+
+	m_notebook.append_page(*tab, tab->m_content.title);
+	tab->show();
 }

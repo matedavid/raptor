@@ -4,6 +4,7 @@
 #include <gtkmm.h>
 
 #include "content.h"
+#include "tab.h"
 
 class Browser : public Gtk::Window
 {
@@ -22,4 +23,5 @@ public:
 
 private:
 	void search_bar_button_press();
+	void new_tab();
 };

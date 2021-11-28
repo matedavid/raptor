@@ -15,12 +15,19 @@ Content::Content()
 
 void Content::render_from_file(const std::string& path)
 {
+	// Clear content
+	for (auto child : m_content.get_children())
+		m_content.remove(*child);
+
 	liquid::HTMLDocument document;
 	document.from_file(path);
 	title = document.title;
 
 	liquid::render(document.body, &m_content, liquid::RenderConfig{});
 
+	m_content.show();
+	show_all_children();
+
 	// DEBUG
-	liquid::print_html_element(document.body, 0);
+	//liquid::print_html_element(document.body, 0);
 }
