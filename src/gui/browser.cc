@@ -39,9 +39,9 @@ void Browser::new_tab()
 	Tab* tab = new Tab();
 	tab->m_content.render_from_file("/home/david/workspace/raptor/src/gui/templates/new_tab.html");
 
-	//tab->m_search_button.signal_clicked().connect([this] { this->search_bar_button_press(); });
 	tab->m_new_tab_button.signal_clicked().connect([this] { this->new_tab(); });
+	tab->show();
 
 	m_notebook.append_page(*tab, tab->m_content.title);
-	tab->show();
+	m_notebook.set_current_page(m_notebook.page_num(*tab));
 }

@@ -16,6 +16,7 @@ Content::Content()
 void Content::render_from_file(const std::string& path)
 {
 	// Clear content
+	// TODO: Probably big memory leak, not deleting all children
 	for (auto child : m_content.get_children())
 		m_content.remove(*child);
 
