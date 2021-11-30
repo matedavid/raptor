@@ -12,8 +12,6 @@ private:
 	std::string m_title	= "Raptor Browser";
 
 public:
-	Browser();
-
 	Gtk::Box m_container;
 	Gtk::Notebook m_notebook;
 	Gtk::Entry m_search_bar;
@@ -23,5 +21,8 @@ public:
 
 private:
 	void search_bar_button_press();
+
+public:
+	Browser();
 	void new_tab();
 };

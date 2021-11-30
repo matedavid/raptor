@@ -8,15 +8,6 @@ Browser::Browser()
 
 	add(m_container);
 
-	//m_search_button.signal_clicked().connect([this] { this->search_bar_button_press(); } );
-
-	/*
-	Tab* tab1 = new Tab();
-	tab1->m_search_button.signal_clicked().connect([this] { this->search_bar_button_press(); });
-	tab1->m_new_tab_button.signal_clicked().connect([this] { this->new_tab(); });
-	m_notebook.append_page(*tab1, "Tab 1");
-	*/
-
 	// First tab
 	new_tab();
 

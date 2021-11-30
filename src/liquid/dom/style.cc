@@ -34,11 +34,11 @@ StyleNumber parse_number_value(const std::string& value)
   return StyleNumber{value_number, type};
 }
 
-static void add_margin_padding(Gtk::Box* box, const HTMLElement* element, const std::string& property)
+static void add_margin_padding(Gtk::Box* box, const HTMLElement* element, const std::string& property, const RenderConfig& config)
 {
   std::string str = element->get_style_property_value(property)[0];
   StyleNumber value = parse_number_value(str);
-  value.value *= PANGO_SCALE_LARGE;
+  //value.value *= PANGO_SCALE_X_SMALL;
 
   if (value.type == ParseNumberType::Px)
   {
@@ -49,14 +49,14 @@ static void add_margin_padding(Gtk::Box* box, const HTMLElement* element, const 
   }
   else if (value.type == ParseNumberType::Em)
   {
-    box->set_margin_top(value.value * DEFAULT_FONT_SIZE);
-    box->set_margin_right(value.value * DEFAULT_FONT_SIZE);
-    box->set_margin_bottom(value.value * DEFAULT_FONT_SIZE);
-    box->set_margin_left(value.value * DEFAULT_FONT_SIZE);
+    box->set_margin_top(value.value * config.font_size * PANGO_SCALE_X_SMALL);
+    box->set_margin_right(value.value * config.font_size * PANGO_SCALE_X_SMALL);
+    box->set_margin_bottom(value.value * config.font_size * PANGO_SCALE_X_SMALL);
+    box->set_margin_left(value.value * config.font_size * PANGO_SCALE_X_SMALL);
   }
 }
 
-static void add_margin_padding_side(Gtk::Box* box, const HTMLElement* element, const std::string& property)
+static void add_margin_padding_side(Gtk::Box* box, const HTMLElement* element, const std::string& property, const RenderConfig& config)
 {
   std::string top = property + "-top";
   std::string right = property + "-right";
@@ -65,71 +65,75 @@ static void add_margin_padding_side(Gtk::Box* box, const HTMLElement* element, c
 
   if (element->contains_style(top))
   {
+    if (element->element_value == "h6") {
+      std::cout << config.font_size << std::endl;
+    }
+    
     std::string str = element->get_style_property_value(top)[0];
     StyleNumber value = parse_number_value(str);
-    value.value *= PANGO_SCALE_LARGE;
+    //value.value *= PANGO_SCALE_X_SMALL;
 
     if (value.type == ParseNumberType::Px)
       box->set_margin_top(value.value);
     else if (value.type == ParseNumberType::Em)
-      box->set_margin_top(value.value * DEFAULT_FONT_SIZE);
+      box->set_margin_top(value.value * config.font_size * PANGO_SCALE_X_SMALL);
   }
 
   if (element->contains_style(right))
   {
     std::string str = element->get_style_property_value(right)[0];
     StyleNumber value = parse_number_value(str);
-    value.value *= PANGO_SCALE_LARGE;
+    //value.value *= PANGO_SCALE_X_SMALL;
 
     if (value.type == ParseNumberType::Px)
       box->set_margin_right(value.value);
     else if (value.type == ParseNumberType::Em)
-      box->set_margin_right(value.value * DEFAULT_FONT_SIZE);
+      box->set_margin_right(value.value * config.font_size * PANGO_SCALE_X_SMALL);
   }
 
   if (element->contains_style(bottom))
   {
     std::string str = element->get_style_property_value(bottom)[0];
     StyleNumber value = parse_number_value(str);
-    value.value *= PANGO_SCALE_LARGE;
+    //value.value *= PANGO_SCALE_X_SMALL;
 
     if (value.type == ParseNumberType::Px)
       box->set_margin_bottom(value.value);
     else if (value.type == ParseNumberType::Em)
-      box->set_margin_bottom(value.value * DEFAULT_FONT_SIZE);
+      box->set_margin_bottom(value.value * config.font_size * PANGO_SCALE_X_SMALL);
   }
 
   if (element->contains_style(left))
   {
     std::string str = element->get_style_property_value(left)[0];
     StyleNumber value = parse_number_value(str);
-    value.value *= PANGO_SCALE_LARGE;
+    //value.value *= PANGO_SCALE_X_SMALL;
 
     if (value.type == ParseNumberType::Px)
       box->set_margin_left(value.value);
     else if (value.type == ParseNumberType::Em)
-      box->set_margin_left(value.value * DEFAULT_FONT_SIZE);
+      box->set_margin_left(value.value * config.font_size * PANGO_SCALE_X_SMALL);
   }
 }
 
-void add_margin_style(Gtk::Box* box, const HTMLElement* element)
+void add_margin_style(Gtk::Box* box, const HTMLElement* element, const RenderConfig& config)
 {
-  add_margin_padding(box, element, "margin");
+  add_margin_padding(box, element, "margin", config);
 }
 
-void add_margin_side_style(Gtk::Box* box, const HTMLElement* element)
+void add_margin_side_style(Gtk::Box* box, const HTMLElement* element, const RenderConfig& config)
 {
-  add_margin_padding_side(box, element, "margin");
+  add_margin_padding_side(box, element, "margin", config);
 }
 
-void add_padding_style(Gtk::Box* box, const HTMLElement* element)
+void add_padding_style(Gtk::Box* box, const HTMLElement* element, const RenderConfig& config)
 {
-  add_margin_padding(box, element, "padding");
+  add_margin_padding(box, element, "padding", config);
 }
 
-void add_padding_side_style(Gtk::Box* box, const HTMLElement* element)
+void add_padding_side_style(Gtk::Box* box, const HTMLElement* element, const RenderConfig& config)
 {
-  add_margin_padding_side(box, element, "padding");
+  add_margin_padding_side(box, element, "padding", config);
 }
 
 void add_background_color_style(Gtk::Box* box, const HTMLElement* element)

@@ -10,7 +10,11 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
   // Common style properties
   if (element->contains_style("font-size"))
   {
-    config.font_size = parse_number_value(element->get_style_property_value("font-size")[0]);
+    StyleNumber parsed_font_size = parse_number_value(element->get_style_property_value("font-size")[0]);
+    if (parsed_font_size.type == ParseNumberType::Em)
+      config.font_size *= parsed_font_size.value;
+    else 
+      config.font_size = parsed_font_size.value;
   }
 
   // Depending on element_value
@@ -24,44 +28,33 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
     config.list = true;
     config.list_type = 1;
   }
+
 }
 
-static RenderBox* new_render_box(const std::string& element_value, Gtk::Orientation orientation)
-{
-  Gtk::Box* outer_box = Gtk::make_managed<Gtk::Box>(orientation);
-  Gtk::Box* inner_box = Gtk::make_managed<Gtk::Box>(orientation);
-  outer_box->pack_start(*inner_box);
 
-  return new RenderBox{
-    outer_box: outer_box,
-    inner_box: inner_box,
-    element_value: element_value
-  };
-}
-
-void apply_common_style(RenderBox* box, HTMLElement* element)
+static void apply_common_style(RenderBox* box, HTMLElement* element, const RenderConfig& config)
 {
   if (element->contains_style("margin"))
   {
-    add_margin_style(box->outer_box, element);
+    add_margin_style(box->outer_box, element, config);
   }
   if (element->contains_style("margin-top") or 
       element->contains_style("margin-right") or
       element->contains_style("margin-bottom") or
       element->contains_style("margin-left"))
   {
-    add_margin_side_style(box->outer_box, element);
+    add_margin_side_style(box->outer_box, element, config);
   }
   if (element->contains_style("padding"))
   {
-    add_padding_style(box->inner_box, element);
+    add_padding_style(box->inner_box, element, config);
   }
   if (element->contains_style("padding-top") or 
       element->contains_style("padding-right") or
       element->contains_style("padding-bottom") or
       element->contains_style("padding-left"))
   {
-    add_padding_side_style(box->inner_box, element);
+    add_padding_side_style(box->inner_box, element, config);
   }
   if (element->contains_style("background-color"))
   {
@@ -69,50 +62,58 @@ void apply_common_style(RenderBox* box, HTMLElement* element)
   }
 }
 
-RenderBox* render_body_tag(HTMLBodyElement* body_element)
+RenderBox* render_body_tag(HTMLBodyElement* body_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(body_element->element_value, Gtk::ORIENTATION_VERTICAL);
-  apply_common_style(box, body_element);
+  apply_common_style(box, body_element, config);
 
   return box;
 }
 
-RenderBox* render_div_tag(HTMLDivElement* div_element)
+RenderBox* render_div_tag(HTMLDivElement* div_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(div_element->element_value, Gtk::ORIENTATION_VERTICAL);
-  apply_common_style(box, div_element);
+  apply_common_style(box, div_element, config);
 
   return box;
 }
 
-RenderBox* render_p_tag(HTMLParagraphElement* p_element)
+RenderBox* render_p_tag(HTMLParagraphElement* p_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(p_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, p_element);
+  apply_common_style(box, p_element, config);
 
   return box;
 }
 
-RenderBox* render_span_tag(HTMLSpanElement* span_element)
+RenderBox* render_hx_tag(HTMLHeadingElement* h_element, const RenderConfig& config)
+{
+  RenderBox* box = new_render_box(h_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
+  apply_common_style(box, h_element, config);
+
+  return box;
+}
+
+RenderBox* render_span_tag(HTMLSpanElement* span_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(span_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, span_element);
+  apply_common_style(box, span_element, config);
 
   return box;
 }
 
-RenderBox* render_ol_tag(HTMLOrderedListElement* ol_element)
+RenderBox* render_ol_tag(HTMLOrderedListElement* ol_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(ol_element->element_value, Gtk::ORIENTATION_VERTICAL);
-  apply_common_style(box, ol_element);
+  apply_common_style(box, ol_element, config);
 
   return box;
 }
 
-RenderBox* render_ul_tag(HTMLUnorderedListElement* ul_element)
+RenderBox* render_ul_tag(HTMLUnorderedListElement* ul_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(ul_element->element_value, Gtk::ORIENTATION_VERTICAL);
-  apply_common_style(box, ul_element);
+  apply_common_style(box, ul_element, config);
 
   return box;
 }
@@ -120,7 +121,7 @@ RenderBox* render_ul_tag(HTMLUnorderedListElement* ul_element)
 RenderBox* render_li_tag(HTMLListItemElement* li_element, Gtk::Box* parent, RenderConfig& config)
 {
   RenderBox* box = new_render_box(li_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, li_element);
+  apply_common_style(box, li_element, config);
 
   if (not config.list)
   {
@@ -165,7 +166,12 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
   
   // TODO: This should be dynamic (dependant on style)
   Pango::AttrList attr_list = Pango::AttrList();
-  Pango::AttrInt font_size_attr = Pango::Attribute().create_attr_size_absolute(config.font_size.value*PANGO_SCALE*1.1); // TODO: Check SCALE value
+
+  // Font size
+  Pango::AttrInt font_size_attr = Pango::Attribute().create_attr_size_absolute(DEFAULT_FONT_SIZE*PANGO_SCALE*1.1);
+  font_size_attr = font_size_attr = Pango::Attribute().create_attr_size_absolute(config.font_size*PANGO_SCALE*1.1); // TODO: Check SCALE value
+
+  // Font family 
   Pango::AttrFontDesc font_description_attr = Pango::Attribute().create_attr_font_desc(Pango::FontDescription("Times New Roman"));
 
   attr_list.insert(font_size_attr);
@@ -189,6 +195,8 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config)
     return;
   }
 
+  set_render_config(config, element);
+
   // Renderizado para cada elemento
   RenderBox* rendered_element;
   if (element->element_value == "body")
@@ -196,42 +204,50 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config)
     HTMLBodyElement* body_element = dynamic_cast<HTMLBodyElement*>(element);
     if (body_element == nullptr) 
       return;
-    rendered_element = render_body_tag(body_element);
+    rendered_element = render_body_tag(body_element, config);
   }
   else if (element->element_value == "div")
   {
     HTMLDivElement* div_element = dynamic_cast<HTMLDivElement*>(element);
     if (div_element == nullptr)
       return;
-    rendered_element = render_div_tag(div_element);
+    rendered_element = render_div_tag(div_element, config);
   }
   else if (element->element_value == "p")
   {
     HTMLParagraphElement* p_element = dynamic_cast<HTMLParagraphElement*>(element);
     if (p_element == nullptr)
       return;
-    rendered_element = render_p_tag(p_element);
+    rendered_element = render_p_tag(p_element, config);
+  }
+  else if (element->element_value == "h1" or element->element_value == "h2" or element->element_value == "h3" or
+           element->element_value == "h4" or element->element_value == "h5" or element->element_value == "h6")
+  {
+    HTMLHeadingElement* h_element = dynamic_cast<HTMLHeadingElement*>(element);
+    if (h_element == nullptr)
+      return;
+    rendered_element = render_hx_tag(h_element, config);
   }
   else if (element->element_value == "span")
   {
     HTMLSpanElement* span_element = dynamic_cast<HTMLSpanElement*>(element);
     if (span_element == nullptr)
       return;
-    rendered_element = render_span_tag(span_element);
+    rendered_element = render_span_tag(span_element, config);
   }
   else if (element->element_value == "ol")
   {
     HTMLOrderedListElement* ol_element = dynamic_cast<HTMLOrderedListElement*>(element);
     if (ol_element == nullptr)
       return;
-    rendered_element = render_ol_tag(ol_element);
+    rendered_element = render_ol_tag(ol_element, config);
   }
   else if (element->element_value == "ul")
   {
     HTMLUnorderedListElement* ul_element = dynamic_cast<HTMLUnorderedListElement*>(element);
     if (ul_element == nullptr)
       return;
-    rendered_element = render_ul_tag(ul_element);
+    rendered_element = render_ul_tag(ul_element, config);
   }
   else if (element->element_value == "li")
   {
@@ -242,8 +258,6 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config)
   }
 
   parent->pack_start(*rendered_element->outer_box, false, false);
-
-  set_render_config(config, element);
 
   std::vector<HTMLElement*> children = element->child_elements();
   for (HTMLElement* child : children)
