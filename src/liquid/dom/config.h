@@ -18,7 +18,8 @@ struct RenderBox
 struct RenderConfig 
 {
   // Text
-  float font_size = 16.0;     // DEFAULT_FONT_SIZE: 16
+  float font_size = 16.0;                                   // Default font size: 16
+  Pango::Weight font_weight = Pango::Weight::WEIGHT_NORMAL; // Default font weight: Normal
 
   // Lists
   bool list;                  // If element is under a list

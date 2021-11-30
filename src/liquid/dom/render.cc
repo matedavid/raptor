@@ -16,6 +16,28 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
     else 
       config.font_size = parsed_font_size.value;
   }
+  if (element->contains_style("font-weight"))
+  {
+    std::string value = element->get_style_property_value("font-weight")[0];
+    // Check fi string is number
+    if (value.find_first_not_of("0123456789") == std::string::npos)
+    {
+      int font_weight_num;
+      std::stringstream ss;
+      ss << value;
+      ss >> font_weight_num;
+
+      config.font_weight = Pango::Weight(font_weight_num);
+    }
+    else
+    {
+      if (value == "normal") 
+        config.font_weight = Pango::Weight::WEIGHT_NORMAL;
+      else if (value == "bold")
+        config.font_weight = Pango::Weight::WEIGHT_BOLD;
+    }
+  }
+
 
   // Depending on element_value
   if (element->element_value == "ul")
@@ -164,18 +186,22 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
 	label->set_xalign(0.0f);
   label->set_padding(0, 0);
   
-  // TODO: This should be dynamic (dependant on style)
   Pango::AttrList attr_list = Pango::AttrList();
 
   // Font size
-  Pango::AttrInt font_size_attr = Pango::Attribute().create_attr_size_absolute(DEFAULT_FONT_SIZE*PANGO_SCALE*1.1);
-  font_size_attr = font_size_attr = Pango::Attribute().create_attr_size_absolute(config.font_size*PANGO_SCALE*1.1); // TODO: Check SCALE value
+  Pango::AttrInt font_size_attr = Pango::Attribute().create_attr_size_absolute(config.font_size*PANGO_SCALE*1.1); // TODO: Check SCALE value
+
+  // Font weight
+  Pango::AttrInt font_weight_attr = Pango::Attribute().create_attr_weight(config.font_weight);
 
   // Font family 
   Pango::AttrFontDesc font_description_attr = Pango::Attribute().create_attr_font_desc(Pango::FontDescription("Times New Roman"));
 
   attr_list.insert(font_size_attr);
   attr_list.insert(font_description_attr);
+  attr_list.insert(font_weight_attr);
+
+  // Add attribytes to label
   label->set_attributes(attr_list);
 
   return label;
