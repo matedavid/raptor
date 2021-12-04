@@ -65,10 +65,6 @@ static void add_margin_padding_side(Gtk::Box* box, const HTMLElement* element, c
 
   if (element->contains_style(top))
   {
-    if (element->element_value == "h6") {
-      std::cout << config.font_size << std::endl;
-    }
-    
     std::string str = element->get_style_property_value(top)[0];
     StyleNumber value = parse_number_value(str);
     //value.value *= PANGO_SCALE_X_SMALL;
