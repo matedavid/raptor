@@ -21,8 +21,9 @@ struct RenderConfig
   float font_size = 16.0;                                   // Default font size: 16
   Pango::Weight font_weight = Pango::Weight::WEIGHT_NORMAL; // Default font weight: Normal
 
-  Pango::Underline text_underline = Pango::Underline::UNDERLINE_NONE; // Default: No text-decoration (no underline neither overline)
+	Pango::Underline text_underline = Pango::Underline::UNDERLINE_NONE; // Default: No text-decoration (no underline neither overline)
   Pango::Overline text_overline   = Pango::Overline::OVERLINE_NONE;
+	Pango::Color text_decoration_color;
 
   // Lists
   bool list;                  // If element is under a list

@@ -39,13 +39,33 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
   }
   if (element->contains_style("text-decoration"))
   {
-    std::string value = element->get_style_property_value("text-decoration")[0];
+    std::vector<std::string> text_decoration_values = element->get_style_property_value("text-decoration");
+    std::string value = text_decoration_values[0];
     if (value == "none")
       config.text_underline = Pango::Underline::UNDERLINE_NONE;
     else if (value == "underline")
       config.text_underline = Pango::Underline::UNDERLINE_SINGLE;
     else if (value == "overline")
       config.text_overline  = Pango::Overline::OVERLINE_SINGLE;
+
+    if (text_decoration_values.size() > 1)
+    {
+      std::string color = text_decoration_values[1];
+      Gdk::RGBA rgba = Gdk::RGBA(color);
+
+      config.text_decoration_color.set_red(rgba.get_red_u());
+      config.text_decoration_color.set_green(rgba.get_green_u());
+      config.text_decoration_color.set_blue(rgba.get_blue_u());
+    }
+  }
+  if (element->contains_style("text-decoration-color"))
+  {
+    std::string value = element->get_style_property_value("text-decoration-color")[0];
+    Gdk::RGBA rgba = Gdk::RGBA(value);
+
+    config.text_decoration_color.set_red(rgba.get_red_u());
+    config.text_decoration_color.set_green(rgba.get_green_u());
+    config.text_decoration_color.set_blue(rgba.get_blue_u());
   }
 
   // Depending on element_value
@@ -221,16 +241,36 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
 
   // Text decoration
   Pango::AttrInt text_decoration_underline_attr = Pango::Attribute::create_attr_underline(config.text_underline);
-  Pango::AttrInt text_decoration_overline_attr  = Pango::Attribute::create_attr_overline(config.text_overline);
+	Pango::AttrInt text_decoration_overline_attr  = Pango::Attribute::create_attr_overline(config.text_overline);
+
+  guint16 r = config.text_decoration_color.get_red();
+  guint16 g = config.text_decoration_color.get_green();
+  guint16 b = config.text_decoration_color.get_blue();
+
+  Pango::AttrColor text_decoration_underline_color = Pango::Attribute::create_attr_underline_color(
+    config.text_decoration_color.get_red(),
+    config.text_decoration_color.get_green(),
+    config.text_decoration_color.get_blue()
+  );
+  Pango::AttrColor text_decoration_overline_color = Pango::Attribute::create_attr_overline_color(
+    config.text_decoration_color.get_red(),
+    config.text_decoration_color.get_green(),
+    config.text_decoration_color.get_blue()
+  );
 
   attr_list.insert(font_size_attr);
   attr_list.insert(font_weight_attr);
   attr_list.insert(font_description_attr);
-
   if (config.text_underline != Pango::Underline::UNDERLINE_NONE)
+  {
     attr_list.insert(text_decoration_underline_attr);
-  if (config.text_overline != Pango::Overline::OVERLINE_NONE)
+    attr_list.insert(text_decoration_underline_color);
+  }
+  else if (config.text_overline != Pango::Overline::OVERLINE_NONE)
+  {
     attr_list.insert(text_decoration_overline_attr);
+    attr_list.insert(text_decoration_overline_color);
+  }
 
   // Add attribytes to label
   label->set_attributes(attr_list);
