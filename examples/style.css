@@ -3,3 +3,7 @@ li {
   text-decoration: overline;
   text-decoration-color: #0000FF;
 }
+
+img {
+  margin-left: 50px;
+}

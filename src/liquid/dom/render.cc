@@ -249,12 +249,12 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
   // Font size
   Pango::AttrInt font_size_attr = Pango::Attribute::create_attr_size_absolute(config.font_size*PANGO_SCALE*1.1); // TODO: Check SCALE value
 
-  // Font weight
-  Pango::AttrInt font_weight_attr = Pango::Attribute::create_attr_weight(config.font_weight);
-
   // Font family 
   // TODO: Make this dependant on RenderConfig
   Pango::AttrFontDesc font_description_attr = Pango::Attribute::create_attr_font_desc(Pango::FontDescription("Times New Roman"));
+
+  // Font weight
+  Pango::AttrInt font_weight_attr = Pango::Attribute::create_attr_weight(config.font_weight);
 
   // Text decoration
   Pango::AttrInt text_decoration_underline_attr = Pango::Attribute::create_attr_underline(config.text_underline);
@@ -272,8 +272,8 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
   );
 
   attr_list.insert(font_size_attr);
-  attr_list.insert(font_weight_attr);
   attr_list.insert(font_description_attr);
+  attr_list.insert(font_weight_attr);
   if (config.text_underline != Pango::Underline::UNDERLINE_NONE)
   {
     attr_list.insert(text_decoration_underline_attr);
