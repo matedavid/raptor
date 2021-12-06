@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <filesystem>
 #include <stack>
 
 #include "liquid/html/debug.h"
@@ -56,6 +57,9 @@ private:
 		AfterAfterFrameset
   };
 
+  // Path to the html document being parsed, used for relative file references
+  std::filesystem::path m_document_path;
+
   // The current insertion mode of the parser
   InsertionMode current_insertion_mode;
   
@@ -91,7 +95,7 @@ private:
 public:
 	HTMLParser();
 
-	HTMLHtmlElement* parse(Tokenizer& tokenizer);
+	HTMLHtmlElement* parse(Tokenizer& tokenizer, const std::string& document_path);
 };
 
 }

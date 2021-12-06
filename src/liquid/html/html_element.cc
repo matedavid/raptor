@@ -95,7 +95,7 @@ HTMLElement::HTMLElement(HTMLElement* parent)
 {
 }
 
-HTMLElement::HTMLElement(const Token& token, HTMLElement* parent)
+HTMLElement::HTMLElement(const Token& token, HTMLElement* parent, const std::filesystem::path& document_path)
 	: parent(parent)
 {
 	element_value = token.value;
@@ -106,6 +106,12 @@ HTMLElement::HTMLElement(const Token& token, HTMLElement* parent)
 
     Attribute* attribute = new Attribute(attr.first, attr.second);
     attributes.insert(std::make_pair(attr.first, attribute));
+
+		if (attribute->name() == "src" and attribute->value()[0] != '/')
+		{
+			std::string absolute_path = (document_path/attribute->value()).string();
+			attribute->set_value(absolute_path);
+		}
 
 		if (attribute->name() == "class")
 			class_name = attribute->value();

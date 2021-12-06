@@ -33,7 +33,7 @@ void HTMLDocument::from_string(const std::string& content)
 	tokenizer.tokenize(content);
 
 	HTMLParser parser = HTMLParser();
-	html = parser.parse(tokenizer);
+	html = parser.parse(tokenizer, document_path);
 
 	title = "New Tab";
 	std::vector<HTMLElement*> title_elements = html->get_elements_by_tag_name("title");
@@ -99,7 +99,7 @@ void HTMLDocument::from_file(const std::filesystem::path& file_path)
 		exit(0);
 	}
 	std::string content( (std::istreambuf_iterator<char>(file) ),
-											 (std	::istreambuf_iterator<char>()     ));
+											 (std	::istreambuf_iterator<char>()   ));
 
 	std::string final_content = "";
 	for (int i = 0; i < content.length(); ++i)

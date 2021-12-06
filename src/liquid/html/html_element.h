@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <filesystem>
 
 #include "liquid/html/token.h"
 #include "liquid/html/attribute.h"
@@ -47,7 +48,7 @@ private:
 public:
 	HTMLElement();
 	HTMLElement(HTMLElement* parent);
-	HTMLElement(const Token& token, HTMLElement* parent);
+	HTMLElement(const Token& token, HTMLElement* parent, const std::filesystem::path& document_path);
 
 	HTMLElement* parent_element();
 	std::vector<HTMLElement*> child_elements();

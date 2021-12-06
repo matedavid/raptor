@@ -86,7 +86,7 @@ void HTMLParser::before_html_mode()
 		return;
 	else if (token.type == TokenType::StartTag and token.value == "html")
 	{
-		HTMLHtmlElement* html_element = new HTMLHtmlElement(token, nullptr);
+		HTMLHtmlElement* html_element = new HTMLHtmlElement(token, nullptr, m_document_path);
 		html = html_element;
 		open_elements.push(html_element);
 
@@ -134,7 +134,7 @@ void HTMLParser::before_head_mode()
 	}
 	else if (token.type == TokenType::StartTag and token.value == "head")
 	{
-		HTMLHeadElement* head_element = new HTMLHeadElement(token, html);
+		HTMLHeadElement* head_element = new HTMLHeadElement(token, html, m_document_path);
 		html->insert_child(head_element);
 
     open_elements.push(head_element);
@@ -183,7 +183,7 @@ void HTMLParser::in_head_mode()
   }
   else if ( token.type == TokenType::StartTag and (token.value == "base" or token.value == "basefont" or token.value == "bgsound" or token.value == "link") )
   {
-		HTMLElement* element = new HTMLElement(token, nullptr);
+		HTMLElement* element = new HTMLElement(token, nullptr, m_document_path);
 		element->element_value = token.value;
 
 		HTMLElement* insert_element = open_elements.top();
@@ -199,7 +199,7 @@ void HTMLParser::in_head_mode()
   }
   else if (token.type == TokenType::StartTag and token.value == "title")
   {
-    HTMLTitleElement* title_element = new HTMLTitleElement(token, nullptr);
+    HTMLTitleElement* title_element = new HTMLTitleElement(token, nullptr, m_document_path);
 		//document.head->insert_child(title_element);
 		HTMLElement* insert_element = open_elements.top();
 		insert_element->insert_child(title_element);
@@ -258,7 +258,7 @@ void HTMLParser::after_head_mode()
 	}
 	else if (token.type == TokenType::StartTag and token.value == "body")
 	{
-		HTMLBodyElement* body_element = new HTMLBodyElement(token, html);
+		HTMLBodyElement* body_element = new HTMLBodyElement(token, html, m_document_path);
 		html->insert_child(body_element);
 		//document.body = body_element;
 
@@ -382,15 +382,15 @@ void HTMLParser::in_body_mode()
 	else if (token.type == TokenType::StartTag)
 	{
 		/*
-			HTMLElement* new_element = new HTMLElement(token, nullptr);
+			HTMLElement* new_element = new HTMLElement(token, nullptr, m_document_path);
 		*/
 		HTMLElement* new_element;
 		if (token.value == "div")
-			new_element = new HTMLDivElement(token, nullptr);
+			new_element = new HTMLDivElement(token, nullptr, m_document_path);
 		else if (token.value == "p")
-			new_element = new HTMLParagraphElement(token, nullptr);
+			new_element = new HTMLParagraphElement(token, nullptr, m_document_path);
 		else if (token.value == "span")
-			new_element = new HTMLSpanElement(token, nullptr);
+			new_element = new HTMLSpanElement(token, nullptr, m_document_path);
 		else if (token.value == "h1" or
 						 token.value == "h2" or
 						 token.value == "h3" or
@@ -398,7 +398,7 @@ void HTMLParser::in_body_mode()
 						 token.value == "h5" or
 						 token.value == "h6") 
 		{
-			HTMLHeadingElement* heading = new HTMLHeadingElement(token, nullptr);
+			HTMLHeadingElement* heading = new HTMLHeadingElement(token, nullptr, m_document_path);
 			switch (token.value[1])
 			{
 				case '1':
@@ -417,17 +417,17 @@ void HTMLParser::in_body_mode()
 			new_element = heading;
 		} 
 		else if (token.value == "a")
-			new_element = new HTMLAnchorElement(token, nullptr);
+			new_element = new HTMLAnchorElement(token, nullptr, m_document_path);
 		else if (token.value == "ol")
-			new_element = new HTMLOrderedListElement(token, nullptr);
+			new_element = new HTMLOrderedListElement(token, nullptr, m_document_path);
 		else if (token.value == "ul")
-			new_element = new HTMLUnorderedListElement(token, nullptr);
+			new_element = new HTMLUnorderedListElement(token, nullptr, m_document_path);
 		else if (token.value == "li")
-			new_element = new HTMLListItemElement(token, nullptr);
+			new_element = new HTMLListItemElement(token, nullptr, m_document_path);
 		else if (token.value == "img")
-			new_element = new HTMLImageElement(token, nullptr);
+			new_element = new HTMLImageElement(token, nullptr, m_document_path);
 		else 
-			new_element = new HTMLElement(token, nullptr);
+			new_element = new HTMLElement(token, nullptr, m_document_path);
 
 		HTMLElement* insert_element = open_elements.top();
 		insert_element->insert_child(new_element);
@@ -498,8 +498,11 @@ std::string trim(const std::string &s) {
 }
 // ================
 
-HTMLHtmlElement* HTMLParser::parse(Tokenizer& tokenizer)
+HTMLHtmlElement* HTMLParser::parse(Tokenizer& tokenizer, const std::string& document_path)
 {
+	m_document_path = std::filesystem::path(document_path);
+	m_document_path.remove_filename();
+
   m_tokenizer = tokenizer;
 	reconsume_token = false;
   current_insertion_mode = InsertionMode::Initial;

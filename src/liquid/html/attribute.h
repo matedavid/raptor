@@ -14,6 +14,9 @@ public:
 	Attribute();
 	Attribute(const std::string& name, const std::string& value);
 
+	void set_name(const std::string& name);
+	void set_value(const std::string& value);
+
 	std::string name() const;
 	std::string value() const;
 };
