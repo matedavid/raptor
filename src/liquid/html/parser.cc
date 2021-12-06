@@ -398,7 +398,7 @@ void HTMLParser::in_body_mode()
 						 token.value == "h5" or
 						 token.value == "h6") 
 		{
-			auto heading = new HTMLHeadingElement(token, nullptr);
+			HTMLHeadingElement* heading = new HTMLHeadingElement(token, nullptr);
 			switch (token.value[1])
 			{
 				case '1':

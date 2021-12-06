@@ -24,7 +24,8 @@ RenderBox* render_hx_tag(HTMLHeadingElement* h_element, const RenderConfig& conf
 RenderBox* render_span_tag(HTMLSpanElement* span_element, const RenderConfig& config);
 RenderBox* render_ol_tag(HTMLOrderedListElement* ol_element, const RenderConfig& config);
 RenderBox* render_ul_tag(HTMLUnorderedListElement* ul_element, const RenderConfig& config);
-RenderBox* render_li_tag(HTMLListItemElement* li_element, Gtk::Box* parent, RenderConfig* config);
+RenderBox* render_li_tag(HTMLListItemElement* li_element, Gtk::Box* parent, RenderConfig& config);
+RenderBox* render_img_tag(HTMLImageElement* img_element, Gtk::Box* parent, const RenderConfig& config);
 
 Gtk::Label* render_text(Text* text, RenderConfig& config);
 

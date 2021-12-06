@@ -194,7 +194,7 @@ RenderBox* render_li_tag(HTMLListItemElement* li_element, Gtk::Box* parent, Rend
 
   if (config.list_type == 0)
   {
-    Gtk::Label* label = Gtk::make_managed<Gtk::Label>("* ");
+    Gtk::Label* label = Gtk::make_managed<Gtk::Label>("· "); // TODO: Fix this, use something different to "*" and push it to the left a bit, and match font-size to actual text
     box->inner_box->pack_start(*label, false, false);
   }
   else if (config.list_type == 1)
@@ -214,6 +214,23 @@ RenderBox* render_li_tag(HTMLListItemElement* li_element, Gtk::Box* parent, Rend
     Gtk::Label* label = Gtk::make_managed<Gtk::Label>(num_marker);
     box->inner_box->pack_start(*label, false, false);
   }
+
+  return box;
+}
+
+RenderBox* render_img_tag(HTMLImageElement* img_element, Gtk::Box* parent, const RenderConfig& config)
+{
+  RenderBox* box = new_render_box(img_element->element_value, Gtk::ORIENTATION_VERTICAL);
+  apply_common_style(box, img_element, config);
+
+  std::string src = img_element->src();
+  Glib::RefPtr<Gdk::Pixbuf> pixbuf_img = Gdk::Pixbuf::create_from_file(src);
+
+  Gtk::Image* image = Gtk::make_managed<Gtk::Image>(pixbuf_img);
+  image->set_halign(Gtk::Align::ALIGN_START);
+  image->set_valign(Gtk::Align::ALIGN_START);
+
+  box->inner_box->pack_start(*image, false, false);
 
   return box;
 }
@@ -242,10 +259,6 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
   // Text decoration
   Pango::AttrInt text_decoration_underline_attr = Pango::Attribute::create_attr_underline(config.text_underline);
 	Pango::AttrInt text_decoration_overline_attr  = Pango::Attribute::create_attr_overline(config.text_overline);
-
-  guint16 r = config.text_decoration_color.get_red();
-  guint16 g = config.text_decoration_color.get_green();
-  guint16 b = config.text_decoration_color.get_blue();
 
   Pango::AttrColor text_decoration_underline_color = Pango::Attribute::create_attr_underline_color(
     config.text_decoration_color.get_red(),
@@ -359,6 +372,13 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config)
     if (li_element == nullptr)
       return;
     rendered_element = render_li_tag(li_element, parent, config);
+  }
+  else if (element->element_value == "img")
+  {
+    HTMLImageElement* img_element = dynamic_cast<HTMLImageElement*>(element);
+    if (img_element == nullptr)
+      return;
+    rendered_element = render_img_tag(img_element, parent, config);
   }
 
   parent->pack_start(*rendered_element->outer_box, false, false);

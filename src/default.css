@@ -99,3 +99,7 @@ ol {
   margin-right: 0;
   padding-left: 40px;
 }
+
+img {
+  display: inline-block;
+}
