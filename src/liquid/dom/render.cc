@@ -285,7 +285,7 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
     attr_list.insert(text_decoration_overline_color);
   }
 
-  // Add attribytes to label
+  // Add attributes to label
   label->set_attributes(attr_list);
 
   return label;
@@ -293,7 +293,7 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
 
 void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config)
 {
-  // Caso especial donde elemento es texto
+  // Special case where element is text
   if (element->type() == HTMLElementType::TextType)
   {
     Text* text = dynamic_cast<Text*>(element);
@@ -307,7 +307,7 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config)
 
   set_render_config(config, element);
 
-  // Renderizado para cada elemento
+  // Renderer for every element
   RenderBox* rendered_element;
   if (element->element_value == "body")
   {
