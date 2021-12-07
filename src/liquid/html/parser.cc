@@ -431,7 +431,9 @@ void HTMLParser::in_body_mode()
 
 		HTMLElement* insert_element = open_elements.top();
 		insert_element->insert_child(new_element);
-		open_elements.push(new_element);
+
+		if (not token.self_closing)
+			open_elements.push(new_element);
 	}
 
 	else if (token.type == TokenType::EndTag and open_elements.top()->element_value == token.value)
