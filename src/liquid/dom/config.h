@@ -18,8 +18,10 @@ struct RenderBox
 struct RenderConfig 
 {
   // Text
-  float font_size = 16.0;                                   // Default font size: 16
-  Pango::Weight font_weight = Pango::Weight::WEIGHT_NORMAL; // Default font weight: Normal
+  float font_size = 14.0;                                   // Default font size: 14
+  std::string font_family = "Times New Roman";              // Default font family: Timew New Roman
+  Pango::Weight font_weight = Pango::Weight::WEIGHT_NORMAL; // Default font weight: normal
+  Pango::Style font_style = Pango::Style::STYLE_NORMAL;     // Default font style: normal
 
 	Pango::Underline text_underline = Pango::Underline::UNDERLINE_NONE; // Default: No text-decoration (no underline neither overline)
   Pango::Overline text_overline   = Pango::Overline::OVERLINE_NONE;

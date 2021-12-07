@@ -17,6 +17,18 @@ p {
   margin-right: 0;
 }
 
+em {
+  font-style: italic;
+}
+
+i {
+  font-style: italic;
+}
+
+strong {
+  font-weight: bold;	
+}
+
 a {
   text-decoration: underline blue;
   color: blue;

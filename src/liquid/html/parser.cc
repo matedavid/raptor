@@ -416,6 +416,12 @@ void HTMLParser::in_body_mode()
 			}
 			new_element = heading;
 		} 
+		else if (token.value == "em")
+			new_element = new HTMLEmphasisElement(token, nullptr, m_document_path);
+		else if (token.value == "i")
+			new_element = new HTMLItalicizedElement(token, nullptr, m_document_path);
+		else if (token.value == "strong")
+			new_element = new HTMLStrongElement(token, nullptr, m_document_path);
 		else if (token.value == "a")
 			new_element = new HTMLAnchorElement(token, nullptr, m_document_path);
 		else if (token.value == "ol")

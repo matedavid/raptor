@@ -8,6 +8,11 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
     return;
 
   // Common style properties
+  if (element->contains_style("font-family"))
+  {
+    std::string value = element->get_style_property_value("font-family")[0];
+    config.font_family = value;
+  }
   if (element->contains_style("font-size"))
   {
     StyleNumber parsed_font_size = parse_number_value(element->get_style_property_value("font-size")[0]);
@@ -36,6 +41,16 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
       else if (value == "bold")
         config.font_weight = Pango::Weight::WEIGHT_BOLD;
     }
+  }
+  if (element->contains_style("font-style"))
+  {
+    std::string value = element->get_style_property_value("font-style")[0];
+    if (value == "normal")
+      config.font_style = Pango::Style::STYLE_NORMAL;
+    else if (value == "italic")
+      config.font_style = Pango::Style::STYLE_ITALIC;
+    else if (value == "oblique")
+      config.font_style = Pango::Style::STYLE_OBLIQUE;
   }
   if (element->contains_style("text-decoration"))
   {
@@ -189,6 +204,30 @@ RenderBox* render_span_tag(HTMLSpanElement* span_element, const RenderConfig& co
   return box;
 }
 
+RenderBox* render_em_tag(HTMLEmphasisElement* em_element, const RenderConfig& config)
+{
+  RenderBox* box = new_render_box(em_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
+  apply_common_style(box, em_element, config);
+
+  return box;
+}
+
+RenderBox* render_i_tag(HTMLItalicizedElement* i_element, const RenderConfig& config)
+{
+  RenderBox* box = new_render_box(i_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
+  apply_common_style(box, i_element, config);
+
+  return box;
+}
+
+RenderBox* render_strong_tag(HTMLStrongElement* strong_element, const RenderConfig& config)
+{
+  RenderBox* box = new_render_box(strong_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
+  apply_common_style(box, strong_element, config);
+
+  return box;
+}
+
 RenderBox* render_ol_tag(HTMLOrderedListElement* ol_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(ol_element->element_value, Gtk::ORIENTATION_VERTICAL);
@@ -270,15 +309,14 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
   
   Pango::AttrList attr_list = Pango::AttrList();
 
-  // Font size
-  Pango::AttrInt font_size_attr = Pango::Attribute::create_attr_size_absolute(config.font_size*PANGO_SCALE*1.1); // TODO: Check SCALE value
-
-  // Font family 
-  // TODO: Make this dependant on RenderConfig
-  Pango::AttrFontDesc font_description_attr = Pango::Attribute::create_attr_font_desc(Pango::FontDescription("Times New Roman"));
-
-  // Font weight
-  Pango::AttrInt font_weight_attr = Pango::Attribute::create_attr_weight(config.font_weight);
+  // Font Description
+  Pango::FontDescription font_description = Pango::FontDescription();
+  font_description.set_size(config.font_size*PANGO_SCALE); // font-size
+  font_description.set_family(config.font_family);         // font-family
+  font_description.set_weight(config.font_weight);         // font-weight
+  font_description.set_style(config.font_style);           // font-style
+  
+  Pango::AttrFontDesc font_description_attr = Pango::Attribute::create_attr_font_desc(font_description);
 
   // Text decoration
   Pango::AttrInt text_decoration_underline_attr = Pango::Attribute::create_attr_underline(config.text_underline);
@@ -295,9 +333,7 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
     config.text_decoration_color.get_blue()
   );
 
-  attr_list.insert(font_size_attr);
   attr_list.insert(font_description_attr);
-  attr_list.insert(font_weight_attr);
   if (config.text_underline != Pango::Underline::UNDERLINE_NONE)
   {
     attr_list.insert(text_decoration_underline_attr);
@@ -375,6 +411,27 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config)
     if (span_element == nullptr)
       return;
     rendered_element = render_span_tag(span_element, config);
+  }
+  else if (element->element_value == "em")
+  {
+    HTMLEmphasisElement* em_element = dynamic_cast<HTMLEmphasisElement*>(element);
+    if (em_element == nullptr)
+      return;
+    rendered_element = render_em_tag(em_element, config);
+  }
+  else if (element->element_value == "i")
+  {
+    HTMLItalicizedElement* i_element = dynamic_cast<HTMLItalicizedElement*>(element);
+    if (i_element == nullptr)
+      return;
+    rendered_element = render_i_tag(i_element, config);
+  }
+  else if (element->element_value == "strong")
+  {
+    HTMLStrongElement* strong_element = dynamic_cast<HTMLStrongElement*>(element);
+    if (strong_element == nullptr)
+      return;
+    rendered_element = render_strong_tag(strong_element, config);
   }
   else if (element->element_value == "ol")
   {
