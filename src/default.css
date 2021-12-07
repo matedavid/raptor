@@ -18,7 +18,8 @@ p {
 }
 
 a {
-  text-decoration: underline;
+  text-decoration: underline blue;
+  color: blue;
 }
 
 h1 {

@@ -30,5 +30,5 @@ void Content::render_from_file(const std::string& path)
 	show_all_children();
 
 	// DEBUG
-	//liquid::print_html_element(document.body, 0);
+	liquid::print_html_element(document.body, 0);
 }

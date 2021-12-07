@@ -143,8 +143,32 @@ void anchor_clicked()
 
 RenderBox* render_a_tag(HTMLAnchorElement* a_element, const RenderConfig& config)
 {
-  RenderBox* box = new_render_box(a_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
+  Gtk::Box* outer_box = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_HORIZONTAL);
+  Gtk::Box* inner_box = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_HORIZONTAL);
+
+  Gtk::LinkButton* link_button = Gtk::make_managed<Gtk::LinkButton>();
+  outer_box->pack_start(*link_button);
+  link_button->add(*inner_box);
+
+  outer_box->show();
+  link_button->show();
+  inner_box->show();
+
+  RenderBox* box = new RenderBox{
+    outer_box: outer_box,
+    inner_box: inner_box,
+    element_value: a_element->element_value
+  };
   apply_common_style(box, a_element, config);
+
+  if (a_element->contains_style("color"))
+  {
+    std::string color_value = a_element->get_style_property_value("color")[0];
+    Gdk::RGBA color = Gdk::RGBA(color_value);
+    link_button->override_color(color);
+  }
+  link_button->set_use_underline(false);
+  link_button->signal_clicked().connect([] { anchor_clicked(); });
 
   return box;
 }
