@@ -184,10 +184,7 @@ RenderBox* render_a_tag(HTMLAnchorElement* a_element, const RenderConfig& config
   }
 
   if (a_element->contains_attribute("href"))
-  {
-    std::cout << "Contains href: " << a_element->get_attribute("href")->value() << std::endl;
     link_button->set_uri(a_element->get_attribute("href")->value());
-  }
   else
     link_button->set_uri("");
 

@@ -12,6 +12,7 @@ class Content : public Gtk::ScrolledWindow
 {
 protected:
 	Gtk::Box m_content;
+	std::string url;
 
 public:
 	std::string title;

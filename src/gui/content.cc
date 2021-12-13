@@ -2,7 +2,19 @@
 
 void Content::anchor_clicked(Gtk::LinkButton* self)
 {
-	std::cout << "Anchor clicked with href: " << self->get_uri() << std::endl;
+	std::string uri = self->get_uri();
+	if (uri[0] == '/')
+	{
+		this->render_from_file(uri);
+	}
+	else 
+	{
+		std::cout << uri << std::endl;
+		std::filesystem::path relative_path = std::filesystem::path(this->url).parent_path();
+		relative_path /= uri;
+
+		this->render_from_file(relative_path.c_str());
+	}
 }
 
 Content::Content()
@@ -25,9 +37,11 @@ void Content::render_from_file(const std::string &path)
 	for (auto child : m_content.get_children())
 		m_content.remove(*child);
 
+
 	liquid::HTMLDocument document;
 	document.from_file(path);
 	title = document.title;
+	url = path;
 
 	liquid::RenderConfig config;
 	liquid::RenderInfo info;
@@ -35,9 +49,7 @@ void Content::render_from_file(const std::string &path)
 
 	// Apply anchor element clicked function to every <a> element in the content tree
 	for (Gtk::LinkButton* link_button : info.anchor_elements)
-	{
 		link_button->signal_clicked().connect(sigc::bind<Gtk::LinkButton*>(sigc::mem_fun(*this, &Content::anchor_clicked), link_button));
-	}
 
 	m_content.show();
 	show_all_children();
