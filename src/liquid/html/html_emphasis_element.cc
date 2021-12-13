@@ -2,7 +2,7 @@
 
 namespace liquid {
 
-HTMLAnchorElement::HTMLAnchorElement()
+HTMLEmphasisElement::HTMLEmphasisElement()
 {
 }
 

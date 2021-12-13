@@ -156,7 +156,7 @@ void anchor_clicked()
   std::cout << "Anchor clicked..." << std::endl;
 }
 
-RenderBox* render_a_tag(HTMLAnchorElement* a_element, const RenderConfig& config)
+RenderBox* render_a_tag(HTMLAnchorElement* a_element, const RenderConfig& config, RenderInfo& info)
 {
   Gtk::Box* outer_box = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_HORIZONTAL);
   Gtk::Box* inner_box = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_HORIZONTAL);
@@ -182,8 +182,17 @@ RenderBox* render_a_tag(HTMLAnchorElement* a_element, const RenderConfig& config
     Gdk::RGBA color = Gdk::RGBA(color_value);
     link_button->override_color(color);
   }
+
+  if (a_element->contains_attribute("href"))
+  {
+    std::cout << "Contains href: " << a_element->get_attribute("href")->value() << std::endl;
+    link_button->set_uri(a_element->get_attribute("href")->value());
+  }
+  else
+    link_button->set_uri("");
+
   link_button->set_use_underline(false);
-  link_button->signal_clicked().connect([] { anchor_clicked(); });
+  info.anchor_elements.push_back(link_button);
 
   return box;
 }
@@ -351,7 +360,7 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
   return label;
 }
 
-void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config)
+void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config, RenderInfo& info)
 {
   // Special case where element is text
   if (element->type() == HTMLElementType::TextType)
@@ -395,7 +404,7 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config)
     HTMLAnchorElement* a_element = dynamic_cast<HTMLAnchorElement*>(element);
     if (a_element == nullptr)
       return;
-    rendered_element = render_a_tag(a_element, config);
+    rendered_element = render_a_tag(a_element, config, info);
   }
   else if (element->element_value == "h1" or element->element_value == "h2" or element->element_value == "h3" or
            element->element_value == "h4" or element->element_value == "h5" or element->element_value == "h6")
@@ -467,7 +476,7 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config)
   std::vector<HTMLElement*> children = element->child_elements();
   for (HTMLElement* child : children)
   {
-    render(child, rendered_element->inner_box, config);
+    render(child, rendered_element->inner_box, config, info);
   }
 }
 

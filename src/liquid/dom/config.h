@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include <utility>
+
 #include <gtkmm.h>
 
 #include "liquid/html/html_element.h"
@@ -15,10 +18,12 @@ struct RenderBox
   std::string element_value;
 };
 
+RenderBox* new_render_box(const std::string& element_value, Gtk::Orientation orientation);
+
 struct RenderConfig 
 {
   // Text
-  float font_size = 14.0;                                   // Default font size: 14
+  float font_size = 12.0;                                   // Default font size: 14
   std::string font_family = "Times New Roman";              // Default font family: Timew New Roman
   Pango::Weight font_weight = Pango::Weight::WEIGHT_NORMAL; // Default font weight: normal
   Pango::Style font_style = Pango::Style::STYLE_NORMAL;     // Default font style: normal
@@ -33,6 +38,10 @@ struct RenderConfig
   int unordered_list_marker;  // TODO: Not implemented, should decide how to represent markers
 };
 
-RenderBox* new_render_box(const std::string& element_value, Gtk::Orientation orientation);
+struct RenderInfo 
+{
+  // List of all rendered anchor elements, with a pointer to the widget and a string with the target
+  std::vector<Gtk::LinkButton*> anchor_elements;
+};
 
 }

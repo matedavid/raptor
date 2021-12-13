@@ -19,7 +19,7 @@ static void apply_common_style(RenderBox* box, HTMLElement* element, const Rende
 RenderBox* render_body_tag(HTMLBodyElement* body_element, Gtk::Box* parent, const RenderConfig& config);
 RenderBox* render_div_tag(HTMLDivElement* div_element, const RenderConfig& config);
 RenderBox* render_p_tag(HTMLParagraphElement* p_element, const RenderConfig& config);
-RenderBox* render_a_tag(HTMLAnchorElement* a_element, const RenderConfig& config);
+RenderBox* render_a_tag(HTMLAnchorElement* a_element, const RenderConfig& config, RenderInfo& info);
 RenderBox* render_hx_tag(HTMLHeadingElement* h_element, const RenderConfig& config);
 RenderBox* render_span_tag(HTMLSpanElement* span_element, const RenderConfig& config);
 RenderBox* render_em_tag(HTMLEmphasisElement* em_element, const RenderConfig& config);
@@ -32,6 +32,6 @@ RenderBox* render_img_tag(HTMLImageElement* img_element, Gtk::Box* parent, const
 
 Gtk::Label* render_text(Text* text, RenderConfig& config);
 
-void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config);
+void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config, RenderInfo& info);
 
 }

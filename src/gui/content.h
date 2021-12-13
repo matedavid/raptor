@@ -16,6 +16,9 @@ protected:
 public:
 	std::string title;
 
+private:
+	void anchor_clicked(Gtk::LinkButton* self);
+
 public:
 	Content();
 
