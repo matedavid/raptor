@@ -13,6 +13,7 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
     std::string value = element->get_style_property_value("font-family")[0];
     config.font_family = value;
   }
+
   if (element->contains_style("font-size"))
   {
     StyleNumber parsed_font_size = parse_number_value(element->get_style_property_value("font-size")[0]);
@@ -21,6 +22,7 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
     else 
       config.font_size = parsed_font_size.value;
   }
+
   if (element->contains_style("font-weight"))
   {
     std::string value = element->get_style_property_value("font-weight")[0];
@@ -42,6 +44,7 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
         config.font_weight = Pango::Weight::WEIGHT_BOLD;
     }
   }
+
   if (element->contains_style("font-style"))
   {
     std::string value = element->get_style_property_value("font-style")[0];
@@ -52,6 +55,7 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
     else if (value == "oblique")
       config.font_style = Pango::Style::STYLE_OBLIQUE;
   }
+
   if (element->contains_style("text-decoration"))
   {
     std::vector<std::string> text_decoration_values = element->get_style_property_value("text-decoration");
@@ -73,6 +77,7 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
       config.text_decoration_color.set_blue(rgba.get_blue_u());
     }
   }
+
   if (element->contains_style("text-decoration-color"))
   {
     std::string value = element->get_style_property_value("text-decoration-color")[0];

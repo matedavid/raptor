@@ -9,7 +9,6 @@ void Content::anchor_clicked(Gtk::LinkButton* self)
 	}
 	else 
 	{
-		std::cout << uri << std::endl;
 		std::filesystem::path relative_path = std::filesystem::path(this->url).parent_path();
 		relative_path /= uri;
 
