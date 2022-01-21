@@ -217,6 +217,79 @@ void HTMLElement::set_style_property(const std::string& property, const std::str
 
 void HTMLElement::set_style_property(const std::string& property, const std::vector<std::string>& value)
 {
+	// Background
+	if (property == "background")
+	{
+
+	}
+	else if (property == "background-color")
+	{
+
+	}
+	else if (property == "background-image")
+	{
+
+	}
+	else if (property == "background-position")
+	{
+
+	}
+	else if (property == "background-size")
+	{
+
+	}
+	else if (property == "background-repeat")
+	{
+
+	}
+	else if (property == "background-origin")
+	{
+
+	}
+	else if (property == "background-clip")
+	{
+
+	}
+	else if (property == "background-attachment")
+	{
+
+	}
+
+	// Margin
+	else if (property == "margin")
+	{
+
+	}
+	else if (property == "margin-top")
+	{
+		
+	}
+	else if (property == "margin-bottom")
+	{
+		
+	}
+	else if (property == "margin-left")
+	{
+
+	}
+	
+	// Padding 
+	else if (property == "padding")
+	{
+
+	}
+	else if (property == "padding-top")
+	{
+		
+	}
+	else if (property == "padding-bottom")
+	{
+		
+	}
+	else if (property == "padding-left")
+	{
+
+	}
 
 	/*
 	if (contains_style(property))

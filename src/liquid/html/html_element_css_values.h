@@ -21,4 +21,10 @@ struct HTMLElementCSSValues
   float margin_bottom = 0.0;
   float margin_right  = 0.0;
   float margin_left   = 0.0;
+
+  // Padding
+  float padding_top    = 0.0;
+  float padding_bottom = 0.0;
+  float padding_right  = 0.0;
+  float padding_left   = 0.0;
 };
