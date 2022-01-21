@@ -3,6 +3,7 @@
 
 #include "browser.h"
 
+/*
 int main(int argc, char* argv[])
 {
 	// Creates Gtk app
@@ -12,4 +13,4 @@ int main(int argc, char* argv[])
 	auto window = Browser();
 
 	return app->run(window, argc, argv);
-}
+*/

@@ -20,10 +20,7 @@ void HTMLDocument::add_css_block(const CSSBlock& css_block)
 			target_elements = html->get_elements_by_tag_name(selector.value);
 
 		for (HTMLElement* element : target_elements)
-		{
-			for (auto declaration : css_block.declarations)
-				element->set_style_property(declaration.first, declaration.second);
-		}
+			element->apply_css(css_block.declarations);
 	}
 }
 

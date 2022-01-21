@@ -198,6 +198,12 @@ bool HTMLElement::contains_attribute(const std::string& name) const
 	return attributes.find(name) != attributes.end();
 }
 
+void HTMLElement::apply_css(const std::map<std::string, std::vector<std::string>>& declarations)
+{
+	for (auto declaration : declarations)
+		set_style_property(declaration.first, declaration.second);
+}	
+
 void HTMLElement::set_style_property(const std::string& property, const std::string& value)
 {
 	if (contains_style(property))
@@ -211,9 +217,12 @@ void HTMLElement::set_style_property(const std::string& property, const std::str
 
 void HTMLElement::set_style_property(const std::string& property, const std::vector<std::string>& value)
 {
+
+	/*
 	if (contains_style(property))
 		styles[property] = value;
 	styles.insert(std::make_pair(property, value));
+	*/
 }
 
 std::vector<std::string> HTMLElement::get_style_property_value(const std::string& property) const
