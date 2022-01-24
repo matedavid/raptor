@@ -58,10 +58,28 @@ void print_style(const HTMLElementCSSValues& style)
 
   std::cout << std::endl;
 
+  std::cout << "background-color: " << style.background_color << std::endl;
+  std::cout << "background-image: " << style.background_image << std::endl;
+  std::cout << "background-position: (" << style.background_position.first << ", " << style.background_position.second << ")" << std::endl;
+  //std::cout << "background-size: " << style.background_size << std::endl;
+  std::cout << "background-repeat: " << style.background_repeat << std::endl;
+  std::cout << "background-origin: " << style.background_origin << std::endl;
+  std::cout << "background-clip: " << style.background_clip << std::endl;
+  std::cout << "background-attachment: " << style.background_attachment << std::endl;
+
+  std::cout << std::endl;
+
   std::cout << "margin-top: " << style.margin_top << std::endl;
   std::cout << "margin-bottom: " << style.margin_bottom << std::endl;
   std::cout << "margin-right: " << style.margin_right << std::endl;
   std::cout << "margin-left: " << style.margin_left << std::endl;
+
+  std::cout << std::endl;
+
+  std::cout << "padding-top: " << style.padding_top << std::endl;
+  std::cout << "padding-bottom: " << style.padding_bottom << std::endl;
+  std::cout << "padding-right: " << style.padding_right << std::endl;
+  std::cout << "padding-left: " << style.padding_left << std::endl;
 
   std::cout << std::endl;
 }

@@ -17,7 +17,7 @@ struct HTMLElementCSSValues
   // Background
   std::string background_color = "transparent";
   std::string background_image = "none";
-  std::pair<std::string, std::string> background_position = {"0%", "0%"};
+  std::pair<std::string, std::string> background_position = {"0.0", "0.0"};
   std::string background_size; // TODO
   std::string background_repeat = "repeat";
   std::string background_origin = "padding-box";

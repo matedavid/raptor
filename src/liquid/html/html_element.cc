@@ -240,7 +240,6 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 
 		if (n_value.type == CSSNumberType::Px)
 			style.font_size = n_value.value;
-		//else if (n_value.type == CSSNumberType::Percentage)
 		else if (n_value.type == CSSNumberType::Em and parent != nullptr)
 			style.font_size = n_value.value*parent->style.font_size;
 		else if (n_value.type == CSSNumberType::Em and parent == nullptr)
@@ -266,32 +265,103 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 	}
 	else if (property == "background-position")
 	{
-		
+		if (value.size() >= 2)
+		{
+			CSSNumber num1 = parse_number(value[0]);
+			CSSNumber num2 = parse_number(value[1]);
+
+			if (num1.type != CSSNumberType::Error and num2.type != CSSNumberType::Error)
+			{
+				style.background_position.first = num1.type == CSSNumberType::Px 
+																					? std::to_string(num1.value)
+																					: std::to_string(num1.value*style.font_size);
+				style.background_position.second = num2.type == CSSNumberType::Px 
+																					? std::to_string(num2.value)
+																					: std::to_string(num2.value*style.font_size);
+			}
+			else if (num1.type != CSSNumberType::Error)
+			{
+				style.background_position.first = num1.type == CSSNumberType::Px 
+																					? std::to_string(num1.value)
+																					: std::to_string(num1.value*style.font_size);
+				style.background_position.second = num1.value;
+			}
+			else if (num2.type != CSSNumberType::Error)
+			{
+				style.background_position.first = num2.value;
+				style.background_position.second = num2.type == CSSNumberType::Px 
+																					? std::to_string(num2.value) 
+																					: std::to_string(num2.value*style.font_size);
+			}
+			else
+			{
+				style.background_position.first = value[0];
+				style.background_position.second = value[1];
+			}
+		}
+		else if (value.size() == 1)
+		{
+			CSSNumber num = parse_number(value[0]);
+			if (num.type != CSSNumberType::Error)
+			{
+				style.background_position.first = num.type == CSSNumberType::Px 
+																				? std::to_string(num.value)
+																				: std::to_string(num.value*style.font_size);
+				style.background_position.second = std::to_string(num.value);
+			}
+			else
+			{
+				style.background_position.first = value[0];
+				style.background_position.second = "center";
+			}
+		}
 	}
 	else if (property == "background-size")
 	{
-
+		// TODO
 	}
 	else if (property == "background-repeat")
 	{
-
+		style.background_repeat = value[0];
 	}
 	else if (property == "background-origin")
 	{
-
+		style.background_origin = value[0];
 	}
 	else if (property == "background-clip")
 	{
-
+		style.background_clip = value[0];
 	}
 	else if (property == "background-attachment")
 	{
-
+		style.background_attachment = value[0];
 	}
 
 	// Margin
 	else if (property == "margin")
 	{
+		if (value.size() == 4)
+		{
+			style.margin_top = parse_number(value[0]).value;
+			style.margin_right = parse_number(value[1]).value;
+			style.margin_bottom = parse_number(value[2]).value;
+			style.margin_left = parse_number(value[3]).value;
+		}
+		else if (value.size() == 3)
+		{
+			style.margin_top = parse_number(value[0]).value;
+			style.margin_right = style.margin_left = parse_number(value[1]).value;
+			style.margin_bottom = parse_number(value[2]).value;
+		}
+		else if (value.size() == 2)
+		{
+			style.margin_top = style.margin_bottom = parse_number(value[0]).value;
+			style.margin_right = style.margin_left = parse_number(value[1]).value;
+		}
+		else
+		{
+			style.margin_top = style.margin_bottom = style.margin_left = style.margin_right = parse_number(value[0]).value;
+		}
 	}
 	else if (property == "margin-top")
 	{
@@ -299,8 +369,6 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 
 		if (n_value.type == CSSNumberType::Px)
 			style.margin_top = n_value.value;
-		//else if (n_value.type == CSSNumberType::Percentage)
-			//style.margin_top = ?????
 		else if (n_value.type == CSSNumberType::Em)
 			style.margin_top = n_value.value*style.font_size;
 	}
@@ -310,8 +378,6 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 
 		if (n_value.type == CSSNumberType::Px)
 			style.margin_bottom = n_value.value;
-		//else if (n_value.type == CSSNumberType::Percentage)
-			//style.margin_bottom = ?????
 		else if (n_value.type == CSSNumberType::Em)
 			style.margin_bottom = n_value.value*style.font_size;
 	}
@@ -321,8 +387,6 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 
 		if (n_value.type == CSSNumberType::Px)
 			style.margin_left = n_value.value;
-		//else if (n_value.type == CSSNumberType::Percentage)
-			//style.margin_left = ?????
 		else if (n_value.type == CSSNumberType::Em)
 			style.margin_left = n_value.value*style.font_size;
 	}
@@ -332,8 +396,6 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 
 		if (n_value.type == CSSNumberType::Px)
 			style.margin_right = n_value.value;
-		//else if (n_value.type == CSSNumberType::Percentage)
-			//style.margin_right = ?????
 		else if (n_value.type == CSSNumberType::Em)
 			style.margin_right = n_value.value*style.font_size;
 	}
@@ -341,26 +403,65 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 	// Padding 
 	else if (property == "padding")
 	{
-
+		if (value.size() == 4)
+		{
+			style.padding_top = parse_number(value[0]).value;
+			style.padding_right = parse_number(value[1]).value;
+			style.padding_bottom = parse_number(value[2]).value;
+			style.padding_left = parse_number(value[3]).value;
+		}
+		else if (value.size() == 3)
+		{
+			style.padding_top = parse_number(value[0]).value;
+			style.padding_right = style.padding_left = parse_number(value[1]).value;
+			style.padding_bottom = parse_number(value[2]).value;
+		}
+		else if (value.size() == 2)
+		{
+			style.padding_top = style.padding_bottom = parse_number(value[0]).value;
+			style.padding_right = style.padding_left = parse_number(value[1]).value;
+		}
+		else
+		{
+			style.padding_top = style.padding_bottom = style.padding_left = style.padding_right = parse_number(value[0]).value;
+		}
 	}
 	else if (property == "padding-top")
 	{
-		
+		CSSNumber n_value = parse_number(value[0]);
+
+		if (n_value.type == CSSNumberType::Px)
+			style.padding_top = n_value.value;
+		else if (n_value.type == CSSNumberType::Em)
+			style.padding_top = n_value.value*style.font_size;
 	}
 	else if (property == "padding-bottom")
 	{
-		
+		CSSNumber n_value = parse_number(value[0]);
+
+		if (n_value.type == CSSNumberType::Px)
+			style.padding_bottom = n_value.value;
+		else if (n_value.type == CSSNumberType::Em)
+			style.padding_bottom = n_value.value*style.font_size;
 	}
 	else if (property == "padding-left")
 	{
+		CSSNumber n_value = parse_number(value[0]);
 
+		if (n_value.type == CSSNumberType::Px)
+			style.padding_left = n_value.value;
+		else if (n_value.type == CSSNumberType::Em)
+			style.padding_left = n_value.value*style.font_size;
 	}
+	else if (property == "padding-right")
+	{
+		CSSNumber n_value = parse_number(value[0]);
 
-	/*
-	if (contains_style(property))
-		styles[property] = value;
-	styles.insert(std::make_pair(property, value));
-	*/
+		if (n_value.type == CSSNumberType::Px)
+			style.padding_right = n_value.value;
+		else if (n_value.type == CSSNumberType::Em)
+			style.padding_right = n_value.value*style.font_size;
+	}
 }
 
 std::vector<std::string> HTMLElement::get_style_property_value(const std::string& property) const
