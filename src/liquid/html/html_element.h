@@ -7,8 +7,10 @@
 
 #include "liquid/html/token.h"
 #include "liquid/html/attribute.h"
-#include "liquid/html/html_element_css_values.h"
 #include "liquid/css/parser.h"
+
+#include "liquid/html/style/html_element_css_values.h"
+#include "liquid/html/style/parsing.h"
 
 namespace liquid {
 
@@ -34,6 +36,8 @@ public:
 
 	std::string inner_html;
 	std::string outer_html;
+
+	HTMLElementCSSValues style;
 
 	virtual HTMLElementType type() const { return HTMLElementType::ElementType; }
 

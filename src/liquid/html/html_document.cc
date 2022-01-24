@@ -9,7 +9,7 @@ HTMLDocument::HTMLDocument()
 
 void HTMLDocument::add_css_block(const CSSBlock& css_block)
 {
-	for (SelectorValue selector :  css_block.selector_targets)
+	for (SelectorValue selector : css_block.selector_targets)
 	{
 		std::vector<HTMLElement*> target_elements;
 		if (selector.option == SelectorValueOption::Class)

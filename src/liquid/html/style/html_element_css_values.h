@@ -1,11 +1,19 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 #include <string>
 #include <utility>
 
 struct HTMLElementCSSValues
 {
+  // Font
+  std::string font_style = "normal";
+  std::string font_variant = "normal";
+  std::string font_weight = "normal";
+  float font_size = 12.0;
+  std::string font_family = "Times New Roman";
+
   // Background
   std::string background_color = "transparent";
   std::string background_image = "none";

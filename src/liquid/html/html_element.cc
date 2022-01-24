@@ -204,6 +204,7 @@ void HTMLElement::apply_css(const std::map<std::string, std::vector<std::string>
 		set_style_property(declaration.first, declaration.second);
 }	
 
+/*
 void HTMLElement::set_style_property(const std::string& property, const std::string& value)
 {
 	if (contains_style(property))
@@ -213,26 +214,59 @@ void HTMLElement::set_style_property(const std::string& property, const std::str
 	}
 	styles.insert(std::make_pair(property, std::vector<std::string>{value}));
 }
-
+*/
 
 void HTMLElement::set_style_property(const std::string& property, const std::vector<std::string>& value)
 {
+	// Font
+	if (property == "font")
+	{
+	}
+	else if (property == "font-style")
+	{
+		style.font_style = value[0];
+	}
+	else if (property == "font-variant")
+	{
+		style.font_variant = value[0];
+	}
+	else if (property == "font-weight")
+	{
+		style.font_variant = value[0];
+	}
+	else if (property == "font-size")
+	{
+		CSSNumber n_value = parse_number(value[0]);
+
+		if (n_value.type == CSSNumberType::Px)
+			style.font_size = n_value.value;
+		//else if (n_value.type == CSSNumberType::Percentage)
+		else if (n_value.type == CSSNumberType::Em and parent != nullptr)
+			style.font_size = n_value.value*parent->style.font_size;
+		else if (n_value.type == CSSNumberType::Em and parent == nullptr)
+			style.font_size = n_value.value*style.font_size;
+	}
+	else if (property == "font-family")
+	{
+		style.font_family = value[0];
+	}
+
 	// Background
-	if (property == "background")
+	else if (property == "background")
 	{
 
 	}
 	else if (property == "background-color")
 	{
-
+		style.background_color = value[0];
 	}
 	else if (property == "background-image")
 	{
-
+		style.background_image = value[0];
 	}
 	else if (property == "background-position")
 	{
-
+		
 	}
 	else if (property == "background-size")
 	{
@@ -258,19 +292,50 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 	// Margin
 	else if (property == "margin")
 	{
-
 	}
 	else if (property == "margin-top")
 	{
-		
+		CSSNumber n_value = parse_number(value[0]);
+
+		if (n_value.type == CSSNumberType::Px)
+			style.margin_top = n_value.value;
+		//else if (n_value.type == CSSNumberType::Percentage)
+			//style.margin_top = ?????
+		else if (n_value.type == CSSNumberType::Em)
+			style.margin_top = n_value.value*style.font_size;
 	}
 	else if (property == "margin-bottom")
 	{
-		
+		CSSNumber n_value = parse_number(value[0]);
+
+		if (n_value.type == CSSNumberType::Px)
+			style.margin_bottom = n_value.value;
+		//else if (n_value.type == CSSNumberType::Percentage)
+			//style.margin_bottom = ?????
+		else if (n_value.type == CSSNumberType::Em)
+			style.margin_bottom = n_value.value*style.font_size;
 	}
 	else if (property == "margin-left")
 	{
+		CSSNumber n_value = parse_number(value[0]);
 
+		if (n_value.type == CSSNumberType::Px)
+			style.margin_left = n_value.value;
+		//else if (n_value.type == CSSNumberType::Percentage)
+			//style.margin_left = ?????
+		else if (n_value.type == CSSNumberType::Em)
+			style.margin_left = n_value.value*style.font_size;
+	}
+	else if (property == "margin-right")
+	{
+		CSSNumber n_value = parse_number(value[0]);
+
+		if (n_value.type == CSSNumberType::Px)
+			style.margin_right = n_value.value;
+		//else if (n_value.type == CSSNumberType::Percentage)
+			//style.margin_right = ?????
+		else if (n_value.type == CSSNumberType::Em)
+			style.margin_right = n_value.value*style.font_size;
 	}
 	
 	// Padding 

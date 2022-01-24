@@ -1,8 +1,7 @@
-li {
-  text-decoration: overline;
-  text-decoration-color: #0000FF;
-}
+.exampletext {
+  font-weight: bold;
+  font-size: 128px;
 
-img {
-  margin-left: 50px;
+  margin-top: 45px;
+  margin-bottom: 5em;
 }

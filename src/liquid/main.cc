@@ -16,5 +16,13 @@ int main(int argc, const char* argv[])
 	std::cout << "Printing resulting HTML AST:" << std::endl;
 	liquid::print_html_element(document.html, 0);
 
+	auto elements = document.html->get_elements_by_class_name("exampletext");
+	for (auto elem : elements)
+	{
+		std::cout << "element 1: " << std::endl;
+		std::cout << "------" << std::endl;
+		print_style(elem->style);
+	}
+
   return 0;
 }
