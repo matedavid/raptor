@@ -7,55 +7,6 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
   if (element->type() == HTMLElementType::TextType)
     return;
 
-  // Common style properties
-  if (element->contains_style("font-family"))
-  {
-    std::string value = element->get_style_property_value("font-family")[0];
-    config.font_family = value;
-  }
-
-  if (element->contains_style("font-size"))
-  {
-    StyleNumber parsed_font_size = parse_number_value(element->get_style_property_value("font-size")[0]);
-    if (parsed_font_size.type == ParseNumberType::Em)
-      config.font_size *= parsed_font_size.value;
-    else 
-      config.font_size = parsed_font_size.value;
-  }
-
-  if (element->contains_style("font-weight"))
-  {
-    std::string value = element->get_style_property_value("font-weight")[0];
-    // Check if string is number
-    if (value.find_first_not_of("0123456789") == std::string::npos)
-    {
-      int font_weight_num;
-      std::stringstream ss;
-      ss << value;
-      ss >> font_weight_num;
-
-      config.font_weight = Pango::Weight(font_weight_num);
-    }
-    else
-    {
-      if (value == "normal") 
-        config.font_weight = Pango::Weight::WEIGHT_NORMAL;
-      else if (value == "bold")
-        config.font_weight = Pango::Weight::WEIGHT_BOLD;
-    }
-  }
-
-  if (element->contains_style("font-style"))
-  {
-    std::string value = element->get_style_property_value("font-style")[0];
-    if (value == "normal")
-      config.font_style = Pango::Style::STYLE_NORMAL;
-    else if (value == "italic")
-      config.font_style = Pango::Style::STYLE_ITALIC;
-    else if (value == "oblique")
-      config.font_style = Pango::Style::STYLE_OBLIQUE;
-  }
-
   if (element->contains_style("text-decoration"))
   {
     std::vector<std::string> text_decoration_values = element->get_style_property_value("text-decoration");
@@ -104,6 +55,22 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
 
 static void apply_common_style(RenderBox* box, HTMLElement* element, const RenderConfig& config)
 {
+  // Apply margin
+  box->outer_box->set_margin_top(element->style.margin_top);
+  box->outer_box->set_margin_bottom(element->style.margin_bottom);
+  box->outer_box->set_margin_left(element->style.margin_left);
+  box->outer_box->set_margin_right(element->style.margin_right);
+
+  // Apply padding
+  box->inner_box->set_margin_top(element->style.padding_top);
+  box->inner_box->set_margin_bottom(element->style.padding_bottom);
+  box->inner_box->set_margin_left(element->style.padding_left);
+  box->inner_box->set_margin_right(element->style.padding_right);
+
+  // Apply background color
+  box->outer_box->override_background_color(Gdk::RGBA(element->style.background_color));
+
+  /*
   if (element->contains_style("margin"))
   {
     add_margin_style(box->outer_box, element, config);
@@ -126,10 +93,12 @@ static void apply_common_style(RenderBox* box, HTMLElement* element, const Rende
   {
     add_padding_side_style(box->inner_box, element, config);
   }
+
   if (element->contains_style("background-color"))
   {
     add_background_color_style(box->outer_box, element);
   }
+  */
 }
 
 RenderBox* render_body_tag(HTMLBodyElement* body_element, const RenderConfig& config)
@@ -322,11 +291,36 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
 
   // Font Description
   Pango::FontDescription font_description = Pango::FontDescription();
-  font_description.set_size(config.font_size*PANGO_SCALE); // font-size
-  font_description.set_family(config.font_family);         // font-family
-  font_description.set_weight(config.font_weight);         // font-weight
-  font_description.set_style(config.font_style);           // font-style
-  
+
+  font_description.set_size(text->style.font_size*PANGO_SCALE); // font-size
+  font_description.set_family(text->style.font_family);         // font-family
+
+  // font-weight
+  if (text->style.font_weight.find_first_not_of("0123456789") == std::string::npos)
+  {
+    int font_weight_num;
+    std::stringstream ss;
+    ss << text->style.font_weight;
+    ss >> font_weight_num;
+
+    font_description.set_weight(Pango::Weight(font_weight_num));
+  }
+  else
+  {
+    if (text->style.font_weight == "normal") 
+      font_description.set_weight(Pango::Weight::WEIGHT_NORMAL);
+    else if (text->style.font_weight == "bold")
+      font_description.set_weight(Pango::Weight::WEIGHT_BOLD);
+  }
+
+  // font-style
+  if (text->style.font_style == "normal")
+    font_description.set_style(Pango::Style::STYLE_NORMAL);
+  else if (text->style.font_style == "italic")
+    font_description.set_style(Pango::Style::STYLE_ITALIC);
+  else if (text->style.font_style == "oblique")
+    font_description.set_style(Pango::Style::STYLE_OBLIQUE);
+
   Pango::AttrFontDesc font_description_attr = Pango::Attribute::create_attr_font_desc(font_description);
 
   // Text decoration

@@ -1,16 +1,16 @@
 .parent-text {
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .example-text {
   font-weight: bold;
-  font-size: 2em;
+  /* font-size: 2em; */
 
   margin: 10px 5px 15px 20px;
 
-  padding-top: 20px;
+  /*padding-top: 20px;*/
   padding-bottom: 10px;
-  padding-right: 5px;
+  padding-right: 100px;
   padding-left: 100px;
 
   background-color: lightblue;

@@ -7,6 +7,7 @@
 #include "liquid/css/tokenizer.h"
 #include "liquid/css/parser.h"
 
+/*
 int main(int argc, const char* argv[])
 {
 	std::filesystem::path file_path = "/home/david/workspace/raptor/examples/index.html";
@@ -26,3 +27,4 @@ int main(int argc, const char* argv[])
 
   return 0;
 }
+*/

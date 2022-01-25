@@ -232,7 +232,7 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 	}
 	else if (property == "font-weight")
 	{
-		style.font_variant = value[0];
+		style.font_weight = value[0];
 	}
 	else if (property == "font-size")
 	{
@@ -461,6 +461,12 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 			style.padding_right = n_value.value;
 		else if (n_value.type == CSSNumberType::Em)
 			style.padding_right = n_value.value*style.font_size;
+	}
+
+	// "Cascade-down" property through children
+	for (HTMLElement* child : children)
+	{
+		child->set_style_property(property, value);
 	}
 }
 
