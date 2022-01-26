@@ -11,7 +11,7 @@ struct HTMLElementCSSValues
   std::string font_style = "normal";
   std::string font_variant = "normal";
   std::string font_weight = "normal";
-  float font_size = 12.0;
+  float font_size = 16.0;
   std::string font_family = "Times New Roman";
 
   // Background

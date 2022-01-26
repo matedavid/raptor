@@ -262,7 +262,7 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
   // Font Description
   Pango::FontDescription font_description = Pango::FontDescription();
 
-  font_description.set_size(text->style.font_size*PANGO_SCALE); // font-size
+  font_description.set_absolute_size(text->style.font_size*PANGO_SCALE*PANGO_SCALE_LARGE); // font-size
   font_description.set_family(text->style.font_family);         // font-family
 
   // font-weight

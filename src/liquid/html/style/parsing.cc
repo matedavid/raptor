@@ -50,6 +50,16 @@ std::pair<CSSNumber, CSSNumber> parse_pair_numbers(const std::vector<std::string
 }
 */
 
+float get_css_number(CSSNumber& n, float& em_reference_value)
+{
+  if (n.type == CSSNumberType::Px)
+    return n.value;
+  else if (n.type == CSSNumberType::Em)
+    return n.value*em_reference_value;
+  else 
+    return 0.0;
+}
+
 bool is_property_inherited(const std::string& property)
 {
   if (property == "font" or
