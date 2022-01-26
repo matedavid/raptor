@@ -463,10 +463,13 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 			style.padding_right = n_value.value*style.font_size;
 	}
 
-	// "Cascade-down" property through children
-	for (HTMLElement* child : children)
+	// "Cascade-down" property through children if it's inherited
+	if (is_property_inherited(property))
 	{
-		child->set_style_property(property, value);
+		for (HTMLElement* child : children)
+		{
+			child->set_style_property(property, value);
+		}
 	}
 }
 

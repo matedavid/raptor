@@ -14,7 +14,7 @@
 namespace liquid {
 
 static void set_render_config(RenderConfig& config, const HTMLElement* element);
-static void apply_common_style(RenderBox* box, HTMLElement* element, const RenderConfig& config);
+static void apply_common_style(RenderBox* box, HTMLElement* element);
 
 RenderBox* render_body_tag(HTMLBodyElement* body_element, Gtk::Box* parent, const RenderConfig& config);
 RenderBox* render_div_tag(HTMLDivElement* div_element, const RenderConfig& config);

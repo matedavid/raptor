@@ -20,7 +20,11 @@ void HTMLDocument::add_css_block(const CSSBlock& css_block)
 			target_elements = html->get_elements_by_tag_name(selector.value);
 
 		for (HTMLElement* element : target_elements)
+		{
 			element->apply_css(css_block.declarations);
+			std::cout << "Element: " << element->element_value << std::endl;
+			print_style(element->style);
+		}
 	}
 }
 

@@ -22,7 +22,9 @@ struct CSSNumber
 };
 
 CSSNumber parse_number(const std::string& value);
-std::pair<CSSNumber, CSSNumber> parse_pair_numbers(const std::vector<std::string>& value, int i);
+//std::pair<CSSNumber, CSSNumber> parse_pair_numbers(const std::vector<std::string>& value, int i);
+
+bool is_property_inherited(const std::string& property);
 
 // DEBUG
 void print_style(const HTMLElementCSSValues& style);

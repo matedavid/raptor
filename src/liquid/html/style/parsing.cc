@@ -35,6 +35,7 @@ CSSNumber parse_number(const std::string& value)
   return CSSNumber{value_number, type};
 }
 
+/*
 std::pair<CSSNumber, CSSNumber> parse_pair_numbers(const std::vector<std::string>& value, int i)
 {
   CSSNumber num1 = parse_number(value[i]);
@@ -46,6 +47,22 @@ std::pair<CSSNumber, CSSNumber> parse_pair_numbers(const std::vector<std::string
     return std::make_pair(CSSNumber{0.0, CSSNumberType::Error}, CSSNumber{0.0, CSSNumberType::Error});
   
   return std::make_pair(num1, num2);
+}
+*/
+
+bool is_property_inherited(const std::string& property)
+{
+  if (property == "font" or
+      property == "font-style" or
+      property == "font-variant" or
+      property == "font-weight" or
+      property == "font-size" or 
+      property == "line-height" or
+      property == "font-family")
+  {
+    return true;
+  }
+  return false;
 }
 
 void print_style(const HTMLElementCSSValues& style)

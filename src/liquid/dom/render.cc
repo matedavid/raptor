@@ -53,7 +53,7 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
 
 }
 
-static void apply_common_style(RenderBox* box, HTMLElement* element, const RenderConfig& config)
+static void apply_common_style(RenderBox* box, HTMLElement* element)
 {
   // Apply margin
   box->outer_box->set_margin_top(element->style.margin_top);
@@ -69,42 +69,12 @@ static void apply_common_style(RenderBox* box, HTMLElement* element, const Rende
 
   // Apply background color
   box->outer_box->override_background_color(Gdk::RGBA(element->style.background_color));
-
-  /*
-  if (element->contains_style("margin"))
-  {
-    add_margin_style(box->outer_box, element, config);
-  }
-  if (element->contains_style("margin-top") or 
-      element->contains_style("margin-right") or
-      element->contains_style("margin-bottom") or
-      element->contains_style("margin-left"))
-  {
-    add_margin_side_style(box->outer_box, element, config);
-  }
-  if (element->contains_style("padding"))
-  {
-    add_padding_style(box->inner_box, element, config);
-  }
-  if (element->contains_style("padding-top") or 
-      element->contains_style("padding-right") or
-      element->contains_style("padding-bottom") or
-      element->contains_style("padding-left"))
-  {
-    add_padding_side_style(box->inner_box, element, config);
-  }
-
-  if (element->contains_style("background-color"))
-  {
-    add_background_color_style(box->outer_box, element);
-  }
-  */
 }
 
 RenderBox* render_body_tag(HTMLBodyElement* body_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(body_element->element_value, Gtk::ORIENTATION_VERTICAL);
-  apply_common_style(box, body_element, config);
+  apply_common_style(box, body_element);
 
   return box;
 }
@@ -112,7 +82,7 @@ RenderBox* render_body_tag(HTMLBodyElement* body_element, const RenderConfig& co
 RenderBox* render_div_tag(HTMLDivElement* div_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(div_element->element_value, Gtk::ORIENTATION_VERTICAL);
-  apply_common_style(box, div_element, config);
+  apply_common_style(box, div_element);
 
   return box;
 }
@@ -120,7 +90,7 @@ RenderBox* render_div_tag(HTMLDivElement* div_element, const RenderConfig& confi
 RenderBox* render_p_tag(HTMLParagraphElement* p_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(p_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, p_element, config);
+  apply_common_style(box, p_element);
 
   return box;
 }
@@ -148,7 +118,7 @@ RenderBox* render_a_tag(HTMLAnchorElement* a_element, const RenderConfig& config
     inner_box: inner_box,
     element_value: a_element->element_value
   };
-  apply_common_style(box, a_element, config);
+  apply_common_style(box, a_element);
 
   if (a_element->contains_style("color"))
   {
@@ -171,7 +141,7 @@ RenderBox* render_a_tag(HTMLAnchorElement* a_element, const RenderConfig& config
 RenderBox* render_hx_tag(HTMLHeadingElement* h_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(h_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, h_element, config);
+  apply_common_style(box, h_element);
 
   return box;
 }
@@ -179,7 +149,7 @@ RenderBox* render_hx_tag(HTMLHeadingElement* h_element, const RenderConfig& conf
 RenderBox* render_span_tag(HTMLSpanElement* span_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(span_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, span_element, config);
+  apply_common_style(box, span_element);
 
   return box;
 }
@@ -187,7 +157,7 @@ RenderBox* render_span_tag(HTMLSpanElement* span_element, const RenderConfig& co
 RenderBox* render_em_tag(HTMLEmphasisElement* em_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(em_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, em_element, config);
+  apply_common_style(box, em_element);
 
   return box;
 }
@@ -195,7 +165,7 @@ RenderBox* render_em_tag(HTMLEmphasisElement* em_element, const RenderConfig& co
 RenderBox* render_i_tag(HTMLItalicizedElement* i_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(i_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, i_element, config);
+  apply_common_style(box, i_element);
 
   return box;
 }
@@ -203,7 +173,7 @@ RenderBox* render_i_tag(HTMLItalicizedElement* i_element, const RenderConfig& co
 RenderBox* render_strong_tag(HTMLStrongElement* strong_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(strong_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, strong_element, config);
+  apply_common_style(box, strong_element);
 
   return box;
 }
@@ -211,7 +181,7 @@ RenderBox* render_strong_tag(HTMLStrongElement* strong_element, const RenderConf
 RenderBox* render_ol_tag(HTMLOrderedListElement* ol_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(ol_element->element_value, Gtk::ORIENTATION_VERTICAL);
-  apply_common_style(box, ol_element, config);
+  apply_common_style(box, ol_element);
 
   return box;
 }
@@ -219,7 +189,7 @@ RenderBox* render_ol_tag(HTMLOrderedListElement* ol_element, const RenderConfig&
 RenderBox* render_ul_tag(HTMLUnorderedListElement* ul_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(ul_element->element_value, Gtk::ORIENTATION_VERTICAL);
-  apply_common_style(box, ul_element, config);
+  apply_common_style(box, ul_element);
 
   return box;
 }
@@ -227,7 +197,7 @@ RenderBox* render_ul_tag(HTMLUnorderedListElement* ul_element, const RenderConfi
 RenderBox* render_li_tag(HTMLListItemElement* li_element, Gtk::Box* parent, RenderConfig& config)
 {
   RenderBox* box = new_render_box(li_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, li_element, config);
+  apply_common_style(box, li_element);
 
   if (not config.list)
   {
@@ -264,7 +234,7 @@ RenderBox* render_li_tag(HTMLListItemElement* li_element, Gtk::Box* parent, Rend
 RenderBox* render_img_tag(HTMLImageElement* img_element, Gtk::Box* parent, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(img_element->element_value, Gtk::ORIENTATION_VERTICAL);
-  apply_common_style(box, img_element, config);
+  apply_common_style(box, img_element);
 
   std::string src = img_element->src();
   Glib::RefPtr<Gdk::Pixbuf> pixbuf_img = Gdk::Pixbuf::create_from_file(src);
