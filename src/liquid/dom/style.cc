@@ -2,6 +2,7 @@
 
 namespace liquid {
 
+/*
 StyleNumber parse_number_value(const std::string& value)
 {
   // Finds values in a format like: 16px -> '16' and 'px'
@@ -137,5 +138,6 @@ void add_background_color_style(Gtk::Box* box, const HTMLElement* element)
   std::string background_color_str = element->get_style_property_value("background-color")[0];
   box->override_background_color(Gdk::RGBA(background_color_str));
 }
+*/
 
 }

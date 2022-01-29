@@ -14,6 +14,7 @@
 
 namespace liquid {
 
+/*
 const int DEFAULT_FONT_SIZE = 16;
 
 enum ParseNumberType
@@ -41,5 +42,6 @@ void add_padding_style(Gtk::Box* box, const HTMLElement* element, const RenderCo
 void add_padding_side_style(Gtk::Box* box, const HTMLElement* element, const RenderConfig& config);
 
 void add_background_color_style(Gtk::Box* box, const HTMLElement* element);
+*/
 
 }

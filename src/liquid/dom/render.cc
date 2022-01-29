@@ -7,38 +7,6 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
   if (element->type() == HTMLElementType::TextType)
     return;
 
-  if (element->contains_style("text-decoration"))
-  {
-    std::vector<std::string> text_decoration_values = element->get_style_property_value("text-decoration");
-    std::string value = text_decoration_values[0];
-    if (value == "none")
-      config.text_underline = Pango::Underline::UNDERLINE_NONE;
-    else if (value == "underline")
-      config.text_underline = Pango::Underline::UNDERLINE_SINGLE;
-    else if (value == "overline")
-      config.text_overline  = Pango::Overline::OVERLINE_SINGLE;
-
-    if (text_decoration_values.size() > 1)
-    {
-      std::string color = text_decoration_values[1];
-      Gdk::RGBA rgba = Gdk::RGBA(color);
-
-      config.text_decoration_color.set_red(rgba.get_red_u());
-      config.text_decoration_color.set_green(rgba.get_green_u());
-      config.text_decoration_color.set_blue(rgba.get_blue_u());
-    }
-  }
-
-  if (element->contains_style("text-decoration-color"))
-  {
-    std::string value = element->get_style_property_value("text-decoration-color")[0];
-    Gdk::RGBA rgba = Gdk::RGBA(value);
-
-    config.text_decoration_color.set_red(rgba.get_red_u());
-    config.text_decoration_color.set_green(rgba.get_green_u());
-    config.text_decoration_color.set_blue(rgba.get_blue_u());
-  }
-
   // Depending on element_value
   if (element->element_value == "ul")
   {
@@ -71,7 +39,7 @@ static void apply_common_style(RenderBox* box, HTMLElement* element)
   box->outer_box->override_background_color(Gdk::RGBA(element->style.background_color));
 }
 
-RenderBox* render_body_tag(HTMLBodyElement* body_element, const RenderConfig& config)
+RenderBox* render_body_tag(HTMLBodyElement* body_element)
 {
   RenderBox* box = new_render_box(body_element->element_value, Gtk::ORIENTATION_VERTICAL);
   apply_common_style(box, body_element);
@@ -79,7 +47,7 @@ RenderBox* render_body_tag(HTMLBodyElement* body_element, const RenderConfig& co
   return box;
 }
 
-RenderBox* render_div_tag(HTMLDivElement* div_element, const RenderConfig& config)
+RenderBox* render_div_tag(HTMLDivElement* div_element)
 {
   RenderBox* box = new_render_box(div_element->element_value, Gtk::ORIENTATION_VERTICAL);
   apply_common_style(box, div_element);
@@ -87,7 +55,7 @@ RenderBox* render_div_tag(HTMLDivElement* div_element, const RenderConfig& confi
   return box;
 }
 
-RenderBox* render_p_tag(HTMLParagraphElement* p_element, const RenderConfig& config)
+RenderBox* render_p_tag(HTMLParagraphElement* p_element)
 {
   RenderBox* box = new_render_box(p_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
   apply_common_style(box, p_element);
@@ -95,12 +63,7 @@ RenderBox* render_p_tag(HTMLParagraphElement* p_element, const RenderConfig& con
   return box;
 }
 
-void anchor_clicked()
-{
-  std::cout << "Anchor clicked..." << std::endl;
-}
-
-RenderBox* render_a_tag(HTMLAnchorElement* a_element, const RenderConfig& config, RenderInfo& info)
+RenderBox* render_a_tag(HTMLAnchorElement* a_element, RenderInfo& info)
 {
   Gtk::Box* outer_box = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_HORIZONTAL);
   Gtk::Box* inner_box = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_HORIZONTAL);
@@ -138,7 +101,7 @@ RenderBox* render_a_tag(HTMLAnchorElement* a_element, const RenderConfig& config
   return box;
 }
 
-RenderBox* render_hx_tag(HTMLHeadingElement* h_element, const RenderConfig& config)
+RenderBox* render_hx_tag(HTMLHeadingElement* h_element)
 {
   RenderBox* box = new_render_box(h_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
   apply_common_style(box, h_element);
@@ -146,7 +109,7 @@ RenderBox* render_hx_tag(HTMLHeadingElement* h_element, const RenderConfig& conf
   return box;
 }
 
-RenderBox* render_span_tag(HTMLSpanElement* span_element, const RenderConfig& config)
+RenderBox* render_span_tag(HTMLSpanElement* span_element)
 {
   RenderBox* box = new_render_box(span_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
   apply_common_style(box, span_element);
@@ -154,7 +117,7 @@ RenderBox* render_span_tag(HTMLSpanElement* span_element, const RenderConfig& co
   return box;
 }
 
-RenderBox* render_em_tag(HTMLEmphasisElement* em_element, const RenderConfig& config)
+RenderBox* render_em_tag(HTMLEmphasisElement* em_element)
 {
   RenderBox* box = new_render_box(em_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
   apply_common_style(box, em_element);
@@ -162,7 +125,7 @@ RenderBox* render_em_tag(HTMLEmphasisElement* em_element, const RenderConfig& co
   return box;
 }
 
-RenderBox* render_i_tag(HTMLItalicizedElement* i_element, const RenderConfig& config)
+RenderBox* render_i_tag(HTMLItalicizedElement* i_element)
 {
   RenderBox* box = new_render_box(i_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
   apply_common_style(box, i_element);
@@ -170,7 +133,7 @@ RenderBox* render_i_tag(HTMLItalicizedElement* i_element, const RenderConfig& co
   return box;
 }
 
-RenderBox* render_strong_tag(HTMLStrongElement* strong_element, const RenderConfig& config)
+RenderBox* render_strong_tag(HTMLStrongElement* strong_element)
 {
   RenderBox* box = new_render_box(strong_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
   apply_common_style(box, strong_element);
@@ -231,7 +194,7 @@ RenderBox* render_li_tag(HTMLListItemElement* li_element, Gtk::Box* parent, Rend
   return box;
 }
 
-RenderBox* render_img_tag(HTMLImageElement* img_element, Gtk::Box* parent, const RenderConfig& config)
+RenderBox* render_img_tag(HTMLImageElement* img_element, Gtk::Box* parent)
 {
   RenderBox* box = new_render_box(img_element->element_value, Gtk::ORIENTATION_VERTICAL);
   apply_common_style(box, img_element);
@@ -298,7 +261,6 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
   //    text-decoration-line
   for (std::string& text_decoration : text->style.text_decoration_line)
   {
-    std::cout << text_decoration << std::endl;
     if (text_decoration == "none")
     {
       break;
@@ -367,8 +329,6 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config, RenderI
     return;
   }
 
-  //set_render_config(config, element);
-
   // Renderer for every element
   RenderBox* rendered_element;
   if (element->element_value == "body")
@@ -376,28 +336,28 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config, RenderI
     HTMLBodyElement* body_element = dynamic_cast<HTMLBodyElement*>(element);
     if (body_element == nullptr) 
       return;
-    rendered_element = render_body_tag(body_element, config);
+    rendered_element = render_body_tag(body_element);
   }
   else if (element->element_value == "div")
   {
     HTMLDivElement* div_element = dynamic_cast<HTMLDivElement*>(element);
     if (div_element == nullptr)
       return;
-    rendered_element = render_div_tag(div_element, config);
+    rendered_element = render_div_tag(div_element);
   }
   else if (element->element_value == "p")
   {
     HTMLParagraphElement* p_element = dynamic_cast<HTMLParagraphElement*>(element);
     if (p_element == nullptr)
       return;
-    rendered_element = render_p_tag(p_element, config);
+    rendered_element = render_p_tag(p_element);
   }
   else if (element->element_value == "a")
   {
     HTMLAnchorElement* a_element = dynamic_cast<HTMLAnchorElement*>(element);
     if (a_element == nullptr)
       return;
-    rendered_element = render_a_tag(a_element, config, info);
+    rendered_element = render_a_tag(a_element, info);
   }
   else if (element->element_value == "h1" or element->element_value == "h2" or element->element_value == "h3" or
            element->element_value == "h4" or element->element_value == "h5" or element->element_value == "h6")
@@ -405,35 +365,35 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config, RenderI
     HTMLHeadingElement* h_element = dynamic_cast<HTMLHeadingElement*>(element);
     if (h_element == nullptr)
       return;
-    rendered_element = render_hx_tag(h_element, config);
+    rendered_element = render_hx_tag(h_element);
   }
   else if (element->element_value == "span")
   {
     HTMLSpanElement* span_element = dynamic_cast<HTMLSpanElement*>(element);
     if (span_element == nullptr)
       return;
-    rendered_element = render_span_tag(span_element, config);
+    rendered_element = render_span_tag(span_element);
   }
   else if (element->element_value == "em")
   {
     HTMLEmphasisElement* em_element = dynamic_cast<HTMLEmphasisElement*>(element);
     if (em_element == nullptr)
       return;
-    rendered_element = render_em_tag(em_element, config);
+    rendered_element = render_em_tag(em_element);
   }
   else if (element->element_value == "i")
   {
     HTMLItalicizedElement* i_element = dynamic_cast<HTMLItalicizedElement*>(element);
     if (i_element == nullptr)
       return;
-    rendered_element = render_i_tag(i_element, config);
+    rendered_element = render_i_tag(i_element);
   }
   else if (element->element_value == "strong")
   {
     HTMLStrongElement* strong_element = dynamic_cast<HTMLStrongElement*>(element);
     if (strong_element == nullptr)
       return;
-    rendered_element = render_strong_tag(strong_element, config);
+    rendered_element = render_strong_tag(strong_element);
   }
   else if (element->element_value == "ol")
   {
@@ -461,7 +421,7 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config, RenderI
     HTMLImageElement* img_element = dynamic_cast<HTMLImageElement*>(element);
     if (img_element == nullptr)
       return;
-    rendered_element = render_img_tag(img_element, parent, config);
+    rendered_element = render_img_tag(img_element, parent);
   }
 
   parent->pack_start(*rendered_element->outer_box, false, false);
