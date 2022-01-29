@@ -244,15 +244,6 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 			style.font_size = get_css_number(n_value, parent->style.font_size);
 		else if (n_value.type == CSSNumberType::Em and parent == nullptr)
 			style.font_size = get_css_number(n_value, style.font_size);
-
-		/*
-		if (n_value.type == CSSNumberType::Px)
-			style.font_size = n_value.value;
-		else if (n_value.type == CSSNumberType::Em and parent != nullptr)
-			style.font_size = n_value.value*parent->style.font_size;
-		else if (n_value.type == CSSNumberType::Em and parent == nullptr)
-			style.font_size = n_value.value*style.font_size;
-		*/
 	}
 	else if (property == "font-family")
 	{
@@ -384,79 +375,26 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 			CSSNumber number = parse_number(value[0]);
 			style.margin_top = style.margin_bottom = style.margin_left = style.margin_right = get_css_number(number, style.font_size);
 		}
-		/*
-		if (value.size() == 4)
-		{
-			CSSNumber number1 = parse_number(value[0]);
-			CSSNumber number2 = parse_number(value[1]);
-			CSSNumber number3 = parse_number(value[2]);
-			CSSNumber number4 = parse_number(value[3]);
-
-			style.margin_top = parse_number(value[0]).value;
-			style.margin_right = parse_number(value[1]).value;
-			style.margin_bottom = parse_number(value[2]).value;
-			style.margin_left = parse_number(value[3]).value;
-		}
-		else if (value.size() == 3)
-		{
-			style.margin_top = parse_number(value[0]).value;
-			style.margin_right = style.margin_left = parse_number(value[1]).value;
-			style.margin_bottom = parse_number(value[2]).value;
-		}
-		else if (value.size() == 2)
-		{
-			style.margin_top = style.margin_bottom = parse_number(value[0]).value;
-			style.margin_right = style.margin_left = parse_number(value[1]).value;
-		}
-		else
-		{
-			style.margin_top = style.margin_bottom = style.margin_left = style.margin_right = parse_number(value[0]).value;
-		}
-		*/
 	}
 	else if (property == "margin-top")
 	{
 		CSSNumber n_value = parse_number(value[0]);
 		style.margin_top = get_css_number(n_value, style.font_size);
-		/*
-		if (n_value.type == CSSNumberType::Px)
-			style.margin_top = n_value.value;
-		else if (n_value.type == CSSNumberType::Em)
-			style.margin_top = n_value.value*style.font_size;
-		*/
 	}
 	else if (property == "margin-bottom")
 	{
 		CSSNumber n_value = parse_number(value[0]);
 		style.margin_bottom = get_css_number(n_value, style.font_size);
-		/*
-		if (n_value.type == CSSNumberType::Px)
-			style.margin_bottom = n_value.value;
-		else if (n_value.type == CSSNumberType::Em)
-			style.margin_bottom = n_value.value*style.font_size;
-		*/
 	}
 	else if (property == "margin-left")
 	{
 		CSSNumber n_value = parse_number(value[0]);
 		style.margin_left = get_css_number(n_value, style.font_size);
-		/*
-		if (n_value.type == CSSNumberType::Px)
-			style.margin_left = n_value.value;
-		else if (n_value.type == CSSNumberType::Em)
-			style.margin_left = n_value.value*style.font_size;
-		*/
 	}
 	else if (property == "margin-right")
 	{
 		CSSNumber n_value = parse_number(value[0]);
 		style.margin_right = get_css_number(n_value, style.font_size);
-		/*
-		if (n_value.type == CSSNumberType::Px)
-			style.margin_right = n_value.value;
-		else if (n_value.type == CSSNumberType::Em)
-			style.margin_right = n_value.value*style.font_size;
-		*/
 	}
 	
 	// Padding 
@@ -497,74 +435,44 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 			CSSNumber number = parse_number(value[0]);
 			style.padding_top = style.padding_bottom = style.padding_left = style.padding_right = get_css_number(number, style.font_size);
 		}
-		/*
-		if (value.size() == 4)
-		{
-			style.padding_top = parse_number(value[0]).value;
-			style.padding_right = parse_number(value[1]).value;
-			style.padding_bottom = parse_number(value[2]).value;
-			style.padding_left = parse_number(value[3]).value;
-		}
-		else if (value.size() == 3)
-		{
-			style.padding_top = parse_number(value[0]).value;
-			style.padding_right = style.padding_left = parse_number(value[1]).value;
-			style.padding_bottom = parse_number(value[2]).value;
-		}
-		else if (value.size() == 2)
-		{
-			style.padding_top = style.padding_bottom = parse_number(value[0]).value;
-			style.padding_right = style.padding_left = parse_number(value[1]).value;
-		}
-		else
-		{
-			style.padding_top = style.padding_bottom = style.padding_left = style.padding_right = parse_number(value[0]).value;
-		}
-		*/
 	}
 	else if (property == "padding-top")
 	{
 		CSSNumber n_value = parse_number(value[0]);
 		style.padding_top = get_css_number(n_value, style.font_size);
-		/*
-		if (n_value.type == CSSNumberType::Px)
-			style.padding_top = n_value.value;
-		else if (n_value.type == CSSNumberType::Em)
-			style.padding_top = n_value.value*style.font_size;
-		*/
 	}
 	else if (property == "padding-bottom")
 	{
 		CSSNumber n_value = parse_number(value[0]);
 		style.padding_bottom = get_css_number(n_value, style.font_size);
-		/*
-		if (n_value.type == CSSNumberType::Px)
-			style.padding_bottom = n_value.value;
-		else if (n_value.type == CSSNumberType::Em)
-			style.padding_bottom = n_value.value*style.font_size;
-		*/
 	}
 	else if (property == "padding-left")
 	{
 		CSSNumber n_value = parse_number(value[0]);
 		style.padding_left = get_css_number(n_value, style.font_size);
-		/*
-		if (n_value.type == CSSNumberType::Px)
-			style.padding_left = n_value.value;
-		else if (n_value.type == CSSNumberType::Em)
-			style.padding_left = n_value.value*style.font_size;
-		*/
 	}
 	else if (property == "padding-right")
 	{
 		CSSNumber n_value = parse_number(value[0]);
 		style.padding_right = get_css_number(n_value, style.font_size);
-		/*
-		if (n_value.type == CSSNumberType::Px)
-			style.padding_right = n_value.value;
-		else if (n_value.type == CSSNumberType::Em)
-			style.padding_right = n_value.value*style.font_size;
-		*/
+	}
+
+	// Text decoration
+	else if (property == "text-decoration")
+	{
+
+	}
+	else if (property == "text-decoration-line")
+	{
+		style.text_decoration_line = value;
+	}
+	else if (property == "text-decoration-color")
+	{
+		style.text_decoration_color = value[0];
+	}
+	else if (property == "text-decoration-style")
+	{
+		style.text_decoration_style = value[0];
 	}
 
 	// "Cascade-down" property through children if it's inherited

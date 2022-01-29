@@ -1,23 +1,4 @@
-.parent-text {
-  font-size: 20px;
-}
-
-.example-text {
-  font-weight: bold;
-  /* font-size: 2em; */
-
-  margin: 10px 5px 15px 20px;
-
-  /*padding-top: 20px;*/
-  padding-bottom: 10px;
-  padding-right: 100px;
-  padding-left: 100px;
-
-  background-color: lightblue;
-  background-image: url("img_tree.gif");
-  background-position: bottom left;
-  background-repeat: repeat-x;
-  background-origin: content-box;
-  background-clip: padding-box;
-  background-attachment: fixed;
+.example {
+  text-decoration-line: underline overline;
+  text-decoration-style: double;
 }

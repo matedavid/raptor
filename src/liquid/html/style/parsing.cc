@@ -68,7 +68,11 @@ bool is_property_inherited(const std::string& property)
       property == "font-weight" or
       property == "font-size" or 
       property == "line-height" or
-      property == "font-family")
+      property == "font-family" or
+      property == "text-decoration" or      // text-decoration (+ individual values) does not have inherited property, but if not will not cascase down to Text child
+      property == "text-decoration-line" or
+      property == "text-decoration-color" or
+      property == "text-decoration-style")
   {
     return true;
   }

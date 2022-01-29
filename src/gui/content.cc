@@ -36,7 +36,6 @@ void Content::render_from_file(const std::string &path)
 	for (auto child : m_content.get_children())
 		m_content.remove(*child);
 
-
 	liquid::HTMLDocument document;
 	document.from_file(path);
 	title = document.title;
@@ -54,5 +53,5 @@ void Content::render_from_file(const std::string &path)
 	show_all_children();
 
 	// DEBUG
-	//liquid::print_html_element(document.body, 0);
+	liquid::print_html_element(document.body, 0);
 }

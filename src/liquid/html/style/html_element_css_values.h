@@ -12,7 +12,7 @@ struct HTMLElementCSSValues
   std::string font_variant = "normal";
   std::string font_weight = "normal";
   float font_size = 16.0;
-  std::string font_family = "Times New Roman";
+  std::string font_family = "Arial";
 
   // Background
   std::string background_color = "transparent";
@@ -35,4 +35,9 @@ struct HTMLElementCSSValues
   float padding_bottom = 0.0;
   float padding_right  = 0.0;
   float padding_left   = 0.0;
+
+  // Text decoration
+  std::vector<std::string> text_decoration_line = {"none"};
+  std::string text_decoration_color = "black";
+  std::string text_decoration_style = "solid";
 };

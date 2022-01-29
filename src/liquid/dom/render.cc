@@ -292,33 +292,60 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
     font_description.set_style(Pango::Style::STYLE_OBLIQUE);
 
   Pango::AttrFontDesc font_description_attr = Pango::Attribute::create_attr_font_desc(font_description);
+  attr_list.insert(font_description_attr);
 
   // Text decoration
-  Pango::AttrInt text_decoration_underline_attr = Pango::Attribute::create_attr_underline(config.text_underline);
-	Pango::AttrInt text_decoration_overline_attr  = Pango::Attribute::create_attr_overline(config.text_overline);
+  //    text-decoration-line
+  for (std::string& text_decoration : text->style.text_decoration_line)
+  {
+    std::cout << text_decoration << std::endl;
+    if (text_decoration == "none")
+    {
+      break;
+    }
+    else if (text_decoration == "underline")
+    {
+      // Default: solid
+      Pango::AttrInt text_decoration_underline = Pango::Attribute::create_attr_underline(Pango::Underline::UNDERLINE_SINGLE);
+      if (text->style.text_decoration_style == "double")
+        text_decoration_underline = Pango::Attribute::create_attr_underline(Pango::Underline::UNDERLINE_DOUBLE);
+      else if (text->style.text_decoration_style == "wavy")
+        text_decoration_underline = Pango::Attribute::create_attr_underline(Pango::Underline::UNDERLINE_ERROR);
 
+      attr_list.insert(text_decoration_underline);
+    }
+    else if (text_decoration == "overline")
+    {
+      Pango::AttrInt text_decoration_overline = Pango::Attribute::create_attr_overline(Pango::Overline::OVERLINE_SINGLE);
+      attr_list.insert(text_decoration_overline);
+    }
+    else if (text_decoration == "line-through")
+    {
+      Pango::AttrInt text_decoration_line_through = Pango::Attribute::create_attr_strikethrough(true);
+      attr_list.insert(text_decoration_line_through);
+    }
+  }
+
+  //    text-decoration-color
+  Gdk::RGBA color = Gdk::RGBA(text->style.text_decoration_color);
   Pango::AttrColor text_decoration_underline_color = Pango::Attribute::create_attr_underline_color(
-    config.text_decoration_color.get_red(),
-    config.text_decoration_color.get_green(),
-    config.text_decoration_color.get_blue()
+    color.get_red_u(),
+    color.get_green_u(),
+    color.get_blue_u()
   );
   Pango::AttrColor text_decoration_overline_color = Pango::Attribute::create_attr_overline_color(
-    config.text_decoration_color.get_red(),
-    config.text_decoration_color.get_green(),
-    config.text_decoration_color.get_blue()
+    color.get_red_u(),
+    color.get_green_u(),
+    color.get_blue_u()
   );
-
-  attr_list.insert(font_description_attr);
-  if (config.text_underline != Pango::Underline::UNDERLINE_NONE)
-  {
-    attr_list.insert(text_decoration_underline_attr);
-    attr_list.insert(text_decoration_underline_color);
-  }
-  else if (config.text_overline != Pango::Overline::OVERLINE_NONE)
-  {
-    attr_list.insert(text_decoration_overline_attr);
-    attr_list.insert(text_decoration_overline_color);
-  }
+  Pango::AttrColor text_decoration_line_through_color = Pango::Attribute::create_attr_strikethrough_color(
+    color.get_red_u(),
+    color.get_green_u(),
+    color.get_blue_u()
+  );
+  attr_list.insert(text_decoration_underline_color);
+  attr_list.insert(text_decoration_overline_color);
+  attr_list.insert(text_decoration_line_through_color);
 
   // Add attributes to label
   label->set_attributes(attr_list);
@@ -340,7 +367,7 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config, RenderI
     return;
   }
 
-  set_render_config(config, element);
+  //set_render_config(config, element);
 
   // Renderer for every element
   RenderBox* rendered_element;
