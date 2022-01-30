@@ -8,7 +8,6 @@
 #include "liquid/html/html_document.h"
 #include "liquid/html/html_paragraph_element.h"
 
-#include "liquid/dom/style.h"
 #include "liquid/dom/config.h"
 
 namespace liquid {

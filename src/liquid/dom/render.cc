@@ -18,7 +18,6 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
     config.list = true;
     config.list_type = 1;
   }
-
 }
 
 static void apply_common_style(RenderBox* box, HTMLElement* element)
