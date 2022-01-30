@@ -30,9 +30,7 @@ Tab::Tab()
   m_toolbar.pack_start(m_search_button, false, false);
   pack_start(m_toolbar, false, false);
 
-  //m_content.render_from_file("/home/david/workspace/raptor/examples/index.html");
   pack_start(m_content);
-
   show_all_children();
 }
 

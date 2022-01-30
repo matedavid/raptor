@@ -7,6 +7,10 @@
 
 #include "liquid/html/token.h"
 #include "liquid/html/attribute.h"
+#include "liquid/css/parser.h"
+
+#include "liquid/html/style/html_element_css_values.h"
+#include "liquid/html/style/parsing.h"
 
 namespace liquid {
 
@@ -32,6 +36,8 @@ public:
 
 	std::string inner_html;
 	std::string outer_html;
+
+	HTMLElementCSSValues style;
 
 	virtual HTMLElementType type() const { return HTMLElementType::ElementType; }
 
@@ -72,6 +78,8 @@ public:
 	void remove_attribute(const std::string& name);
 	void toggle_attribute(const std::string& name);
 	bool contains_attribute(const std::string& name) const;
+
+	void apply_css(const std::map<std::string, std::vector<std::string>>& declarations);
 
 	void set_style_property(const std::string& property, const std::string& value);
 	void set_style_property(const std::string& property, const std::vector<std::string>& value);

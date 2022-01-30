@@ -1,8 +1,4 @@
-li {
-  text-decoration: overline;
-  text-decoration-color: #0000FF;
-}
-
-img {
-  margin-left: 50px;
+.example {
+  text-decoration-line: underline overline;
+  text-decoration-style: double;
 }

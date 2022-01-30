@@ -7,82 +7,6 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
   if (element->type() == HTMLElementType::TextType)
     return;
 
-  // Common style properties
-  if (element->contains_style("font-family"))
-  {
-    std::string value = element->get_style_property_value("font-family")[0];
-    config.font_family = value;
-  }
-  if (element->contains_style("font-size"))
-  {
-    StyleNumber parsed_font_size = parse_number_value(element->get_style_property_value("font-size")[0]);
-    if (parsed_font_size.type == ParseNumberType::Em)
-      config.font_size *= parsed_font_size.value;
-    else 
-      config.font_size = parsed_font_size.value;
-  }
-  if (element->contains_style("font-weight"))
-  {
-    std::string value = element->get_style_property_value("font-weight")[0];
-    // Check if string is number
-    if (value.find_first_not_of("0123456789") == std::string::npos)
-    {
-      int font_weight_num;
-      std::stringstream ss;
-      ss << value;
-      ss >> font_weight_num;
-
-      config.font_weight = Pango::Weight(font_weight_num);
-    }
-    else
-    {
-      if (value == "normal") 
-        config.font_weight = Pango::Weight::WEIGHT_NORMAL;
-      else if (value == "bold")
-        config.font_weight = Pango::Weight::WEIGHT_BOLD;
-    }
-  }
-  if (element->contains_style("font-style"))
-  {
-    std::string value = element->get_style_property_value("font-style")[0];
-    if (value == "normal")
-      config.font_style = Pango::Style::STYLE_NORMAL;
-    else if (value == "italic")
-      config.font_style = Pango::Style::STYLE_ITALIC;
-    else if (value == "oblique")
-      config.font_style = Pango::Style::STYLE_OBLIQUE;
-  }
-  if (element->contains_style("text-decoration"))
-  {
-    std::vector<std::string> text_decoration_values = element->get_style_property_value("text-decoration");
-    std::string value = text_decoration_values[0];
-    if (value == "none")
-      config.text_underline = Pango::Underline::UNDERLINE_NONE;
-    else if (value == "underline")
-      config.text_underline = Pango::Underline::UNDERLINE_SINGLE;
-    else if (value == "overline")
-      config.text_overline  = Pango::Overline::OVERLINE_SINGLE;
-
-    if (text_decoration_values.size() > 1)
-    {
-      std::string color = text_decoration_values[1];
-      Gdk::RGBA rgba = Gdk::RGBA(color);
-
-      config.text_decoration_color.set_red(rgba.get_red_u());
-      config.text_decoration_color.set_green(rgba.get_green_u());
-      config.text_decoration_color.set_blue(rgba.get_blue_u());
-    }
-  }
-  if (element->contains_style("text-decoration-color"))
-  {
-    std::string value = element->get_style_property_value("text-decoration-color")[0];
-    Gdk::RGBA rgba = Gdk::RGBA(value);
-
-    config.text_decoration_color.set_red(rgba.get_red_u());
-    config.text_decoration_color.set_green(rgba.get_green_u());
-    config.text_decoration_color.set_blue(rgba.get_blue_u());
-  }
-
   // Depending on element_value
   if (element->element_value == "ul")
   {
@@ -94,69 +18,51 @@ static void set_render_config(RenderConfig& config, const HTMLElement* element)
     config.list = true;
     config.list_type = 1;
   }
-
 }
 
-static void apply_common_style(RenderBox* box, HTMLElement* element, const RenderConfig& config)
+static void apply_common_style(RenderBox* box, HTMLElement* element)
 {
-  if (element->contains_style("margin"))
-  {
-    add_margin_style(box->outer_box, element, config);
-  }
-  if (element->contains_style("margin-top") or 
-      element->contains_style("margin-right") or
-      element->contains_style("margin-bottom") or
-      element->contains_style("margin-left"))
-  {
-    add_margin_side_style(box->outer_box, element, config);
-  }
-  if (element->contains_style("padding"))
-  {
-    add_padding_style(box->inner_box, element, config);
-  }
-  if (element->contains_style("padding-top") or 
-      element->contains_style("padding-right") or
-      element->contains_style("padding-bottom") or
-      element->contains_style("padding-left"))
-  {
-    add_padding_side_style(box->inner_box, element, config);
-  }
-  if (element->contains_style("background-color"))
-  {
-    add_background_color_style(box->outer_box, element);
-  }
+  // Apply margin
+  box->outer_box->set_margin_top(element->style.margin_top);
+  box->outer_box->set_margin_bottom(element->style.margin_bottom);
+  box->outer_box->set_margin_left(element->style.margin_left);
+  box->outer_box->set_margin_right(element->style.margin_right);
+
+  // Apply padding
+  box->inner_box->set_margin_top(element->style.padding_top);
+  box->inner_box->set_margin_bottom(element->style.padding_bottom);
+  box->inner_box->set_margin_left(element->style.padding_left);
+  box->inner_box->set_margin_right(element->style.padding_right);
+
+  // Apply background color
+  box->outer_box->override_background_color(Gdk::RGBA(element->style.background_color));
 }
 
-RenderBox* render_body_tag(HTMLBodyElement* body_element, const RenderConfig& config)
+RenderBox* render_body_tag(HTMLBodyElement* body_element)
 {
   RenderBox* box = new_render_box(body_element->element_value, Gtk::ORIENTATION_VERTICAL);
-  apply_common_style(box, body_element, config);
+  apply_common_style(box, body_element);
 
   return box;
 }
 
-RenderBox* render_div_tag(HTMLDivElement* div_element, const RenderConfig& config)
+RenderBox* render_div_tag(HTMLDivElement* div_element)
 {
   RenderBox* box = new_render_box(div_element->element_value, Gtk::ORIENTATION_VERTICAL);
-  apply_common_style(box, div_element, config);
+  apply_common_style(box, div_element);
 
   return box;
 }
 
-RenderBox* render_p_tag(HTMLParagraphElement* p_element, const RenderConfig& config)
+RenderBox* render_p_tag(HTMLParagraphElement* p_element)
 {
   RenderBox* box = new_render_box(p_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, p_element, config);
+  apply_common_style(box, p_element);
 
   return box;
 }
 
-void anchor_clicked()
-{
-  std::cout << "Anchor clicked..." << std::endl;
-}
-
-RenderBox* render_a_tag(HTMLAnchorElement* a_element, const RenderConfig& config, RenderInfo& info)
+RenderBox* render_a_tag(HTMLAnchorElement* a_element, RenderInfo& info)
 {
   Gtk::Box* outer_box = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_HORIZONTAL);
   Gtk::Box* inner_box = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_HORIZONTAL);
@@ -174,7 +80,7 @@ RenderBox* render_a_tag(HTMLAnchorElement* a_element, const RenderConfig& config
     inner_box: inner_box,
     element_value: a_element->element_value
   };
-  apply_common_style(box, a_element, config);
+  apply_common_style(box, a_element);
 
   if (a_element->contains_style("color"))
   {
@@ -194,42 +100,42 @@ RenderBox* render_a_tag(HTMLAnchorElement* a_element, const RenderConfig& config
   return box;
 }
 
-RenderBox* render_hx_tag(HTMLHeadingElement* h_element, const RenderConfig& config)
+RenderBox* render_hx_tag(HTMLHeadingElement* h_element)
 {
   RenderBox* box = new_render_box(h_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, h_element, config);
+  apply_common_style(box, h_element);
 
   return box;
 }
 
-RenderBox* render_span_tag(HTMLSpanElement* span_element, const RenderConfig& config)
+RenderBox* render_span_tag(HTMLSpanElement* span_element)
 {
   RenderBox* box = new_render_box(span_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, span_element, config);
+  apply_common_style(box, span_element);
 
   return box;
 }
 
-RenderBox* render_em_tag(HTMLEmphasisElement* em_element, const RenderConfig& config)
+RenderBox* render_em_tag(HTMLEmphasisElement* em_element)
 {
   RenderBox* box = new_render_box(em_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, em_element, config);
+  apply_common_style(box, em_element);
 
   return box;
 }
 
-RenderBox* render_i_tag(HTMLItalicizedElement* i_element, const RenderConfig& config)
+RenderBox* render_i_tag(HTMLItalicizedElement* i_element)
 {
   RenderBox* box = new_render_box(i_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, i_element, config);
+  apply_common_style(box, i_element);
 
   return box;
 }
 
-RenderBox* render_strong_tag(HTMLStrongElement* strong_element, const RenderConfig& config)
+RenderBox* render_strong_tag(HTMLStrongElement* strong_element)
 {
   RenderBox* box = new_render_box(strong_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, strong_element, config);
+  apply_common_style(box, strong_element);
 
   return box;
 }
@@ -237,7 +143,7 @@ RenderBox* render_strong_tag(HTMLStrongElement* strong_element, const RenderConf
 RenderBox* render_ol_tag(HTMLOrderedListElement* ol_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(ol_element->element_value, Gtk::ORIENTATION_VERTICAL);
-  apply_common_style(box, ol_element, config);
+  apply_common_style(box, ol_element);
 
   return box;
 }
@@ -245,7 +151,7 @@ RenderBox* render_ol_tag(HTMLOrderedListElement* ol_element, const RenderConfig&
 RenderBox* render_ul_tag(HTMLUnorderedListElement* ul_element, const RenderConfig& config)
 {
   RenderBox* box = new_render_box(ul_element->element_value, Gtk::ORIENTATION_VERTICAL);
-  apply_common_style(box, ul_element, config);
+  apply_common_style(box, ul_element);
 
   return box;
 }
@@ -253,7 +159,7 @@ RenderBox* render_ul_tag(HTMLUnorderedListElement* ul_element, const RenderConfi
 RenderBox* render_li_tag(HTMLListItemElement* li_element, Gtk::Box* parent, RenderConfig& config)
 {
   RenderBox* box = new_render_box(li_element->element_value, Gtk::ORIENTATION_HORIZONTAL);
-  apply_common_style(box, li_element, config);
+  apply_common_style(box, li_element);
 
   if (not config.list)
   {
@@ -287,10 +193,10 @@ RenderBox* render_li_tag(HTMLListItemElement* li_element, Gtk::Box* parent, Rend
   return box;
 }
 
-RenderBox* render_img_tag(HTMLImageElement* img_element, Gtk::Box* parent, const RenderConfig& config)
+RenderBox* render_img_tag(HTMLImageElement* img_element, Gtk::Box* parent)
 {
   RenderBox* box = new_render_box(img_element->element_value, Gtk::ORIENTATION_VERTICAL);
-  apply_common_style(box, img_element, config);
+  apply_common_style(box, img_element);
 
   std::string src = img_element->src();
   Glib::RefPtr<Gdk::Pixbuf> pixbuf_img = Gdk::Pixbuf::create_from_file(src);
@@ -317,39 +223,90 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
 
   // Font Description
   Pango::FontDescription font_description = Pango::FontDescription();
-  font_description.set_size(config.font_size*PANGO_SCALE); // font-size
-  font_description.set_family(config.font_family);         // font-family
-  font_description.set_weight(config.font_weight);         // font-weight
-  font_description.set_style(config.font_style);           // font-style
-  
+
+  font_description.set_absolute_size(text->style.font_size*PANGO_SCALE*PANGO_SCALE_LARGE); // font-size
+  font_description.set_family(text->style.font_family);         // font-family
+
+  // font-weight
+  if (text->style.font_weight.find_first_not_of("0123456789") == std::string::npos)
+  {
+    int font_weight_num;
+    std::stringstream ss;
+    ss << text->style.font_weight;
+    ss >> font_weight_num;
+
+    font_description.set_weight(Pango::Weight(font_weight_num));
+  }
+  else
+  {
+    if (text->style.font_weight == "normal") 
+      font_description.set_weight(Pango::Weight::WEIGHT_NORMAL);
+    else if (text->style.font_weight == "bold")
+      font_description.set_weight(Pango::Weight::WEIGHT_BOLD);
+  }
+
+  // font-style
+  if (text->style.font_style == "normal")
+    font_description.set_style(Pango::Style::STYLE_NORMAL);
+  else if (text->style.font_style == "italic")
+    font_description.set_style(Pango::Style::STYLE_ITALIC);
+  else if (text->style.font_style == "oblique")
+    font_description.set_style(Pango::Style::STYLE_OBLIQUE);
+
   Pango::AttrFontDesc font_description_attr = Pango::Attribute::create_attr_font_desc(font_description);
+  attr_list.insert(font_description_attr);
 
   // Text decoration
-  Pango::AttrInt text_decoration_underline_attr = Pango::Attribute::create_attr_underline(config.text_underline);
-	Pango::AttrInt text_decoration_overline_attr  = Pango::Attribute::create_attr_overline(config.text_overline);
+  //    text-decoration-line
+  for (std::string& text_decoration : text->style.text_decoration_line)
+  {
+    if (text_decoration == "none")
+    {
+      break;
+    }
+    else if (text_decoration == "underline")
+    {
+      // Default: solid
+      Pango::AttrInt text_decoration_underline = Pango::Attribute::create_attr_underline(Pango::Underline::UNDERLINE_SINGLE);
+      if (text->style.text_decoration_style == "double")
+        text_decoration_underline = Pango::Attribute::create_attr_underline(Pango::Underline::UNDERLINE_DOUBLE);
+      else if (text->style.text_decoration_style == "wavy")
+        text_decoration_underline = Pango::Attribute::create_attr_underline(Pango::Underline::UNDERLINE_ERROR);
 
+      attr_list.insert(text_decoration_underline);
+    }
+    else if (text_decoration == "overline")
+    {
+      Pango::AttrInt text_decoration_overline = Pango::Attribute::create_attr_overline(Pango::Overline::OVERLINE_SINGLE);
+      attr_list.insert(text_decoration_overline);
+    }
+    else if (text_decoration == "line-through")
+    {
+      Pango::AttrInt text_decoration_line_through = Pango::Attribute::create_attr_strikethrough(true);
+      attr_list.insert(text_decoration_line_through);
+    }
+  }
+
+  //    text-decoration-color
+  Gdk::RGBA color = Gdk::RGBA(text->style.text_decoration_color);
   Pango::AttrColor text_decoration_underline_color = Pango::Attribute::create_attr_underline_color(
-    config.text_decoration_color.get_red(),
-    config.text_decoration_color.get_green(),
-    config.text_decoration_color.get_blue()
+    color.get_red_u(),
+    color.get_green_u(),
+    color.get_blue_u()
   );
   Pango::AttrColor text_decoration_overline_color = Pango::Attribute::create_attr_overline_color(
-    config.text_decoration_color.get_red(),
-    config.text_decoration_color.get_green(),
-    config.text_decoration_color.get_blue()
+    color.get_red_u(),
+    color.get_green_u(),
+    color.get_blue_u()
   );
-
-  attr_list.insert(font_description_attr);
-  if (config.text_underline != Pango::Underline::UNDERLINE_NONE)
-  {
-    attr_list.insert(text_decoration_underline_attr);
-    attr_list.insert(text_decoration_underline_color);
-  }
-  else if (config.text_overline != Pango::Overline::OVERLINE_NONE)
-  {
-    attr_list.insert(text_decoration_overline_attr);
-    attr_list.insert(text_decoration_overline_color);
-  }
+  Pango::AttrColor text_decoration_line_through_color = Pango::Attribute::create_attr_strikethrough_color(
+    color.get_red_u(),
+    color.get_green_u(),
+    color.get_blue_u()
+  );
+  attr_list.insert(text_decoration_underline_color);
+  attr_list.insert(text_decoration_overline_color);
+  attr_list.insert(text_decoration_line_through_color);
 
   // Add attributes to label
   label->set_attributes(attr_list);
@@ -371,8 +328,6 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config, RenderI
     return;
   }
 
-  set_render_config(config, element);
-
   // Renderer for every element
   RenderBox* rendered_element;
   if (element->element_value == "body")
@@ -380,28 +335,28 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config, RenderI
     HTMLBodyElement* body_element = dynamic_cast<HTMLBodyElement*>(element);
     if (body_element == nullptr) 
       return;
-    rendered_element = render_body_tag(body_element, config);
+    rendered_element = render_body_tag(body_element);
   }
   else if (element->element_value == "div")
   {
     HTMLDivElement* div_element = dynamic_cast<HTMLDivElement*>(element);
     if (div_element == nullptr)
       return;
-    rendered_element = render_div_tag(div_element, config);
+    rendered_element = render_div_tag(div_element);
   }
   else if (element->element_value == "p")
   {
     HTMLParagraphElement* p_element = dynamic_cast<HTMLParagraphElement*>(element);
     if (p_element == nullptr)
       return;
-    rendered_element = render_p_tag(p_element, config);
+    rendered_element = render_p_tag(p_element);
   }
   else if (element->element_value == "a")
   {
     HTMLAnchorElement* a_element = dynamic_cast<HTMLAnchorElement*>(element);
     if (a_element == nullptr)
       return;
-    rendered_element = render_a_tag(a_element, config, info);
+    rendered_element = render_a_tag(a_element, info);
   }
   else if (element->element_value == "h1" or element->element_value == "h2" or element->element_value == "h3" or
            element->element_value == "h4" or element->element_value == "h5" or element->element_value == "h6")
@@ -409,35 +364,35 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config, RenderI
     HTMLHeadingElement* h_element = dynamic_cast<HTMLHeadingElement*>(element);
     if (h_element == nullptr)
       return;
-    rendered_element = render_hx_tag(h_element, config);
+    rendered_element = render_hx_tag(h_element);
   }
   else if (element->element_value == "span")
   {
     HTMLSpanElement* span_element = dynamic_cast<HTMLSpanElement*>(element);
     if (span_element == nullptr)
       return;
-    rendered_element = render_span_tag(span_element, config);
+    rendered_element = render_span_tag(span_element);
   }
   else if (element->element_value == "em")
   {
     HTMLEmphasisElement* em_element = dynamic_cast<HTMLEmphasisElement*>(element);
     if (em_element == nullptr)
       return;
-    rendered_element = render_em_tag(em_element, config);
+    rendered_element = render_em_tag(em_element);
   }
   else if (element->element_value == "i")
   {
     HTMLItalicizedElement* i_element = dynamic_cast<HTMLItalicizedElement*>(element);
     if (i_element == nullptr)
       return;
-    rendered_element = render_i_tag(i_element, config);
+    rendered_element = render_i_tag(i_element);
   }
   else if (element->element_value == "strong")
   {
     HTMLStrongElement* strong_element = dynamic_cast<HTMLStrongElement*>(element);
     if (strong_element == nullptr)
       return;
-    rendered_element = render_strong_tag(strong_element, config);
+    rendered_element = render_strong_tag(strong_element);
   }
   else if (element->element_value == "ol")
   {
@@ -465,7 +420,7 @@ void render(HTMLElement* element, Gtk::Box* parent, RenderConfig config, RenderI
     HTMLImageElement* img_element = dynamic_cast<HTMLImageElement*>(element);
     if (img_element == nullptr)
       return;
-    rendered_element = render_img_tag(img_element, parent, config);
+    rendered_element = render_img_tag(img_element, parent);
   }
 
   parent->pack_start(*rendered_element->outer_box, false, false);
