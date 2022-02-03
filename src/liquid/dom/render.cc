@@ -68,7 +68,7 @@ RenderBox* render_a_tag(HTMLAnchorElement* a_element, RenderInfo& info)
   Gtk::Box* inner_box = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_HORIZONTAL);
 
   Gtk::LinkButton* link_button = Gtk::make_managed<Gtk::LinkButton>();
-  outer_box->pack_start(*link_button);
+  outer_box->pack_start(*link_button, false, false);
   link_button->add(*inner_box);
 
   outer_box->show();
@@ -82,13 +82,19 @@ RenderBox* render_a_tag(HTMLAnchorElement* a_element, RenderInfo& info)
   };
   apply_common_style(box, a_element);
 
+  /* TODO: Change to use style
   if (a_element->contains_style("color"))
   {
     std::string color_value = a_element->get_style_property_value("color")[0];
     Gdk::RGBA color = Gdk::RGBA(color_value);
     link_button->override_color(color);
   }
+  */
+  // Color of link <a>
+  Gdk::RGBA color = Gdk::RGBA(a_element->style.color);
+  link_button->override_color(color);
 
+  // href attribute
   if (a_element->contains_attribute("href"))
     link_button->set_uri(a_element->get_attribute("href")->value());
   else

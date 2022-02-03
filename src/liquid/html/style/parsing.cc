@@ -62,7 +62,8 @@ float get_css_number(CSSNumber& n, float& em_reference_value)
 
 bool is_property_inherited(const std::string& property)
 {
-  if (property == "font" or
+  if (property == "color" or 
+      property == "font" or
       property == "font-style" or
       property == "font-variant" or
       property == "font-weight" or

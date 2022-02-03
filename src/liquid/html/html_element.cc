@@ -218,8 +218,13 @@ void HTMLElement::set_style_property(const std::string& property, const std::str
 
 void HTMLElement::set_style_property(const std::string& property, const std::vector<std::string>& value)
 {
+	if (property == "color")
+	{
+		style.color = value[0];
+	}
+
 	// Font
-	if (property == "font")
+	else if (property == "font")
 	{
 	}
 	else if (property == "font-style")
@@ -460,7 +465,17 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 	// Text decoration
 	else if (property == "text-decoration")
 	{
+		style.text_decoration_line.clear();
 
+		for (const std::string& text_decoration : value)
+		{
+			if (text_decoration == "underline" or text_decoration == "overline" or text_decoration == "line-through" or text_decoration == "none")
+				style.text_decoration_line.push_back(text_decoration);
+			else if (text_decoration == "solid" or text_decoration == "double" or text_decoration == "dotted" or text_decoration == "dashed" or text_decoration == "wavy")
+				style.text_decoration_style = text_decoration;
+			else
+				style.text_decoration_color = text_decoration;
+		}
 	}
 	else if (property == "text-decoration-line")
 	{
