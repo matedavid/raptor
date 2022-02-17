@@ -60,10 +60,10 @@ void Content::render_from_file(const std::string &path)
   if (fsss.size() != 0)
   {
     auto border_example = fsss[0];
-    std::cout << "Top: " << border_example->style.border_width[0] << std::endl;
-    std::cout << "Right: " << border_example->style.border_width[1] << std::endl;
-    std::cout << "Bottom: " << border_example->style.border_width[2] << std::endl;
-    std::cout << "Left: " << border_example->style.border_width[3] << std::endl;
+    std::cout << "Top: " << border_example->style.border_color[0] << std::endl;
+    std::cout << "Right: " << border_example->style.border_color[1] << std::endl;
+    std::cout << "Bottom: " << border_example->style.border_color[2] << std::endl;
+    std::cout << "Left: " << border_example->style.border_color[3] << std::endl;
   }
 
 	
