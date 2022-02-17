@@ -9,9 +9,9 @@ RenderBox* new_render_box(const std::string& element_value, Gtk::Orientation ori
   outer_box->pack_start(*inner_box);
 
   return new RenderBox{
-    outer_box: outer_box,
-    inner_box: inner_box,
-    element_value: element_value
+		.outer_box = outer_box,
+		.inner_box = inner_box,
+		.element_value = element_value
   };
 }
 

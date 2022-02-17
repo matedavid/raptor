@@ -26,6 +26,9 @@ struct RenderConfig
   bool list;                  // If element is under a list
   unsigned int list_type;     // ul: 0 - ol: 1
   int unordered_list_marker;  // TODO: Not implemented, should decide how to represent markers
+
+  // Box where the marker from a list element goes
+  Gtk::Box* list_marker_box;
 };
 
 struct RenderInfo 

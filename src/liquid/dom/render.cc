@@ -76,20 +76,12 @@ RenderBox* render_a_tag(HTMLAnchorElement* a_element, RenderInfo& info)
   inner_box->show();
 
   RenderBox* box = new RenderBox{
-    outer_box: outer_box,
-    inner_box: inner_box,
-    element_value: a_element->element_value
+		.outer_box = outer_box,
+		.inner_box = inner_box,
+		.element_value = a_element->element_value
   };
   apply_common_style(box, a_element);
 
-  /* TODO: Change to use style
-  if (a_element->contains_style("color"))
-  {
-    std::string color_value = a_element->get_style_property_value("color")[0];
-    Gdk::RGBA color = Gdk::RGBA(color_value);
-    link_button->override_color(color);
-  }
-  */
   // Color of link <a>
   Gdk::RGBA color = Gdk::RGBA(a_element->style.color);
   link_button->override_color(color);
@@ -146,7 +138,7 @@ RenderBox* render_strong_tag(HTMLStrongElement* strong_element)
   return box;
 }
 
-RenderBox* render_ol_tag(HTMLOrderedListElement* ol_element, const RenderConfig& config)
+RenderBox* render_ol_tag(HTMLOrderedListElement* ol_element, RenderConfig& config)
 {
   RenderBox* box = new_render_box(ol_element->element_value, Gtk::ORIENTATION_VERTICAL);
   apply_common_style(box, ol_element);
@@ -154,10 +146,20 @@ RenderBox* render_ol_tag(HTMLOrderedListElement* ol_element, const RenderConfig&
   return box;
 }
 
-RenderBox* render_ul_tag(HTMLUnorderedListElement* ul_element, const RenderConfig& config)
+RenderBox* render_ul_tag(HTMLUnorderedListElement* ul_element, RenderConfig& config)
 {
   RenderBox* box = new_render_box(ul_element->element_value, Gtk::ORIENTATION_VERTICAL);
   apply_common_style(box, ul_element);
+
+  /*
+  Gtk::Label* l = Gtk::make_managed<Gtk::Label>("*");
+  l->set_selectable(false);
+	l->set_line_wrap(false);
+	l->set_xalign(0.0f);
+  l->set_padding(0, 0);
+  box->inner_box->pack_start(*l, false, false);
+  */
+  Gtk::Label* l = Gtk::make_managed<Gtk::Label>("*");
 
   return box;
 }
@@ -173,10 +175,24 @@ RenderBox* render_li_tag(HTMLListItemElement* li_element, Gtk::Box* parent, Rend
     config.list_type = 0;
   }
 
+
+
   if (config.list_type == 0)
   {
-    Gtk::Label* label = Gtk::make_managed<Gtk::Label>("· "); // TODO: Fix this, use something different to "*" and push it to the left a bit, and match font-size to actual text
-    box->inner_box->pack_start(*label, false, false);
+    // TODO: Fix this, use something different to "*" 
+    Gtk::Label* marker = Gtk::make_managed<Gtk::Label>("*");
+    marker->set_size_request(40); // This works as replacement for 40px left-padding of <ul> and <ol>
+
+    Pango::FontDescription font_description = Pango::FontDescription();
+    font_description.set_absolute_size(li_element->style.font_size*PANGO_SCALE*PANGO_SCALE_LARGE);
+    font_description.set_family(li_element->style.font_family);
+    Pango::AttrFontDesc font_description_attr = Pango::Attribute::create_attr_font_desc(font_description);
+
+    Pango::AttrList marker_attrs = Pango::AttrList();
+    marker_attrs.insert(font_description_attr);
+    marker->set_attributes(marker_attrs);
+
+    box->inner_box->pack_start(*marker, false, false);
   }
   else if (config.list_type == 1)
   {
