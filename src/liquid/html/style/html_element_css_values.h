@@ -42,4 +42,9 @@ struct HTMLElementCSSValues
   std::vector<std::string> text_decoration_line = {"none"};
   std::string text_decoration_color = "black";
   std::string text_decoration_style = "solid";
+
+  // Border (vector represents = {top, right, bottom, left})
+  std::vector<std::string> border_width = {"medium", "medium", "medium", "medium"};
+  std::string border_style = "none";
+  std::vector<std::string> border_color = {"black"};
 };

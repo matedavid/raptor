@@ -27,10 +27,10 @@ void Browser::search_bar_button_press()
 
 void Browser::new_tab()
 {
-	Tab* tab = new Tab();
-	//tab->m_content.render_from_file("/home/david/workspace/raptor/src/gui/templates/new_tab.html");
-  // DEBUG: 
-  tab->m_content.render_from_file("/home/david/workspace/raptor/examples/index.html");
+	Tab *tab = new Tab();
+	// tab->m_content.render_from_file("/home/david/workspace/raptor/src/gui/templates/new_tab.html");
+	// DEBUG:
+	tab->m_content.render_from_file("/home/david/workspace/raptor/examples/index.html");
 
 	tab->m_new_tab_button.signal_clicked().connect([this] { this->new_tab(); });
 	tab->show();

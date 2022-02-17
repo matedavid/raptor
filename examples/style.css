@@ -1,16 +1,7 @@
-.example {
-  text-decoration-line: underline overline;
-  text-decoration-style: double;
-}
-
 img {
   margin-left: 20px;
 }
 
-a {
-  background-color: green;
-}
-
-p {
-  background-color: green;
+.border {
+  border-width: thin;
 }

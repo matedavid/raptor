@@ -24,6 +24,9 @@ struct CSSNumber
 // Parses number used in CSS from string
 CSSNumber parse_number(const std::string& value);
 
+// Returns if value is a CSSNumber
+bool is_value_css_number(const std::string& value);
+
 //std::pair<CSSNumber, CSSNumber> parse_pair_numbers(const std::vector<std::string>& value, int i);
 
 // Returns if the property is an inherited property

@@ -35,20 +35,12 @@ CSSNumber parse_number(const std::string& value)
   return CSSNumber{value_number, type};
 }
 
-/*
-std::pair<CSSNumber, CSSNumber> parse_pair_numbers(const std::vector<std::string>& value, int i)
+bool is_value_css_number(const std::string& value)
 {
-  CSSNumber num1 = parse_number(value[i]);
-  CSSNumber num2 = parse_number(value[i+1]);
-
-  if (num1.type != num2.type and num1.type != CSSNumberType::Error and num2.type != CSSNumberType::Error)
-    return std::make_pair(CSSNumber{0.0, CSSNumberType::Error}, CSSNumber{0.0, CSSNumberType::Error});
-  else if (num1.type == CSSNumberType::Error or num2.type == CSSNumberType::Error)
-    return std::make_pair(CSSNumber{0.0, CSSNumberType::Error}, CSSNumber{0.0, CSSNumberType::Error});
-  
-  return std::make_pair(num1, num2);
+  CSSNumber number = parse_number(value);
+  return number.type != CSSNumberType::Error;
 }
-*/
+
 
 float get_css_number(CSSNumber& n, float& em_reference_value)
 {

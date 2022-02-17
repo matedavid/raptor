@@ -54,4 +54,17 @@ void Content::render_from_file(const std::string &path)
 
 	// DEBUG
 	liquid::print_html_element(document.body, 0);
+
+
+	auto fsss = document.body->get_elements_by_class_name("border");
+  if (fsss.size() != 0)
+  {
+    auto border_example = fsss[0];
+    std::cout << "Top: " << border_example->style.border_width[0] << std::endl;
+    std::cout << "Right: " << border_example->style.border_width[1] << std::endl;
+    std::cout << "Bottom: " << border_example->style.border_width[2] << std::endl;
+    std::cout << "Left: " << border_example->style.border_width[3] << std::endl;
+  }
+
+	
 }

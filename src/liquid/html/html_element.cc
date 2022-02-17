@@ -490,6 +490,44 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 		style.text_decoration_style = value[0];
 	}
 
+  // Border
+  else if (property == "border")
+  {
+
+  }
+  else if (property == "border-width")
+  {
+    for (int i = 0; i < value.size(); ++i)
+    {
+      std::string border_width_value = value[i];
+      if (is_value_css_number(value[i]))
+      {
+        CSSNumber number = parse_number(value[i]);
+        border_width_value = std::to_string(get_css_number(number, style.font_size));
+      }
+
+      if (i == 0)
+        style.border_width = {border_width_value, border_width_value, border_width_value, border_width_value};
+      else if (i == 1)
+      {
+        style.border_width[1] = border_width_value; // right
+        style.border_width[3] = border_width_value; // left
+      }
+      else if (i == 2)
+        style.border_width[2] = border_width_value; // bottom
+      else if (i == 3)
+        style.border_width[3] = border_width_value; // left
+    }
+  }
+  else if (property == "border-style")
+  {
+
+  }
+  else if (property == "border-color")
+  {
+
+  }
+
 	// "Cascade-down" property through children if it's inherited
 	if (is_property_inherited(property))
 	{
