@@ -143,6 +143,9 @@ RenderBox* render_ol_tag(HTMLOrderedListElement* ol_element, RenderConfig& confi
   RenderBox* box = new_render_box(ol_element->element_value, Gtk::ORIENTATION_VERTICAL);
   apply_common_style(box, ol_element);
 
+  config.list = true;
+  config.list_type = 1;
+
   return box;
 }
 
@@ -151,15 +154,8 @@ RenderBox* render_ul_tag(HTMLUnorderedListElement* ul_element, RenderConfig& con
   RenderBox* box = new_render_box(ul_element->element_value, Gtk::ORIENTATION_VERTICAL);
   apply_common_style(box, ul_element);
 
-  /*
-  Gtk::Label* l = Gtk::make_managed<Gtk::Label>("*");
-  l->set_selectable(false);
-	l->set_line_wrap(false);
-	l->set_xalign(0.0f);
-  l->set_padding(0, 0);
-  box->inner_box->pack_start(*l, false, false);
-  */
-  Gtk::Label* l = Gtk::make_managed<Gtk::Label>("*");
+  config.list = true;
+  config.list_type = 0;
 
   return box;
 }
@@ -175,11 +171,9 @@ RenderBox* render_li_tag(HTMLListItemElement* li_element, Gtk::Box* parent, Rend
     config.list_type = 0;
   }
 
-
-
   if (config.list_type == 0)
   {
-    // TODO: Fix this, use something different to "*" 
+    // TODO: Fix this, use something different to "*" (maybe the config.unordered_list_marker????)
     Gtk::Label* marker = Gtk::make_managed<Gtk::Label>("*");
     marker->set_size_request(40); // This works as replacement for 40px left-padding of <ul> and <ol>
 
@@ -205,11 +199,21 @@ RenderBox* render_li_tag(HTMLListItemElement* li_element, Gtk::Box* parent, Rend
         break;
       ++number;
     }
-
     std::string num_marker = std::to_string(number) + ". ";
 
-    Gtk::Label* label = Gtk::make_managed<Gtk::Label>(num_marker);
-    box->inner_box->pack_start(*label, false, false);
+    Gtk::Label* marker = Gtk::make_managed<Gtk::Label>(num_marker);
+    marker->set_size_request(40); // This works as replacement for 40px left-padding of <ul> and <ol>
+
+    Pango::FontDescription font_description = Pango::FontDescription();
+    font_description.set_absolute_size(li_element->style.font_size*PANGO_SCALE*PANGO_SCALE_LARGE);
+    font_description.set_family(li_element->style.font_family);
+    Pango::AttrFontDesc font_description_attr = Pango::Attribute::create_attr_font_desc(font_description);
+
+    Pango::AttrList marker_attrs = Pango::AttrList();
+    marker_attrs.insert(font_description_attr);
+    marker->set_attributes(marker_attrs);
+
+    box->inner_box->pack_start(*marker, false, false);
   }
 
   return box;
