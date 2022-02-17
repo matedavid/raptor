@@ -283,7 +283,7 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
   attr_list.insert(font_description_attr);
 
   // Text decoration
-  //    text-decoration-line
+  //    text-decoration-line + text-decoration-style
   for (std::string& text_decoration : text->style.text_decoration_line)
   {
     if (text_decoration == "none")
