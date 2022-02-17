@@ -82,10 +82,6 @@ RenderBox* render_a_tag(HTMLAnchorElement* a_element, RenderInfo& info)
   };
   apply_common_style(box, a_element);
 
-  // Color of link <a>
-  Gdk::RGBA color = Gdk::RGBA(a_element->style.color);
-  link_button->override_color(color);
-
   // href attribute
   if (a_element->contains_attribute("href"))
     link_button->set_uri(a_element->get_attribute("href")->value());
@@ -244,6 +240,10 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
 	label->set_line_wrap(true);
 	label->set_xalign(0.0f);
   label->set_padding(0, 0);
+
+  // color 
+  Gdk::RGBA color = Gdk::RGBA(text->style.color);
+  label->override_color(color);
   
   Pango::AttrList attr_list = Pango::AttrList();
 
@@ -314,21 +314,21 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
   }
 
   //    text-decoration-color
-  Gdk::RGBA color = Gdk::RGBA(text->style.text_decoration_color);
+  Gdk::RGBA text_decoration_color = Gdk::RGBA(text->style.text_decoration_color);
   Pango::AttrColor text_decoration_underline_color = Pango::Attribute::create_attr_underline_color(
-    color.get_red_u(),
-    color.get_green_u(),
-    color.get_blue_u()
+    text_decoration_color.get_green_u(),
+    text_decoration_color.get_red_u(),
+    text_decoration_color.get_blue_u()
   );
   Pango::AttrColor text_decoration_overline_color = Pango::Attribute::create_attr_overline_color(
-    color.get_red_u(),
-    color.get_green_u(),
-    color.get_blue_u()
+    text_decoration_color.get_red_u(),
+    text_decoration_color.get_green_u(),
+    text_decoration_color.get_blue_u()
   );
   Pango::AttrColor text_decoration_line_through_color = Pango::Attribute::create_attr_strikethrough_color(
-    color.get_red_u(),
-    color.get_green_u(),
-    color.get_blue_u()
+    text_decoration_color.get_red_u(),
+    text_decoration_color.get_green_u(),
+    text_decoration_color.get_blue_u()
   );
   attr_list.insert(text_decoration_underline_color);
   attr_list.insert(text_decoration_overline_color);

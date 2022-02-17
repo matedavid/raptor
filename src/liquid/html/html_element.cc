@@ -278,7 +278,7 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 			if (num1.type != CSSNumberType::Error and num2.type != CSSNumberType::Error)
 			{
 				style.background_position.first = num1.type == CSSNumberType::Px 
-																					? std::to_string(num1.value)
+                                          ? std::to_string(num1.value)
 																					: std::to_string(num1.value*style.font_size);
 				style.background_position.second = num2.type == CSSNumberType::Px 
 																					? std::to_string(num2.value)
