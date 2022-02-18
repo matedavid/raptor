@@ -36,6 +36,7 @@ static void apply_common_style(RenderBox* box, HTMLElement* element)
 
   // Apply background color
   box->outer_box->override_background_color(Gdk::RGBA(element->style.background_color));
+  box->inner_box->override_color(Gdk::RGBA(element->style.color));
 }
 
 RenderBox* render_body_tag(HTMLBodyElement* body_element)
@@ -195,7 +196,7 @@ RenderBox* render_li_tag(HTMLListItemElement* li_element, Gtk::Box* parent, Rend
         break;
       ++number;
     }
-    std::string num_marker = std::to_string(number) + ". ";
+    std::string num_marker = std::to_string(number) + ".";
 
     Gtk::Label* marker = Gtk::make_managed<Gtk::Label>(num_marker);
     marker->set_size_request(40); // This works as replacement for 40px left-padding of <ul> and <ol>
@@ -241,10 +242,6 @@ Gtk::Label* render_text(Text* text, RenderConfig& config)
 	label->set_xalign(0.0f);
   label->set_padding(0, 0);
 
-  // color 
-  Gdk::RGBA color = Gdk::RGBA(text->style.color);
-  label->override_color(color);
-  
   Pango::AttrList attr_list = Pango::AttrList();
 
   // Font Description
