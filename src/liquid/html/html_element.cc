@@ -222,6 +222,26 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 	{
 		style.color = value[0];
 	}
+	else if (property == "width")
+	{
+		if (value[0] == "auto")
+			style.width = -1;
+		else if (is_value_css_number(value[0]))
+		{
+			CSSNumber width = parse_number(value[0]);
+			style.width = get_css_number(width, style.font_size);
+		}
+	}
+	else if (property == "height")
+	{
+		if (value[0] == "auto")
+			style.height = -1;
+		else if (is_value_css_number(value[0]))
+		{
+			CSSNumber height = parse_number(value[0]);
+			style.height = get_css_number(height, style.font_size);
+		}
+	}
 
 	// Font
 	else if (property == "font")

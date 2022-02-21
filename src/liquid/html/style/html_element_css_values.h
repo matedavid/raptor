@@ -8,6 +8,8 @@
 struct HTMLElementCSSValues
 {
   std::string color = "black";
+  float width  = -1;  // -1 = auto
+  float height = -1;  // -1 = auto
 
   // Font
   std::string font_style = "normal";

@@ -36,7 +36,15 @@ static void apply_common_style(RenderBox* box, HTMLElement* element)
 
   // Apply background color
   box->outer_box->override_background_color(Gdk::RGBA(element->style.background_color));
+  // Apply color
   box->inner_box->override_color(Gdk::RGBA(element->style.color));
+
+  // Set width and height
+  box->outer_box->set_size_request(element->style.width, element->style.height);
+  // If width != "auto" (-1), need to set halign to START because if not, width will not apply
+  if (element->style.width != -1)
+    box->outer_box->set_halign(Gtk::Align::ALIGN_START);
+
 }
 
 RenderBox* render_body_tag(HTMLBodyElement* body_element)
