@@ -1,15 +1,35 @@
 #include <iostream>
-#include <gtkmm.h>
 
-#include "browser.h"
+#include <SFML/Graphics.hpp>
 
 int main(int argc, char* argv[])
 {
-	// Creates Gtk app
-	auto app = Gtk::Application::create();
+  sf::RenderWindow window(sf::VideoMode(512, 512), "Raptor", sf::Style::Default);
 
-	// Create window
-	auto window = Browser();
+  sf::Font font;
+  if (not font.loadFromFile("../src/gui/Roboto/Roboto-Regular.ttf"))
+  {
+  }
 
-	return app->run(window, argc, argv);
+  sf::Text text;
+  text.setString("Hello world");
+  text.setFont(font);
+  text.setCharacterSize(16);
+  text.setFillColor(sf::Color::Black);
+
+  while (window.isOpen())
+  {
+    sf::Event event;
+    while (window.pollEvent(event))
+    {
+      if (event.type == sf::Event::Closed)
+        window.close();
+    }
+
+    window.clear(sf::Color::White);
+
+    window.draw(text);
+
+    window.display();
+  }
 }
