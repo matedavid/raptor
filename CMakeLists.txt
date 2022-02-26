@@ -11,7 +11,7 @@ file(GLOB Sources
     "src/liquid/html/*.cc"
     "src/liquid/html/style/*.cc"
     "src/liquid/css/*.cc"
-    "src/liquid/dom/*.cc"
+    "src/liquid/renderer/*.cc"
     
     "src/gui/*.cc"
 )

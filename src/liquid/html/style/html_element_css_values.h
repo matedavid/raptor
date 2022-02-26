@@ -11,6 +11,8 @@ struct HTMLElementCSSValues
   float width  = -1;  // -1 = auto
   float height = -1;  // -1 = auto
 
+  std::string position = "static";
+
   // Font
   std::string font_style = "normal";
   std::string font_variant = "normal";
@@ -48,5 +50,5 @@ struct HTMLElementCSSValues
   // Border (vector represents = {top, right, bottom, left})
   std::vector<std::string> border_width = {"medium", "medium", "medium", "medium"};
   std::vector<std::string> border_style = {"none", "none", "none", "none"};
-  std::vector<std::string> border_color = {"black"};
+  std::vector<std::string> border_color = {"black", "black", "black", "black"};
 };

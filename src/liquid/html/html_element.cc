@@ -242,6 +242,10 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 			style.height = get_css_number(height, style.font_size);
 		}
 	}
+	else if (property == "position")
+	{
+		style.position = value[0];
+	}
 
 	// Font
 	else if (property == "font")

@@ -3,7 +3,8 @@ img {
 }
 
 .example {
-  background-color: blue;
-  height: 200px;
-  width: 200px;
+}
+
+.text_2 {
+  margin-top: 20px;
 }

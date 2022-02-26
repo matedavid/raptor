@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-int main(int argc, char* argv[])
+int main_2(int argc, char* argv[])
 {
   sf::RenderWindow window(sf::VideoMode(512, 512), "Raptor", sf::Style::Default);
 
@@ -16,6 +16,9 @@ int main(int argc, char* argv[])
   text.setFont(font);
   text.setCharacterSize(16);
   text.setFillColor(sf::Color::Black);
+
+  sf::Vector2 pos = sf::Vector2(0,1);
+  text.setPosition(50.0, 100.0);
 
   while (window.isOpen())
   {
