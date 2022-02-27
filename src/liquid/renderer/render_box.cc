@@ -30,8 +30,20 @@ void RenderBox::layout(uint _width)
   }
   else
   {
-    xref = parent->get_x();
-    yref = parent->get_y();
+    std::vector<RenderBox*> sibilings = parent->children;
+    int number_sibilings = sibilings.size();
+
+    if (number_sibilings >= 1)
+    {
+      RenderBox* last_sibiling = sibilings[sibilings.size()-1];
+      xref = last_sibiling->get_x();
+      yref = last_sibiling->get_y()+last_sibiling->get_height();
+    }
+    else 
+    {
+      xref = parent->get_x();
+      yref = parent->get_y();
+    }
   }
 
   x = xref + node->style.margin_left + node->style.padding_left;
