@@ -62,6 +62,10 @@ int main(int argc, char* argv[])
       else if (event.type == sf::Event::Resized)
       {
         std::cout << "Width: " << event.size.width << " Height: " << event.size.height << std::endl;
+
+        sf::View new_view = sf::View(sf::FloatRect(0.f, 0.f, event.size.width, event.size.height));
+        window.setView(new_view);
+
         render_tree = liquid::generate_render_tree(document.body, nullptr, event.size.width);
         window.clear(sf::Color::White);
         paint(window, render_tree);
