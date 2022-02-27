@@ -11,6 +11,7 @@ struct HTMLElementCSSValues
   float width  = -1;  // -1 = auto
   float height = -1;  // -1 = auto
 
+  std::string display = "inline";
   std::string position = "static";
 
   // Font

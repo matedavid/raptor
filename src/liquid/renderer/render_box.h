@@ -1,6 +1,7 @@
 #pragma once
 
 #include "liquid/html/html_element.h"
+#include "liquid/html/text.h"
 
 namespace liquid {
 
@@ -21,8 +22,13 @@ struct EdgeValues
 
 class RenderBox
 {
-private:
+protected:
   RenderBoxType type;
+
+  HTMLElement* node;
+
+  RenderBox* parent;
+  std::vector<RenderBox*> children;
 
   float x, y;
   float width, height;
@@ -31,22 +37,35 @@ private:
   EdgeValues<float> border;
   EdgeValues<float> padding;
 
-  HTMLElement* node;
-
-  RenderBox* parent;
-  std::vector<RenderBox*> children;
-
 public: 
-  virtual bool is_printable() { return false; }
+  virtual bool is_printable() const { return false; }
 
 public:
   RenderBox();
   RenderBox(const HTMLElement* element);
 
-  void layout(const HTMLElement* element);
+  void layout(uint _width);
 
-  float get_x() { return x; }
-  float get_y() { return y; }
+  RenderBoxType get_type() const { return type; }
+
+  void set_x(float _x) { x = _x;; }
+  void set_y(float _y) { y = _y; }
+
+  float get_x() const { return x; }
+  float get_y() const { return y; }
+
+  void set_width(float _width)   { width = _width; }
+  void set_height(float _height) { height = _height; }
+
+  float get_width()  const { return width;  }
+  float get_height() const { return height; }
+
+  void add_child(RenderBox* child) { children.push_back(child); }
+
+  void set_parent(RenderBox* _parent) { parent = _parent; }
+  RenderBox* get_parent() const { return parent; }
+
+  void print();
 };
 
 }

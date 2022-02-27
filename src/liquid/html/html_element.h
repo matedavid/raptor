@@ -56,8 +56,8 @@ public:
 	HTMLElement(HTMLElement* parent);
 	HTMLElement(const Token& token, HTMLElement* parent, const std::filesystem::path& document_path);
 
-	HTMLElement* parent_element();
-	std::vector<HTMLElement*> child_elements();
+	HTMLElement* parent_element() const;
+	std::vector<HTMLElement*> child_elements() const;
 
 	// Inserts child to the current element
 	void insert_child(HTMLElement* element);

@@ -6,7 +6,7 @@
 #include "liquid/html/html_document.h"
 #include "liquid/css/tokenizer.h"
 #include "liquid/css/parser.h"
-#include "liquid/renderer/render_box.h"
+#include "liquid/renderer/render_tree.h"
 
 int main(int argc, const char* argv[])
 {
@@ -15,9 +15,11 @@ int main(int argc, const char* argv[])
 	document.from_file(file_path);
 
 	std::cout << "Printing resulting HTML AST:" << std::endl;
-	liquid::print_html_element(document.html, 0);
+	//liquid::print_html_element(document.html, 0);
 
-	liquid::RenderBox rb(document.body);
+	//liquid::RenderBox rb(document.body, 1024, 512);
+	liquid::RenderBox* box = liquid::generate_render_tree(document.body, nullptr, 1024);
+	box->print();
 
   return 0;
 }

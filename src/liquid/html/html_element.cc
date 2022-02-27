@@ -120,12 +120,12 @@ HTMLElement::HTMLElement(const Token& token, HTMLElement* parent, const std::fil
   }
 }
 
-HTMLElement* HTMLElement::parent_element()
+HTMLElement* HTMLElement::parent_element() const
 {
 	return parent;
 }
 
-std::vector<HTMLElement*> HTMLElement::child_elements()
+std::vector<HTMLElement*> HTMLElement::child_elements() const
 {
 	return children;
 }
@@ -242,10 +242,10 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 			style.height = get_css_number(height, style.font_size);
 		}
 	}
-	else if (property == "position")
-	{
+	else if (property == "display")
 		style.position = value[0];
-	}
+	else if (property == "position")
+		style.position = value[0];
 
 	// Font
 	else if (property == "font")
