@@ -23,4 +23,18 @@ RenderBoxText::RenderBoxText(Text* text_element, RenderBox* parent)
   height = text_element->style.font_size * 1.2;
 }
 
+std::string RenderBoxText::get_content() const 
+{
+  Text* text_node = dynamic_cast<Text*>(node);
+  if (text_node == nullptr)
+    return "";
+
+  return text_node->content();
+}
+
+float RenderBoxText::get_font_size() const
+{
+  return node->style.font_size;
+}
+
 }

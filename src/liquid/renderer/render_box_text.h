@@ -18,6 +18,9 @@ public:
 public:
   RenderBoxText();
   RenderBoxText(Text* text_element, RenderBox* parent);
+
+  std::string get_content() const;
+  float get_font_size() const;
 };
 
 }

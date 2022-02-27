@@ -2,35 +2,55 @@
 
 #include <SFML/Graphics.hpp>
 
-int main_2(int argc, char* argv[])
+#include "liquid/html/html_document.h"
+#include "liquid/renderer/render_tree.h"
+
+
+void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
+{
+  if (render_tree->is_printable())
+  {
+    liquid::RenderBoxText* render_box_text = dynamic_cast<liquid::RenderBoxText*>(render_tree);
+    if (render_box_text == nullptr)
+      return;
+
+    float font_size = render_box_text->get_font_size();
+    std::string content = render_box_text->get_content();
+
+    sf::Font font;
+    if (not font.loadFromFile("../src/gui/Roboto/Roboto-Regular.ttf"))
+      return;
+
+    sf::Text text;
+    text.setString(content);
+    text.setFont(font);
+    text.setCharacterSize(font_size);
+    text.setPosition(render_box_text->get_x(), render_box_text->get_y());
+    text.setFillColor(sf::Color::Black);
+
+    window.draw(text);
+  }
+
+  for (liquid::RenderBox* child : render_tree->get_children())
+  {
+    paint(window, child);
+  }
+}
+
+int main(int argc, char* argv[])
 {
   sf::RenderWindow window(sf::VideoMode(1024, 512), "Raptor", sf::Style::Default);
 
-  sf::Font font;
-  if (not font.loadFromFile("../src/gui/Roboto/Roboto-Regular.ttf"))
-  {
-  }
 
-  sf::Text text;
-  text.setString("Hello world");
-  text.setFont(font);
-  text.setCharacterSize(20);
-  text.setFillColor(sf::Color::Black);
-  text.setPosition(8, 16);
+	std::filesystem::path file_path = "/home/david/workspace/raptor/examples/index.html";
+	liquid::HTMLDocument document = liquid::HTMLDocument();
+	document.from_file(file_path);
 
-  sf::VertexArray line(sf::Lines, 2);
-  line[0].position = sf::Vector2f(8, 16);
-  line[0].color = sf::Color::Red;
-  line[1].position = sf::Vector2f(1016, 16);
-  line[1].color = sf::Color::Red;
+	liquid::RenderBox* render_tree = liquid::generate_render_tree(document.body, nullptr, 1024);
 
-  sf::VertexArray line2(sf::Lines, 2);
-  line2[0].position = sf::Vector2f(8, 16+text.getCharacterSize()*1.2);
-  line2[0].color = sf::Color::Red;
-  line2[1].position = sf::Vector2f(1016, 16+text.getCharacterSize()*1.2);
-  line2[1].color = sf::Color::Red;
-
-
+  window.clear(sf::Color::White);
+  paint(window, render_tree);
+  window.display();
 
   while (window.isOpen())
   {
@@ -40,15 +60,16 @@ int main_2(int argc, char* argv[])
       if (event.type == sf::Event::Closed)
         window.close();
       else if (event.type == sf::Event::Resized)
+      {
         std::cout << "Width: " << event.size.width << " Height: " << event.size.height << std::endl;
+        render_tree = liquid::generate_render_tree(document.body, nullptr, event.size.width);
+        window.clear(sf::Color::White);
+        paint(window, render_tree);
+        window.display();
+      }
     }
 
-    window.clear(sf::Color::White);
-
-    window.draw(text);
-    window.draw(line);
-    window.draw(line2);
-
-    window.display();
   }
+  
+  return 0;
 }

@@ -8,7 +8,7 @@
 #include "liquid/css/parser.h"
 #include "liquid/renderer/render_tree.h"
 
-int main(int argc, const char* argv[])
+int main_2(int argc, const char* argv[])
 {
 	std::filesystem::path file_path = "/home/david/workspace/raptor/examples/index.html";
 	liquid::HTMLDocument document = liquid::HTMLDocument();

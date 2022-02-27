@@ -61,6 +61,7 @@ public:
   float get_height() const { return height; }
 
   void add_child(RenderBox* child) { children.push_back(child); }
+  std::vector<RenderBox*> get_children() const { return children; }
 
   void set_parent(RenderBox* _parent) { parent = _parent; }
   RenderBox* get_parent() const { return parent; }
