@@ -17,7 +17,7 @@ public:
 
 public:
   RenderBoxText();
-  RenderBoxText(Text* text_element);
+  RenderBoxText(Text* text_element, RenderBox* parent);
 };
 
 }

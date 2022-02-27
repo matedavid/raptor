@@ -42,7 +42,7 @@ public:
 
 public:
   RenderBox();
-  RenderBox(const HTMLElement* element);
+  RenderBox(HTMLElement* element, RenderBox* parent);
 
   void layout(uint _width);
 
@@ -65,7 +65,7 @@ public:
   void set_parent(RenderBox* _parent) { parent = _parent; }
   RenderBox* get_parent() const { return parent; }
 
-  void print();
+  void print(int number_tabs);
 };
 
 }

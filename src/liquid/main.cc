@@ -19,7 +19,7 @@ int main(int argc, const char* argv[])
 
 	//liquid::RenderBox rb(document.body, 1024, 512);
 	liquid::RenderBox* box = liquid::generate_render_tree(document.body, nullptr, 1024);
-	box->print();
+	box->print(0);
 
   return 0;
 }

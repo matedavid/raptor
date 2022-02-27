@@ -7,6 +7,6 @@
 
 namespace liquid {
 
-RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float _width);
+RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float width);
 
 }

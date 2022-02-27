@@ -2,34 +2,29 @@
 
 namespace liquid {
 
-RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float _width)
+RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float width)
 {
-  RenderBox* render_box = new RenderBox(element);
-  render_box->set_parent(parent);
-  render_box->layout(_width);
+  if (element->type() == HTMLElementType::TextType)
+  {
+    Text* text_element = dynamic_cast<Text*>(element);
+    if (text_element == nullptr)
+      return nullptr;
+
+    RenderBoxText* render_box_text = new RenderBoxText(text_element, parent);
+    return render_box_text;
+  }
+
+  RenderBox* render_box = new RenderBox(element, parent);
+  render_box->layout(width);
 
   float accumulated_height = 0.f;
   for (HTMLElement* child : element->child_elements())
   {
-    if (child->type() == HTMLElementType::TextType)
-    {
-      Text* text_element = dynamic_cast<Text*>(child);
-      if (text_element == nullptr)
-        continue;
+    RenderBox* render_box_child = generate_render_tree(child, render_box, render_box->get_width());
+    if (render_box_child->get_type() != RenderBoxType::Inline)
+      accumulated_height += render_box_child->get_height();
 
-      RenderBoxText* text_render = new RenderBoxText(text_element);
-      accumulated_height += text_render->get_height();
-
-      render_box->add_child(text_render);
-    }
-    else
-    {
-      RenderBox* child_render_box = generate_render_tree(child, render_box, render_box->get_width());
-      if (child_render_box->get_type() != RenderBoxType::Inline)
-        accumulated_height += child_render_box->get_height();
-
-      render_box->add_child(child_render_box);
-    }
+    render_box->add_child(render_box_child);
   }
 
   float height = accumulated_height + element->style.margin_top + element->style.padding_top + 
