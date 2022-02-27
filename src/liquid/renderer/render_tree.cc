@@ -21,7 +21,7 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
   for (HTMLElement* child : element->child_elements())
   {
     RenderBox* render_box_child = generate_render_tree(child, render_box, render_box->get_width());
-    if (render_box_child->get_type() != RenderBoxType::Inline)
+    if (render_box_child->get_display_type() != RenderBoxDisplayType::Inline)
       accumulated_height += render_box_child->get_height();
 
     render_box->add_child(render_box_child);

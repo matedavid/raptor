@@ -10,25 +10,28 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
 {
   if (render_tree->is_printable())
   {
-    liquid::RenderBoxText* render_box_text = dynamic_cast<liquid::RenderBoxText*>(render_tree);
-    if (render_box_text == nullptr)
-      return;
+    if (render_tree->type() == liquid::RenderBoxType::Txt)
+    {
+      liquid::RenderBoxText* render_box_text = dynamic_cast<liquid::RenderBoxText*>(render_tree);
+      if (render_box_text == nullptr)
+        return;
 
-    float font_size = render_box_text->get_font_size();
-    std::string content = render_box_text->get_content();
+      float font_size = render_box_text->get_font_size();
+      std::string content = render_box_text->get_content();
 
-    sf::Font font;
-    if (not font.loadFromFile("../src/gui/Roboto/Roboto-Regular.ttf"))
-      return;
+      sf::Font font;
+      if (not font.loadFromFile("../src/gui/Roboto/Roboto-Regular.ttf"))
+        return;
 
-    sf::Text text;
-    text.setString(content);
-    text.setFont(font);
-    text.setCharacterSize(font_size);
-    text.setPosition(render_box_text->get_x(), render_box_text->get_y());
-    text.setFillColor(sf::Color::Black);
+      sf::Text text;
+      text.setString(content);
+      text.setFont(font);
+      text.setCharacterSize(font_size);
+      text.setPosition(render_box_text->get_x(), render_box_text->get_y());
+      text.setFillColor(sf::Color::Black);
 
-    window.draw(text);
+      window.draw(text);
+    }
   }
 
   for (liquid::RenderBox* child : render_tree->get_children())

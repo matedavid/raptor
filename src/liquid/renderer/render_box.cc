@@ -48,6 +48,14 @@ void RenderBox::layout(uint _width)
 
   x = xref + node->style.margin_left + node->style.padding_left;
   y = yref + node->style.margin_top + node->style.padding_top;
+
+  // Specify display_type
+  if (node->style.display == "none")
+    display_type = RenderBoxDisplayType::None;
+  else if (node->style.display == "block")
+    display_type = RenderBoxDisplayType::Block;
+  else if (node->style.display == "inline")
+    display_type = RenderBoxDisplayType::Inline;
 }
 
 void RenderBox::print(int number_tabs)

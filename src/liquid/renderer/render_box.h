@@ -5,10 +5,18 @@
 
 namespace liquid {
 
-enum RenderBoxType
+enum RenderBoxDisplayType
 {
+  None,
   Block,
   Inline
+};
+
+enum RenderBoxType 
+{
+  Default,
+  Txt,
+  Img 
 };
 
 template<typename T> 
@@ -23,7 +31,7 @@ struct EdgeValues
 class RenderBox
 {
 protected:
-  RenderBoxType type;
+  RenderBoxDisplayType display_type;
 
   HTMLElement* node;
 
@@ -39,6 +47,7 @@ protected:
 
 public: 
   virtual bool is_printable() const { return false; }
+  virtual RenderBoxType type() const { return RenderBoxType::Default; }
 
 public:
   RenderBox();
@@ -46,7 +55,7 @@ public:
 
   void layout(uint _width);
 
-  RenderBoxType get_type() const { return type; }
+  RenderBoxDisplayType get_display_type() const { return display_type; }
 
   void set_x(float _x) { x = _x;; }
   void set_y(float _y) { y = _y; }

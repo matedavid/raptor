@@ -14,6 +14,7 @@ private:
 
 public:
   bool is_printable() const override { return true; }
+  RenderBoxType type() const override { return RenderBoxType::Txt; }
 
 public:
   RenderBoxText();
