@@ -33,8 +33,6 @@ class RenderBox
 protected:
   RenderBoxDisplayType display_type;
 
-  HTMLElement* node;
-
   RenderBox* parent;
   std::vector<RenderBox*> children;
 
@@ -46,6 +44,8 @@ protected:
   EdgeValues<float> padding;
 
 public: 
+  HTMLElement* node;
+
   virtual bool is_printable() const { return false; }
   virtual RenderBoxType type() const { return RenderBoxType::Default; }
 

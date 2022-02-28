@@ -32,6 +32,42 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
 
       window.draw(text);
     }
+    else if (render_tree->type() == liquid::RenderBoxType::Img)
+    {
+      liquid::RenderBoxImage* render_box_image = dynamic_cast<liquid::RenderBoxImage*>(render_tree);
+      if (render_box_image == nullptr)
+        return;
+
+      std::string src = render_box_image->get_src();
+
+      sf::Image image;
+      if (not image.loadFromFile(src))
+      {
+        std::cout << "Error loading image, showing alt: " << render_box_image->get_alt() << std::endl;
+      }
+      sf::Vector2u image_size = image.getSize();
+
+      sf::Texture image_texture;
+      image_texture.loadFromImage(image);
+
+      sf::Sprite image_sprite;
+      image_sprite.setTexture(image_texture, true);
+      image_sprite.setPosition(render_box_image->get_x(), render_box_image->get_y());
+
+      // Apply width and height to sprite
+      sf::Vector2f scale_factor;
+      if (render_box_image->get_width() == -1)
+        scale_factor.x = 1;
+      else 
+        scale_factor.x = render_box_image->img_width / image_size.x;
+      if (render_box_image->get_height() == -1)
+        scale_factor.y = 1;
+      else
+        scale_factor.y = render_box_image->img_height / image_size.y;
+      image_sprite.setScale(scale_factor);
+
+      window.draw(image_sprite);
+    }
   }
 
   for (liquid::RenderBox* child : render_tree->get_children())

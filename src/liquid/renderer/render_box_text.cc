@@ -25,11 +25,7 @@ RenderBoxText::RenderBoxText(Text* text_element, RenderBox* parent)
 
 std::string RenderBoxText::get_content() const 
 {
-  Text* text_node = dynamic_cast<Text*>(node);
-  if (text_node == nullptr)
-    return "";
-
-  return text_node->content();
+  return content;
 }
 
 float RenderBoxText::get_font_size() const

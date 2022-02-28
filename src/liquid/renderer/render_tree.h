@@ -4,6 +4,11 @@
 
 #include "render_box.h"
 #include "render_box_text.h"
+#include "render_box_img.h"
+
+#include "liquid/html/html_element.h"
+#include "liquid/html/html_image_element.h"
+#include "liquid/html/text.h"
 
 namespace liquid {
 

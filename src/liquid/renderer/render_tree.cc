@@ -13,6 +13,16 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
     RenderBoxText* render_box_text = new RenderBoxText(text_element, parent);
     return render_box_text;
   }
+  else if (element->element_value == "img")
+  {
+    HTMLImageElement* img_element = dynamic_cast<HTMLImageElement*>(element);
+    if (img_element == nullptr)
+      return nullptr;
+
+    RenderBoxImage* render_box_image = new RenderBoxImage(img_element, parent);
+    render_box_image->layout(width);
+    return render_box_image;
+  }
 
   RenderBox* render_box = new RenderBox(element, parent);
   render_box->layout(width);
