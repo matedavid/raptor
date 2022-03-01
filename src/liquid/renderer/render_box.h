@@ -39,6 +39,7 @@ protected:
   float x, y;
   float width, height;
 
+public: // TEMPORARY?
   EdgeValues<float> margin;
   EdgeValues<float> border;
   EdgeValues<float> padding;
@@ -49,11 +50,17 @@ public:
   virtual bool is_printable() const { return false; }
   virtual RenderBoxType type() const { return RenderBoxType::Default; }
 
+private:
+  float resolve_border_width(const std::string& border_width_value);
+
 public:
   RenderBox();
   RenderBox(HTMLElement* element, RenderBox* parent);
 
+  // Computes width, (x,y) position, margin/padding/border and display type
   void layout(uint _width);
+  // Computes height from accumulated_height and all remaining margin/padding/border values
+  void compute_height(float accumulated_height);
 
   RenderBoxDisplayType get_display_type() const { return display_type; }
 

@@ -70,6 +70,36 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
     }
   }
 
+  // Print margin, padding lines
+  sf::VertexArray margin_top(sf::Lines, 2);
+  margin_top[0].position = sf::Vector2f(render_tree->get_x(), render_tree->margin.top);
+  margin_top[0].color = sf::Color::Red;
+  margin_top[1].position = sf::Vector2f(render_tree->get_x()+render_tree->get_width(), render_tree->margin.top);
+  margin_top[1].color = sf::Color::Red;
+
+  sf::VertexArray margin_right(sf::Lines, 2);
+  margin_right[0].position = sf::Vector2f(render_tree->margin.right, render_tree->get_y()-render_tree->node->style.margin_top);
+  margin_right[0].color = sf::Color::Red;
+  margin_right[1].position = sf::Vector2f(render_tree->margin.right, render_tree->get_y()+render_tree->get_height()+render_tree->node->style.margin_bottom);
+  margin_right[1].color = sf::Color::Red;
+
+  sf::VertexArray margin_bottom(sf::Lines, 2);
+  margin_bottom[0].position = sf::Vector2f(render_tree->get_x(), render_tree->margin.bottom);
+  margin_bottom[0].color = sf::Color::Red;
+  margin_bottom[1].position = sf::Vector2f(render_tree->get_x()+render_tree->get_width(), render_tree->margin.bottom);
+  margin_bottom[1].color = sf::Color::Red;
+
+  sf::VertexArray margin_left(sf::Lines, 2);
+  margin_left[0].position = sf::Vector2f(render_tree->margin.left, render_tree->get_y()-render_tree->node->style.margin_top);
+  margin_left[0].color = sf::Color::Red;
+  margin_left[1].position = sf::Vector2f(render_tree->margin.left, render_tree->get_y()+render_tree->get_height()+render_tree->node->style.margin_bottom);
+  margin_left[1].color = sf::Color::Red;
+
+  window.draw(margin_top);
+  window.draw(margin_right);
+  window.draw(margin_bottom);
+  window.draw(margin_left);
+
   for (liquid::RenderBox* child : render_tree->get_children())
   {
     paint(window, child);
@@ -86,6 +116,7 @@ int main(int argc, char* argv[])
 	document.from_file(file_path);
 
 	liquid::RenderBox* render_tree = liquid::generate_render_tree(document.body, nullptr, 1024);
+  render_tree->print(0);
 
   window.clear(sf::Color::White);
   paint(window, render_tree);
