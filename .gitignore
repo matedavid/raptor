@@ -57,4 +57,4 @@ _deps
 
 build/
 .vscode
-src/gui/Roboto
+src/gui/Fonts/

@@ -20,7 +20,7 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
       std::string content = render_box_text->get_content();
 
       sf::Font font;
-      if (not font.loadFromFile("../src/gui/Roboto/Roboto-Regular.ttf"))
+      if (not font.loadFromFile("/home/david/workspace/raptor/src/gui/Fonts/Arial-Font/arial_1.ttf"))
         return;
 
       sf::Text text;

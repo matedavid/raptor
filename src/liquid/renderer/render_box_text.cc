@@ -18,8 +18,10 @@ RenderBoxText::RenderBoxText(Text* text_element, RenderBox* parent)
   // Compute width
   width = parent->get_width();
 
-  character_width = text_element->style.font_size * 0.793333;
+  character_width = text_element->style.font_size * 0.4495;
   text_width = content.length() * character_width;
+
+  std::cout << text_width << "/" << parent->get_width() << std::endl;
 
   // Compute height
   height = text_element->style.font_size * 1.2;
