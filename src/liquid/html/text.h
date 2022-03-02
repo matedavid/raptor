@@ -26,6 +26,7 @@ public:
 	HTMLElementType type() const override { return HTMLElementType::TextType; }
 
 	std::string content();
+	void set_content(const std::string& new_content);
 	void append_string(const std::string& str);
 };
 

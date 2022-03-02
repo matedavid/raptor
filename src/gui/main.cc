@@ -114,10 +114,14 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
 
 int main(int argc, char* argv[])
 {
+	std::filesystem::path file_path;
+  if (argc > 1)
+    file_path = argv[1];
+  else
+    file_path = "/home/david/workspace/raptor/examples/index.html";
+
   sf::RenderWindow window(sf::VideoMode(1024, 512), "Raptor", sf::Style::Default);
 
-
-	std::filesystem::path file_path = "/home/david/workspace/raptor/examples/index.html";
 	liquid::HTMLDocument document = liquid::HTMLDocument();
 	document.from_file(file_path);
 

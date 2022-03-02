@@ -57,10 +57,13 @@ public:
   RenderBox();
   RenderBox(HTMLElement* element, RenderBox* parent);
 
+  // Computes the (x,y) position of the RenderBox
+  void compute_xy_position();
   // Computes width, (x,y) position, margin/padding/border and display type
   void layout(uint _width);
   // Computes height from accumulated_height and all remaining margin/padding/border values
   void compute_height(float accumulated_height);
+
 
   RenderBoxDisplayType get_display_type() const { return display_type; }
 

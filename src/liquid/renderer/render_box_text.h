@@ -16,11 +16,17 @@ public:
   bool is_printable() const override { return true; }
   RenderBoxType type() const override { return RenderBoxType::Txt; }
 
+  float text_width;
+  float character_width;
+
 public:
   RenderBoxText();
   RenderBoxText(Text* text_element, RenderBox* parent);
 
+  std::string split_content();
+
   std::string get_content() const;
+  void set_content(const std::string& new_content);
   float get_font_size() const;
 };
 

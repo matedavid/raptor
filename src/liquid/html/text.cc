@@ -41,6 +41,11 @@ std::string Text::content()
 	return m_content;
 }
 
+void Text::set_content(const std::string& new_content)
+{
+	m_content = new_content;
+}
+
 void Text::append_string(const std::string& str)
 {
 	m_content += str;

@@ -32,25 +32,8 @@ RenderBox::RenderBox(HTMLElement* element, RenderBox* parent)
 {
 }
 
-void RenderBox::layout(uint _width)
+void RenderBox::compute_xy_position()
 {
-  // Specify and set display_type
-  if (node->style.display == "none")
-    display_type = RenderBoxDisplayType::None;
-  else if (node->style.display == "block")
-    display_type = RenderBoxDisplayType::Block;
-  else if (node->style.display == "inline")
-    display_type = RenderBoxDisplayType::Inline;
-
-  // Compute border-width values
-  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.;
-  float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.;
-  float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.;
-
-  // General workflow:
-  // 1. Determine width and (x,y)
-  width = _width - node->style.margin_left - node->style.margin_right;
-
   // Find (x,y) reference point to compute RenderBox (x,y) values
   float xref, yref;
   if (parent == nullptr)
@@ -75,8 +58,32 @@ void RenderBox::layout(uint _width)
     }
   }
 
-  x = xref + node->style.margin_left + node->style.padding_left + border_left_value;
-  y = yref + node->style.margin_top + node->style.padding_top + border_top_value;
+  x = xref + node->style.margin_left + node->style.padding_left;
+  y = yref + node->style.margin_top + node->style.padding_top;
+}
+
+void RenderBox::layout(uint _width)
+{
+  // Specify and set display_type
+  if (node->style.display == "none")
+    display_type = RenderBoxDisplayType::None;
+  else if (node->style.display == "block")
+    display_type = RenderBoxDisplayType::Block;
+  else if (node->style.display == "inline")
+    display_type = RenderBoxDisplayType::Inline;
+
+  // Compute border-width values
+  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.;
+  float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.;
+  float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.;
+
+  // General workflow:
+  // 1. Determine width and (x,y)
+  width = _width - node->style.margin_left - node->style.margin_right;
+
+  compute_xy_position();
+  x += border_left_value;
+  y += border_top_value;
 
   // Compute padding, border and margin edges
   padding.top = y - node->style.padding_top;
