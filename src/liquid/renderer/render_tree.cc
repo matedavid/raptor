@@ -37,9 +37,6 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
     render_box->add_child(render_box_child);
   }
 
-  //float height = accumulated_height + element->style.margin_top + element->style.padding_top + 
-                                      element->style.margin_bottom + element->style.padding_bottom;
-  //render_box->set_height(height);
   render_box->compute_height(accumulated_height);
 
   return render_box;

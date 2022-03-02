@@ -44,11 +44,17 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
       if (not image.loadFromFile(src))
       {
         std::cout << "Error loading image, showing alt: " << render_box_image->get_alt() << std::endl;
+        return;
       }
+
       sf::Vector2u image_size = image.getSize();
 
       sf::Texture image_texture;
-      image_texture.loadFromImage(image);
+      if (not image_texture.loadFromImage(image))
+      {
+        std::cout << "Error loading texture from Image" << std::endl;
+        return;
+      }
 
       sf::Sprite image_sprite;
       image_sprite.setTexture(image_texture, true);
@@ -56,16 +62,16 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
 
       // Apply width and height to sprite
       sf::Vector2f scale_factor;
-      if (render_box_image->get_width() == -1)
-        scale_factor.x = 1;
+      if (render_box_image->img_width == -1)
+        scale_factor.x = 1.;
       else 
         scale_factor.x = render_box_image->img_width / image_size.x;
-      if (render_box_image->get_height() == -1)
-        scale_factor.y = 1;
+      if (render_box_image->img_height == -1)
+        scale_factor.y = 1.;
       else
         scale_factor.y = render_box_image->img_height / image_size.y;
-      image_sprite.setScale(scale_factor);
 
+      image_sprite.setScale(scale_factor);
       window.draw(image_sprite);
     }
   }

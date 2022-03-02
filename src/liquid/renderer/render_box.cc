@@ -99,6 +99,9 @@ void RenderBox::layout(uint _width)
     float difference = (node->style.margin_top + sibiling->node->style.margin_bottom) - max_margin;
 
     y -= difference;
+    margin.top -= difference;
+    border.top -= difference;
+    padding.top -= difference;
   }
 }
 
