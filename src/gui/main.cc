@@ -121,6 +121,8 @@ int main(int argc, char* argv[])
 	liquid::HTMLDocument document = liquid::HTMLDocument();
 	document.from_file(file_path);
 
+  window.setTitle(document.title);
+
 	liquid::RenderBox* render_tree = liquid::generate_render_tree(document.body, nullptr, 1024);
   render_tree->print(0);
 
