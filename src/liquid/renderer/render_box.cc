@@ -34,15 +34,24 @@ RenderBox::RenderBox(HTMLElement* element, RenderBox* parent)
 
 void RenderBox::layout(uint _width)
 {
-  // Things to compute + things to take into account
-  //  1. values for margin, padding and border edges - css "margin", "pading", "border-width"
-  //  2. width, height - css "width" & "height"
-  //  3. x,y positioning - css "position"
+  // Specify and set display_type
+  if (node->style.display == "none")
+    display_type = RenderBoxDisplayType::None;
+  else if (node->style.display == "block")
+    display_type = RenderBoxDisplayType::Block;
+  else if (node->style.display == "inline")
+    display_type = RenderBoxDisplayType::Inline;
+
+  // Compute border-width values
+  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.;
+  float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.;
+  float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.;
 
   // General workflow:
   // 1. Determine width and (x,y)
-  width = _width - (node->style.margin_left+node->style.margin_right + node->style.padding_left+node->style.padding_right);
+  width = _width - node->style.margin_left - node->style.margin_right;
 
+  // Find (x,y) reference point to compute RenderBox (x,y) values
   float xref, yref;
   if (parent == nullptr)
   {
@@ -57,7 +66,7 @@ void RenderBox::layout(uint _width)
     {
       RenderBox* last_sibiling = sibilings[sibilings.size()-1];
       xref = last_sibiling->get_x();
-      yref = last_sibiling->get_y()+last_sibiling->get_height();
+      yref = last_sibiling->get_y()+last_sibiling->get_height()+last_sibiling->node->style.margin_bottom;
     }
     else 
     {
@@ -66,21 +75,8 @@ void RenderBox::layout(uint _width)
     }
   }
 
-  x = xref + node->style.margin_left + node->style.padding_left;
-  y = yref + node->style.margin_top + node->style.padding_top;
-
-  // Specify and set display_type
-  if (node->style.display == "none")
-    display_type = RenderBoxDisplayType::None;
-  else if (node->style.display == "block")
-    display_type = RenderBoxDisplayType::Block;
-  else if (node->style.display == "inline")
-    display_type = RenderBoxDisplayType::Inline;
-
-  // Compute border-width values
-  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.;
-  float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.;
-  float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.;
+  x = xref + node->style.margin_left + node->style.padding_left + border_left_value;
+  y = yref + node->style.margin_top + node->style.padding_top + border_top_value;
 
   // Compute padding, border and margin edges
   padding.top = y - node->style.padding_top;
@@ -94,20 +90,29 @@ void RenderBox::layout(uint _width)
   margin.top = border.top - node->style.margin_top;
   margin.right = border.right + node->style.margin_right;
   margin.left = border.left - node->style.margin_left;
+
+  // margin-top collapsing
+  if (parent != nullptr and parent->children.size() >= 1)
+  {
+    RenderBox* sibiling = parent->children[parent->children.size()-1];
+    float max_margin = std::max<float>(node->style.margin_top, sibiling->node->style.margin_bottom);
+    float difference = (node->style.margin_top + sibiling->node->style.margin_bottom) - max_margin;
+
+    y -= difference;
+  }
 }
 
 void RenderBox::compute_height(float accumulated_height)
 {
-  height = accumulated_height; //+ node->style.margin_top + node->style.padding_top 
-                              //+ node->style.margin_bottom + node->style.padding_bottom;
-
   // Bottom border-width value
   float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.;
 
   // Compute padding border and margin bottom edge
-  padding.bottom = y + height + node->style.padding_bottom;
+  padding.bottom = y + accumulated_height + node->style.padding_bottom;
   border.bottom = padding.bottom + border_bottom_value;
   margin.bottom  = border.bottom + node->style.margin_bottom;
+
+  height = accumulated_height + node->style.padding_bottom + border_bottom_value;
 }
 
 void RenderBox::print(int number_tabs)

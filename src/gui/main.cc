@@ -95,10 +95,10 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
   margin_left[1].position = sf::Vector2f(render_tree->margin.left, render_tree->get_y()+render_tree->get_height()+render_tree->node->style.margin_bottom);
   margin_left[1].color = sf::Color::Red;
 
-  window.draw(margin_top);
-  window.draw(margin_right);
-  window.draw(margin_bottom);
-  window.draw(margin_left);
+  //window.draw(margin_top);
+  //window.draw(margin_right);
+  //window.draw(margin_bottom);
+  //window.draw(margin_left);
 
   for (liquid::RenderBox* child : render_tree->get_children())
   {

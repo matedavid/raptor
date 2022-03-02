@@ -1,2 +1,10 @@
-p {
+.p_1 {
+  /*margin-bottom:50px;*/
+}
+
+.p_2 {
+  margin-top:50px;
+}
+
+body {
 }
