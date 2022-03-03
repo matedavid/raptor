@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "liquid/html/html_document.h"
+#include "liquid/html/text.h"
 #include "liquid/renderer/render_tree.h"
 
 
@@ -29,6 +30,33 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
       text.setCharacterSize(font_size);
       text.setPosition(render_box_text->get_x(), render_box_text->get_y());
       text.setFillColor(sf::Color::Black);
+
+      // Apply Text css elements
+      liquid::Text* text_element = dynamic_cast<liquid::Text*>(render_box_text->node);
+      if (text_element == nullptr)
+        return;
+
+      // font-style
+      if (text_element->style.font_style == "italic" or text_element->style.font_style == "oblique")
+        text.setStyle(text.getStyle() | sf::Text::Italic);
+
+      // font-weight
+      if (text_element->style.font_weight == "bold")
+        text.setStyle(text.getStyle() | sf::Text::Bold);
+
+      // text-decoration
+      for (std::string& text_decoration_line : text_element->style.text_decoration_line)
+      {
+        if (text_decoration_line == "none")
+          break;
+        
+        if (text_decoration_line == "underline")
+          text.setStyle(text.getStyle() | sf::Text::Underlined);
+        //else if (text_decoration_line == "overline")
+          //text.setStyle(text.getStyle() | );
+        else if (text_decoration_line == "line-through")
+          text.setStyle(sf::Text::StrikeThrough);
+      }
 
       window.draw(text);
     }
