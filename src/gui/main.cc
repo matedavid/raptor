@@ -6,6 +6,41 @@
 #include "liquid/html/text.h"
 #include "liquid/renderer/render_tree.h"
 
+sf::VertexArray paint_text_underline(const liquid::RenderBoxText* text)
+{
+  sf::VertexArray underline(sf::Lines, 2);
+  underline[0].position = sf::Vector2f(text->get_x(), text->get_y()+text->get_height()+1);
+  underline[0].color = sf::Color::Black;
+  underline[1].position = sf::Vector2f(text->get_x()+text->get_width(), text->get_y()+text->get_height()+1);
+  underline[1].color = sf::Color::Black;
+
+  return underline;
+}
+
+sf::VertexArray paint_text_overline(const liquid::RenderBoxText* text)
+{
+  sf::VertexArray overline(sf::Lines, 2);
+  overline[0].position = sf::Vector2f(text->get_x(), text->get_y());
+  overline[0].color = sf::Color::Black;
+  overline[1].position = sf::Vector2f(text->get_x()+text->get_width(), text->get_y());
+  overline[1].color = sf::Color::Black;
+
+  return overline;
+}
+
+sf::VertexArray paint_text_line_through(const liquid::RenderBoxText* text)
+{
+  float middle = (text->get_y() + text->get_y()+text->get_height())/2.;
+
+  sf::VertexArray line_through(sf::Lines, 2);
+  line_through[0].position = sf::Vector2f(text->get_x(), middle);
+  line_through[0].color = sf::Color::Black;
+  line_through[1].position = sf::Vector2f(text->get_x()+text->get_width(), middle);
+  line_through[1].color = sf::Color::Black;
+
+  return line_through;
+}
+
 
 void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
 {
@@ -51,29 +86,21 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
           break;
         
         if (text_decoration_line == "underline")
-          text.setStyle(text.getStyle() | sf::Text::Underlined);
-        //else if (text_decoration_line == "overline")
-          //text.setStyle(text.getStyle() | );
+        {
+          sf::VertexArray underline = paint_text_underline(render_box_text);
+          window.draw(underline);
+        }
+        else if (text_decoration_line == "overline")
+        {
+          sf::VertexArray overline = paint_text_overline(render_box_text);
+          window.draw(overline);
+        }
         else if (text_decoration_line == "line-through")
-          text.setStyle(sf::Text::StrikeThrough);
+        {
+          sf::VertexArray line_through = paint_text_line_through(render_box_text);
+          window.draw(line_through);
+        }
       }
-
-      /*
-      sf::VertexArray underline(sf::Lines, 2);
-      underline[0].position = sf::Vector2f(render_tree->get_x(), render_tree->get_y()+render_tree->get_height()+1);
-      underline[0].color = sf::Color::Black;
-      underline[1].position = sf::Vector2f(render_tree->get_x()+render_box_text->get_width(), render_tree->get_y()+render_tree->get_height()+1);
-      underline[1].color = sf::Color::Black;
-
-      sf::VertexArray overline(sf::Lines, 2);
-      overline[0].position = sf::Vector2f(render_tree->get_x(), render_tree->get_y());
-      overline[0].color = sf::Color::Black;
-      overline[1].position = sf::Vector2f(render_tree->get_x()+render_box_text->get_width(), render_tree->get_y());
-      overline[1].color = sf::Color::Black;
-
-      //window.draw(underline);
-      //window.draw(overline);
-      */
 
       window.draw(text);
     }

@@ -30,7 +30,7 @@ RenderBoxText::RenderBoxText(Text* text_element, RenderBox* parent)
   // ===========================================
 
   // Compute height
-  height = text_element->style.font_size * 1.2;
+  height = text_element->style.font_size * 1.15;
 }
 
 std::string RenderBoxText::split_content(float container_width)
