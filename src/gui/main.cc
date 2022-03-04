@@ -58,6 +58,23 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
           text.setStyle(sf::Text::StrikeThrough);
       }
 
+      /*
+      sf::VertexArray underline(sf::Lines, 2);
+      underline[0].position = sf::Vector2f(render_tree->get_x(), render_tree->get_y()+render_tree->get_height()+1);
+      underline[0].color = sf::Color::Black;
+      underline[1].position = sf::Vector2f(render_tree->get_x()+render_box_text->get_width(), render_tree->get_y()+render_tree->get_height()+1);
+      underline[1].color = sf::Color::Black;
+
+      sf::VertexArray overline(sf::Lines, 2);
+      overline[0].position = sf::Vector2f(render_tree->get_x(), render_tree->get_y());
+      overline[0].color = sf::Color::Black;
+      overline[1].position = sf::Vector2f(render_tree->get_x()+render_box_text->get_width(), render_tree->get_y());
+      overline[1].color = sf::Color::Black;
+
+      //window.draw(underline);
+      //window.draw(overline);
+      */
+
       window.draw(text);
     }
     else if (render_tree->type() == liquid::RenderBoxType::Img)

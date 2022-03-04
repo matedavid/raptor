@@ -5,6 +5,8 @@
 #include "liquid/html/html_element.h"
 #include "liquid/html/text.h"
 
+#include <SFML/Graphics/Text.hpp>
+
 namespace liquid {
 
 class RenderBoxText : public RenderBox
@@ -16,14 +18,11 @@ public:
   bool is_printable() const override { return true; }
   RenderBoxType type() const override { return RenderBoxType::Txt; }
 
-  float text_width;
-  float character_width;
-
 public:
   RenderBoxText();
   RenderBoxText(Text* text_element, RenderBox* parent);
 
-  std::string split_content();
+  std::string split_content(float container_width);
 
   std::string get_content() const;
   void set_content(const std::string& new_content);
