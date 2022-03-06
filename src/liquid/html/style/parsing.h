@@ -7,6 +7,8 @@
 
 #include "html_element_css_values.h"
 
+namespace liquid {
+
 enum CSSNumberType
 {
   Px,
@@ -37,3 +39,5 @@ float get_css_number(CSSNumber& n, float& em_reference_value);
 
 // DEBUG
 void print_style(const HTMLElementCSSValues& style);
+
+}

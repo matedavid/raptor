@@ -5,9 +5,13 @@
 #include <string>
 #include <utility>
 
+#include "color.h"
+
+namespace liquid {
+
 struct HTMLElementCSSValues
 {
-  std::string color = "black";
+  Color color = Color{0, 0, 0}; // black
   float width  = -1;  // -1 = auto
   float height = -1;  // -1 = auto
 
@@ -22,7 +26,7 @@ struct HTMLElementCSSValues
   std::string font_family = "Arial";
 
   // Background
-  std::string background_color = "transparent";
+  Color background_color = Color{255, 255, 255}; // transparent (using white)
   std::string background_image = "none";
   std::pair<std::string, std::string> background_position = {"0.0", "0.0"};
   std::string background_size; // TODO
@@ -45,11 +49,13 @@ struct HTMLElementCSSValues
 
   // Text decoration
   std::vector<std::string> text_decoration_line = {"none"};
-  std::string text_decoration_color = "black";
+  Color text_decoration_color = Color{255, 255, 255}; // black
   std::string text_decoration_style = "solid";
 
   // Border (vector represents = {top, right, bottom, left})
   std::vector<std::string> border_width = {"medium", "medium", "medium", "medium"};
   std::vector<std::string> border_style = {"none", "none", "none", "none"};
-  std::vector<std::string> border_color = {"black", "black", "black", "black"};
+  std::vector<Color> border_color = { Color{0,0,0}, Color{0,0,0}, Color{0,0,0}, Color{0,0,0} }; // black 
 };
+
+}

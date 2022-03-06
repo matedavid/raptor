@@ -1,5 +1,7 @@
 #include "parsing.h"
 
+namespace liquid {
+
 CSSNumber parse_number(const std::string& value)
 {
   // Finds values in a format like: 16px -> '16' and 'px'
@@ -106,4 +108,6 @@ void print_style(const HTMLElementCSSValues& style)
   std::cout << "padding-left: " << style.padding_left << std::endl;
 
   std::cout << std::endl;
+}
+
 }

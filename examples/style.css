@@ -2,6 +2,6 @@ img {
 }
 
 p {
-  text-decoration-line: line-through;
+  text-decoration-line: line-through underline overline;
   text-decoration-color: red;
 }
