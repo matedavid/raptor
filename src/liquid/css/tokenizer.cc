@@ -226,16 +226,24 @@ void CSSTokenizer::consume_in_value()
 	char c = consume();
 	char next_nw = next_non_white_character();
 
-	if (isalpha(c) or isdigit(c) or c == '-' or c == '.' or c == '#' or c == '(' or c == ')' or c == '_' or c == '"' or c == '\'')
+	if (isalpha(c) or isdigit(c) or c == '-' or c == '.' or c == '#' or c == '(' or c == ')' or c == '_' or c == '"' or c == '\'' or c == ',')
 	{
 		m_current_token.value += c;
+		if (c == '(') inside_parenthesis = true;
+		else if (c == ')') inside_parenthesis = false;
 	}
 	else if (c == ';')
 	{
 		m_tokens.push_back(m_current_token);
 		m_tokens.push_back(CSSToken{CSSTokenType::DeclarationEnd});
 
+		inside_parenthesis = false;
+
 		m_current_state = State::InBlock;
+	}
+	else if (c == ' ' and inside_parenthesis)
+	{
+		m_current_token.value += c;
 	}
 	else if (c == ' ' and (isalpha(next_nw) or isdigit(next_nw) or next_nw == '-') and peek_consume_backwards(1) != ":")
 	{

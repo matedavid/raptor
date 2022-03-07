@@ -36,11 +36,13 @@ private:
   // The current token being created
   CSSToken m_current_token;
 
+  // True if in_value is inside a parenthesis 
+  bool inside_parenthesis = false;
+
   // Previous state if the Tokenizer needs to remember (eg. entering comment and then continue where it left of)
   State m_previous_state;
   // Previous Token if the Tokenizer needs to remember (eg. entering comment and then continue where it left of)
   CSSToken m_previous_token;
-
   
   // Returns the nearest not-yet consumed token
   char consume();
