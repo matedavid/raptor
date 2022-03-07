@@ -44,24 +44,34 @@ Color color_from_string(const std::string& color_name)
 
 Color parse_color(const std::string& value)
 {
-  std::regex rgb_regex = std::regex("rgb\\ *\\(\\ *([0-9]*)\\ *,\\ *([0-9]*)\\ *,\\ *([0-9]*)\\ *\\)");
+  std::regex rgb_regex = std::regex("rgb\\ *\\(\\ *([0-9]*)\\ *,\\ *([0-9]*)\\ *,\\ *([0-9]*),\\ *([0-9.]*)\\ *\\)");
   std::smatch match;
 
-	if (value[0] == '#')
-	{
-    
-	}
-  else if (std::regex_match(value, match, rgb_regex))
-  {
-    if (match.size() != 4)
-      return Color{0,0,0};
+  bool rgb_regex_result = std::regex_match(value, match, rgb_regex);
 
+  if (rgb_regex_result and match.size() == 4)
+  {
+    // regex without alpha
     uint8_t red = std::atoi(match[1].str().c_str());
     uint8_t green = std::atoi(match[2].str().c_str());
     uint8_t blue = std::atoi(match[3].str().c_str());
 
     return Color{red, green, blue};
   }
+  else if (rgb_regex_result and match.size() == 5)
+  {
+    // regex with alpha
+    uint8_t red = std::atoi(match[1].str().c_str());
+    uint8_t green = std::atoi(match[2].str().c_str());
+    uint8_t blue = std::atoi(match[3].str().c_str());
+    float alpha = std::atof(match[4].str().c_str());
+
+    return Color{red, green, blue, alpha};
+  }
+	else if (value[0] == '#')
+	{
+    
+	}
 	return color_from_string(value);
 }
 
