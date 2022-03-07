@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <regex>
 
 namespace liquid {
 
@@ -12,6 +13,10 @@ struct Color
   uint8_t blue;
 };
 
+// Converts a textual color (red, blue, green...) to liquid::Color object
 Color color_from_string(const std::string& color_name);
+
+// Converts a CSS color value to liquid::Color object
+Color parse_color(const std::string& value);
 
 }
