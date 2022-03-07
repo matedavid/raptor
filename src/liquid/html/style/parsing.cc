@@ -84,7 +84,7 @@ void print_style(const HTMLElementCSSValues& style)
 
   std::cout << std::endl;
 
-  std::cout << "background-color: " << style.background_color << std::endl;
+  std::cout << "background-color: " << style.background_color.red << " " << style.background_color.green << " " << style.background_color.blue << std::endl;
   std::cout << "background-image: " << style.background_image << std::endl;
   std::cout << "background-position: (" << style.background_position.first << ", " << style.background_position.second << ")" << std::endl;
   //std::cout << "background-size: " << style.background_size << std::endl;

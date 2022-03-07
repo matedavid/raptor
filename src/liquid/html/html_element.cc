@@ -220,7 +220,7 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 {
 	if (property == "color")
 	{
-		style.color = value[0];
+		style.color = parse_color(value[0]);
 	}
 	else if (property == "width")
 	{
@@ -286,7 +286,7 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 	}
 	else if (property == "background-color")
 	{
-		style.background_color = value[0];
+		style.background_color = parse_color(value[0]);
 	}
 	else if (property == "background-image")
 	{
@@ -498,7 +498,7 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 			else if (text_decoration == "solid" or text_decoration == "double" or text_decoration == "dotted" or text_decoration == "dashed" or text_decoration == "wavy")
 				style.text_decoration_style = text_decoration;
 			else
-				style.text_decoration_color = text_decoration;
+				style.text_decoration_color = parse_color(text_decoration);
 		}
 	}
 	else if (property == "text-decoration-line")
@@ -507,7 +507,7 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 	}
 	else if (property == "text-decoration-color")
 	{
-		style.text_decoration_color = value[0];
+		style.text_decoration_color = parse_color(value[0]);
 	}
 	else if (property == "text-decoration-style")
 	{
@@ -567,16 +567,16 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
     {
       std::string border_color_value = value[i];
       if (i == 0)
-        style.border_color = {border_color_value, border_color_value, border_color_value, border_color_value};
+        style.border_color = {parse_color(border_color_value), parse_color(border_color_value), parse_color(border_color_value), parse_color(border_color_value)};
       else if (i == 1)
       {
-        style.border_color[1] = border_color_value; // right
-        style.border_color[3] = border_color_value; // left
+        style.border_color[1] = parse_color(border_color_value); // right
+        style.border_color[3] = parse_color(border_color_value); // left
       }
       else if (i == 2)
-        style.border_color[2] = border_color_value; // bottom
+        style.border_color[2] = parse_color(border_color_value); // bottom
       else if (i == 3)
-        style.border_color[3] = border_color_value; // left
+        style.border_color[3] = parse_color(border_color_value); // left
     }
   }
 

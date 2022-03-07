@@ -6,41 +6,45 @@
 #include "liquid/html/text.h"
 #include "liquid/renderer/render_tree.h"
 
-sf::VertexArray paint_text_underline(const liquid::RenderBoxText* text)
+sf::VertexArray paint_text_underline(const liquid::RenderBoxText* text, liquid::Color& color)
 {
+  sf::Color c = sf::Color(color.red, color.green, color.blue);
+
   sf::VertexArray underline(sf::Lines, 2);
   underline[0].position = sf::Vector2f(text->get_x(), text->get_y()+text->get_height()+1);
-  underline[0].color = sf::Color::Black;
+  underline[0].color = c;
   underline[1].position = sf::Vector2f(text->get_x()+text->get_width(), text->get_y()+text->get_height()+1);
-  underline[1].color = sf::Color::Black;
+  underline[1].color = c;
 
   return underline;
 }
 
-sf::VertexArray paint_text_overline(const liquid::RenderBoxText* text)
+sf::VertexArray paint_text_overline(const liquid::RenderBoxText* text, liquid::Color& color)
 {
+  sf::Color c = sf::Color(color.red, color.green, color.blue);
+
   sf::VertexArray overline(sf::Lines, 2);
   overline[0].position = sf::Vector2f(text->get_x(), text->get_y());
-  overline[0].color = sf::Color::Black;
+  overline[0].color = c;
   overline[1].position = sf::Vector2f(text->get_x()+text->get_width(), text->get_y());
-  overline[1].color = sf::Color::Black;
+  overline[1].color = c;
 
   return overline;
 }
 
-sf::VertexArray paint_text_line_through(const liquid::RenderBoxText* text)
+sf::VertexArray paint_text_line_through(const liquid::RenderBoxText* text, liquid::Color& color)
 {
   float middle = (text->get_y() + text->get_y()+text->get_height())/2.;
+  sf::Color c = sf::Color(color.red, color.green, color.blue);
 
   sf::VertexArray line_through(sf::Lines, 2);
   line_through[0].position = sf::Vector2f(text->get_x(), middle);
-  line_through[0].color = sf::Color::Black;
+  line_through[0].color = c;
   line_through[1].position = sf::Vector2f(text->get_x()+text->get_width(), middle);
-  line_through[1].color = sf::Color::Black;
+  line_through[1].color = c;
 
   return line_through;
 }
-
 
 void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
 {
@@ -87,17 +91,17 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
         
         if (text_decoration_line == "underline")
         {
-          sf::VertexArray underline = paint_text_underline(render_box_text);
+          sf::VertexArray underline = paint_text_underline(render_box_text, text_element->style.text_decoration_color);
           window.draw(underline);
         }
         else if (text_decoration_line == "overline")
         {
-          sf::VertexArray overline = paint_text_overline(render_box_text);
+          sf::VertexArray overline = paint_text_overline(render_box_text, text_element->style.text_decoration_color);
           window.draw(overline);
         }
         else if (text_decoration_line == "line-through")
         {
-          sf::VertexArray line_through = paint_text_line_through(render_box_text);
+          sf::VertexArray line_through = paint_text_line_through(render_box_text, text_element->style.text_decoration_color);
           window.draw(line_through);
         }
       }
