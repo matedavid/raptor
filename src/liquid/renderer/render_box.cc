@@ -98,12 +98,32 @@ void RenderBox::layout(uint _width)
   margin.right = border.right + node->style.margin_right;
   margin.left = border.left - node->style.margin_left;
 
-  // margin-top collapsing
+  // margin-top collapsing from top-sibilings
   if (parent != nullptr and parent->children.size() >= 1)
   {
     RenderBox* sibiling = parent->children[parent->children.size()-1];
     float max_margin = std::max<float>(node->style.margin_top, sibiling->node->style.margin_bottom);
     float difference = (node->style.margin_top + sibiling->node->style.margin_bottom) - max_margin;
+
+    y -= difference;
+    margin.top -= difference;
+    border.top -= difference;
+    padding.top -= difference;
+  }
+
+  // margin-top collapsing from container
+  float margin_top_accumulated = 0.;
+  RenderBox* pr = parent;
+  while (pr != nullptr and parent->children.size() == 0)
+  {
+    margin_top_accumulated += pr->node->style.margin_top;
+    pr = pr->parent;
+  }
+  
+  if (margin_top_accumulated > 0.)
+  {
+    float max_margin = std::max<float>(node->style.margin_top, margin_top_accumulated);
+    float difference = (node->style.margin_top + margin_top_accumulated) - max_margin;
 
     y -= difference;
     margin.top -= difference;

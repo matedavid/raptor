@@ -1,7 +1,7 @@
-img {
+div {
+  /*background-color: blue;*/
 }
 
 p {
-  text-decoration-line: overline line-through;
-  text-decoration-color: purple;
+  color: black;
 }

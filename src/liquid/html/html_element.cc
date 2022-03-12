@@ -243,7 +243,7 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 		}
 	}
 	else if (property == "display")
-		style.position = value[0];
+		style.display = value[0];
 	else if (property == "position")
 		style.position = value[0];
 

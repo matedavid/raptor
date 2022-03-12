@@ -56,6 +56,11 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
       if (render_box_text == nullptr)
         return;
 
+      // Apply Text css elements
+      liquid::Text* text_element = dynamic_cast<liquid::Text*>(render_box_text->node);
+      if (text_element == nullptr)
+        return;
+
       float font_size = render_box_text->get_font_size();
       std::string content = render_box_text->get_content();
 
@@ -66,14 +71,14 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
       sf::Text text;
       text.setString(content);
       text.setFont(font);
-      text.setCharacterSize(font_size);
       text.setPosition(render_box_text->get_x(), render_box_text->get_y());
-      text.setFillColor(sf::Color::Black);
 
-      // Apply Text css elements
-      liquid::Text* text_element = dynamic_cast<liquid::Text*>(render_box_text->node);
-      if (text_element == nullptr)
-        return;
+      // font-size
+      text.setCharacterSize(font_size);
+      
+      // color
+      sf::Color text_color = sf::Color(text_element->style.color.red, text_element->style.color.green, text_element->style.color.blue, text_element->style.color.alpha*255);
+      text.setFillColor(text_color);
 
       // font-style
       if (text_element->style.font_style == "italic" or text_element->style.font_style == "oblique")
@@ -150,37 +155,23 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
       image_sprite.setScale(scale_factor);
       window.draw(image_sprite);
     }
+    return;
   }
 
-  // Print margin, padding lines
-  sf::VertexArray margin_top(sf::Lines, 2);
-  margin_top[0].position = sf::Vector2f(render_tree->get_x(), render_tree->margin.top);
-  margin_top[0].color = sf::Color::Red;
-  margin_top[1].position = sf::Vector2f(render_tree->get_x()+render_tree->get_width(), render_tree->margin.top);
-  margin_top[1].color = sf::Color::Red;
+  /*
+  // TODO: background-color
+  if (render_tree->node->style.background_color.alpha != 0.)
+  {
+    liquid::Color color = render_tree->node->style.background_color;
 
-  sf::VertexArray margin_right(sf::Lines, 2);
-  margin_right[0].position = sf::Vector2f(render_tree->margin.right, render_tree->get_y()-render_tree->node->style.margin_top);
-  margin_right[0].color = sf::Color::Red;
-  margin_right[1].position = sf::Vector2f(render_tree->margin.right, render_tree->get_y()+render_tree->get_height()+render_tree->node->style.margin_bottom);
-  margin_right[1].color = sf::Color::Red;
+    sf::RectangleShape background_color;
+    background_color.setPosition(render_tree->get_x(), render_tree->get_y());
+    background_color.setSize(sf::Vector2(render_tree->get_width(), render_tree->get_height()));
+    background_color.setFillColor(sf::Color(color.red, color.green, color.blue, color.alpha*255));
 
-  sf::VertexArray margin_bottom(sf::Lines, 2);
-  margin_bottom[0].position = sf::Vector2f(render_tree->get_x(), render_tree->margin.bottom);
-  margin_bottom[0].color = sf::Color::Red;
-  margin_bottom[1].position = sf::Vector2f(render_tree->get_x()+render_tree->get_width(), render_tree->margin.bottom);
-  margin_bottom[1].color = sf::Color::Red;
-
-  sf::VertexArray margin_left(sf::Lines, 2);
-  margin_left[0].position = sf::Vector2f(render_tree->margin.left, render_tree->get_y()-render_tree->node->style.margin_top);
-  margin_left[0].color = sf::Color::Red;
-  margin_left[1].position = sf::Vector2f(render_tree->margin.left, render_tree->get_y()+render_tree->get_height()+render_tree->node->style.margin_bottom);
-  margin_left[1].color = sf::Color::Red;
-
-  //window.draw(margin_top);
-  //window.draw(margin_right);
-  //window.draw(margin_bottom);
-  //window.draw(margin_left);
+    window.draw(background_color);
+  }
+  */
 
   for (liquid::RenderBox* child : render_tree->get_children())
   {

@@ -26,7 +26,7 @@ struct HTMLElementCSSValues
   std::string font_family = "Arial";
 
   // Background
-  Color background_color = Color{255, 255, 255}; // transparent (using white)
+  Color background_color = Color{255, 255, 255, 0.0}; // transparent (alpha = 0.0)
   std::string background_image = "none";
   std::pair<std::string, std::string> background_position = {"0.0", "0.0"};
   std::string background_size; // TODO

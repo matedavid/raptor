@@ -25,6 +25,7 @@ float generate_text_tree(Text* text, RenderBox* parent, float width)
 
 RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float width)
 {
+  // Generate Image
   if (element->element_value == "img")
   {
     HTMLImageElement* img_element = dynamic_cast<HTMLImageElement*>(element);
@@ -55,7 +56,7 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
 
     RenderBox* render_box_child = generate_render_tree(child, render_box, render_box->get_width());
     if (render_box_child->get_display_type() != RenderBoxDisplayType::Inline)
-      accumulated_height += render_box_child->get_height();
+      accumulated_height += render_box_child->get_height() + render_box_child->node->style.margin_top + render_box_child->node->style.margin_bottom;
 
     render_box->add_child(render_box_child);
   }

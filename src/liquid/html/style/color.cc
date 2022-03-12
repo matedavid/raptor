@@ -4,7 +4,10 @@ namespace liquid {
 
 Color color_from_string(const std::string& color_name)
 {
-  if (color_name == "black")
+  if (color_name == "transparent")
+    return Color{255, 255, 255, 0.0};
+
+  else if (color_name == "black")
     return Color{0,0,0};
   else if (color_name == "silver")
     return Color{192,192,192};
