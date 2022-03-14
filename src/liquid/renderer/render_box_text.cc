@@ -11,31 +11,34 @@ RenderBoxText::RenderBoxText(Text* text_element, RenderBox* parent)
   this->parent = parent;
   node = text_element;
   content = text_element->content();
+}
 
-  // Compute x, y position
-  compute_xy_position();
+void RenderBoxText::layout(float container_width)
+{
+  auto [xref, yref] = compute_xy_reference();
+  x = xref;
+  y = yref;
 
-  // ===========================================
-  // TODO: Find better way to do this
+
+  // TODO: Find better way to do this?
   sf::Font font;
   if (not font.loadFromFile("/home/david/workspace/raptor/src/gui/Fonts/Arial-Font/arial_1.ttf"))
   {
     std::cout << "Error loading font" << std::endl;
   }
 
-  sf::Text t(content, font, text_element->style.font_size);
+  sf::Text t(content, font, node->style.font_size);
 
   // Compute width
-  width = t.getLocalBounds().width;
-  // ===========================================
+  content_width = box_width = t.getLocalBounds().width;
 
   // Compute height
-  height = text_element->style.font_size * 1.15;
+  content_height = box_width = node->style.font_size * 1.15;
 }
 
-std::string RenderBoxText::split_content(float container_width)
+std::string RenderBoxText::split_content(uint container_width)
 {
-  float character_width = width/content.size();
+  float character_width = float(content_width)/content.size();
   int n = container_width/character_width;
 
   while (content[n] != ' ')
@@ -66,7 +69,7 @@ void RenderBoxText::set_content(const std::string& new_content)
 
   sf::Text t(content, font, node->style.font_size);
   //text_width = t.getLocalBounds().width;
-  width = t.getLocalBounds().width;
+  content_width = box_width = t.getLocalBounds().width;
 }
 
 float RenderBoxText::get_font_size() const

@@ -22,7 +22,9 @@ public:
   RenderBoxText();
   RenderBoxText(Text* text_element, RenderBox* parent);
 
-  std::string split_content(float container_width);
+  void layout(float container_width) override;
+
+  std::string split_content(uint container_width);
 
   std::string get_content() const;
   void set_content(const std::string& new_content);

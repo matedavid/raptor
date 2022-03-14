@@ -3,12 +3,14 @@
 namespace liquid 
 {
 
+/* ===== UTIL ===== */
 bool is_number(const std::string& value)
 {
   return value.find_first_not_of("0123456789.") == std::string::npos;
 }
+/* ===== ==== ===== */
 
-float RenderBox::resolve_border_width(const std::string& border_width_value)
+float RenderBox::resolve_border_width(const std::string& border_width_value) const
 {
   if (border_width_value == "medium")
     return 3.0;
@@ -32,37 +34,36 @@ RenderBox::RenderBox(HTMLElement* element, RenderBox* parent)
 {
 }
 
-void RenderBox::compute_xy_position()
+std::pair<float, float> RenderBox::compute_xy_reference()
 {
-  // Find (x,y) reference point to compute RenderBox (x,y) values
-  float xref, yref;
   if (parent == nullptr)
-  {
-    xref = yref = 0;
-  }
-  else
-  {
-    std::vector<RenderBox*> sibilings = parent->children;
-    int number_sibilings = sibilings.size();
+    return { 0, 0 };
 
-    if (number_sibilings >= 1)
-    {
-      RenderBox* last_sibiling = sibilings[sibilings.size()-1];
-      xref = last_sibiling->get_x();
-      yref = last_sibiling->get_y()+last_sibiling->get_height()+last_sibiling->node->style.margin_bottom;
-    }
-    else 
-    {
-      xref = parent->get_x();
-      yref = parent->get_y();
-    }
+  std::vector<RenderBox*> sibilings = parent->children;
+  if (sibilings.size() < 1)
+    return { parent->get_x(), parent->get_y() };
+
+  RenderBox* last_sibiling = sibilings[sibilings.size()-1];
+  if (last_sibiling->display_type == RenderBoxDisplayType::Inline and display_type == RenderBoxDisplayType::Inline)
+  {
+    float xref = last_sibiling->get_x() + last_sibiling->get_width();
+    float yref = last_sibiling->get_ref_y();
+
+    std::cout << "Referring to second div: " << last_sibiling->get_width() << std::endl;
+    std::cout << xref << " " << yref << std::endl;
+
+    return { xref, yref };
   }
 
-  x = xref + node->style.margin_left + node->style.padding_left;
-  y = yref + node->style.margin_top + node->style.padding_top;
+  // If last_sibiling or current render_box has display_type = block, block starts in new line,
+  // so yref has to take into account height of last_sibiling
+  float xref = last_sibiling->get_x();
+  float yref = last_sibiling->get_y() + last_sibiling->get_height();
+
+  return { xref, yref };
 }
 
-void RenderBox::layout(uint _width)
+void RenderBox::layout(float container_width)
 {
   // Specify and set display_type
   if (node->style.display == "none")
@@ -72,19 +73,41 @@ void RenderBox::layout(uint _width)
   else if (node->style.display == "inline")
     display_type = RenderBoxDisplayType::Inline;
 
-  // Compute border-width values
+  // Compute border-width values (only top, right and left because bottom can't be used until height is computed)
   float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.;
   float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.;
   float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.;
 
-  // General workflow:
-  // 1. Determine width and (x,y)
-  width = _width - node->style.margin_left - node->style.margin_right;
+  if (display_type == RenderBoxDisplayType::Block) 
+  {
+    // If display = block, both the content width and the box width occupy occupy all of the possible space
+    // We have to account for margin, padding and border width to compute content_width
+    box_width = container_width;
 
-  compute_xy_position();
-  x += border_left_value;
-  y += border_top_value;
+    if (node->style.width == -1) 
+    {
+      // width is set to auto = computed automatically
+      content_width = box_width - node->style.margin_right - border_right_value - node->style.padding_right
+                                - node->style.margin_left - border_left_value - node->style.padding_left;
+    } 
+    else 
+    {
+      content_width = node->style.width;
+      content_height = node->style.height;
+    }
+  }
+  else if (display_type == RenderBoxDisplayType::Inline)
+  {
+    // If display = inline, box_width and content_width are computed based on the content-width, wich can't
+    // be computed in yet (printable objects are not layed out). To compute values, we have to wait for the reflow()
+  }
 
+  // Determine (x,y) position
+  auto [xref, yref] = compute_xy_reference();
+  x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
+  y = yref + node->style.margin_top + border_top_value + node->style.padding_top;
+
+  /*
   // Compute padding, border and margin edges
   padding.top = y - node->style.padding_top;
   padding.right = x + width + node->style.padding_right;
@@ -130,6 +153,20 @@ void RenderBox::layout(uint _width)
     border.top -= difference;
     padding.top -= difference;
   }
+  */
+}
+
+void RenderBox::reflow(float upstream_width)
+{
+  if (display_type == RenderBoxDisplayType::Inline)
+  {
+    float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.;
+    float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.;
+
+    content_width = upstream_width;
+    box_width = content_width + node->style.margin_left + border_left_value + node->style.padding_left
+                              + node->style.margin_right + border_right_value + node->style.padding_right;
+  }
 }
 
 void RenderBox::compute_height(float accumulated_height)
@@ -138,11 +175,17 @@ void RenderBox::compute_height(float accumulated_height)
   float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.;
 
   // Compute padding border and margin bottom edge
-  padding.bottom = y + accumulated_height + node->style.padding_bottom;
-  border.bottom = padding.bottom + border_bottom_value;
-  margin.bottom  = border.bottom + node->style.margin_bottom;
+  //padding.bottom = y + accumulated_height + node->style.padding_bottom;
+  //border.bottom = padding.bottom + border_bottom_value;
+  //margin.bottom  = border.bottom + node->style.margin_bottom;
 
-  height = accumulated_height + node->style.padding_bottom + border_bottom_value;
+  box_height = accumulated_height + node->style.padding_bottom + border_bottom_value;
+}
+
+float RenderBox::get_ref_y() const
+{
+  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.;
+  return y - node->style.margin_top - border_top_value - node->style.padding_top;
 }
 
 void RenderBox::print(int number_tabs)
@@ -152,9 +195,12 @@ void RenderBox::print(int number_tabs)
     std::cout << "  ";
   }
 
-  std::cout << "(" << node->element_value << ") RenderBox: (" << x << "," << y << ") width=" << width << " height="  << height << 
-    " margin=(" << margin.top << " " << margin.right << " " << margin.bottom << " " << margin.left << ")" << 
-    " padding=(" << padding.top << " " << padding.right << " " << padding.bottom << " " << padding.left << ")" << std::endl;
+  //std::cout << "(" << node->element_value << "): (" << x << "," << y << ")"  << std::endl;
+  printf("(%s): (%.1f, %.1f) w=%.1f\n", node->element_value.c_str(), x, y, box_width);
+
+  // std::cout << "(" << node->element_value << ") RenderBox: (" << x << "," << y << ") width=" << width << " height="  << height << 
+    // " margin=(" << margin.top << " " << margin.right << " " << margin.bottom << " " << margin.left << ")" << 
+    // " padding=(" << padding.top << " " << padding.right << " " << padding.bottom << " " << padding.left << ")" << std::endl;
 
   for (auto child : children)
   {

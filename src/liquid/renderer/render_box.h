@@ -37,12 +37,16 @@ protected:
   std::vector<RenderBox*> children;
 
   float x, y;
-  float width, height;
+  // box_width/height is all of the space taken up by the RenderBox (+padding +border +margin)
+  float box_width = -1, box_height = -1;
+  // content_width/height is only the space taken up by the content area box
+  float content_width = -1, content_height = -1;
 
-public: // TEMPORARY?
+public: 
+  // TEMPORARY?
   EdgeValues<float> margin;
-  EdgeValues<float> border;
   EdgeValues<float> padding;
+  EdgeValues<float> content;
 
 public: 
   HTMLElement* node;
@@ -51,16 +55,18 @@ public:
   virtual RenderBoxType type() const { return RenderBoxType::Default; }
 
 private:
-  float resolve_border_width(const std::string& border_width_value);
+  float resolve_border_width(const std::string& border_width_value) const;
 
 public:
   RenderBox();
   RenderBox(HTMLElement* element, RenderBox* parent);
 
-  // Computes the (x,y) position of the RenderBox
-  void compute_xy_position();
-  // Computes width, (x,y) position, margin/padding/border and display type
-  void layout(uint _width);
+  // Computes the (x,y) reference position 
+  std::pair<float, float> compute_xy_reference();
+  // Computes the layout of the object 
+  virtual void layout(float container_width);
+  // Method for reflow
+  void reflow(float upstream_width);
   // Computes height from accumulated_height and all remaining margin/padding/border values
   void compute_height(float accumulated_height);
 
@@ -72,12 +78,20 @@ public:
 
   float get_x() const { return x; }
   float get_y() const { return y; }
+  
+  // Creating different function for ref_y because, when using get_y() as a reference point, the return value
+  // has already taken into account the margin, border and padding values, so it's not a good reference value for other
+  // boxes (for example, when we have two inline tags)
+  float get_ref_y() const;
 
-  void set_width(float _width)   { width = _width; }
-  void set_height(float _height) { height = _height; }
+  //void set_width(float _width)   { width = _width; }
+  //void set_height(float _height) { height = _height; }
 
-  float get_width()  const { return width;  }
-  float get_height() const { return height; }
+  float get_width()  const { return box_width;  }
+  float get_height() const { return box_height; }
+
+  float get_content_width()  const { return content_width; }
+  float get_content_height() const { return content_height; }
 
   void add_child(RenderBox* child) { children.push_back(child); }
   std::vector<RenderBox*> get_children() const { return children; }
