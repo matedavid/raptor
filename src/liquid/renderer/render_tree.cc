@@ -62,11 +62,25 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
     }
 
     RenderBox* render_box_child = generate_render_tree(child, render_box, container_width);
-    if (render_box_child->get_display_type() != RenderBoxDisplayType::Inline)
+
+    std::vector<RenderBox*> children = render_box->get_children();
+    // Case where we have to compute height of two inline elements
+    if (children.size() > 0 and render_box_child->get_ref_y() == children[children.size()-1]->get_ref_y())
+    {
+      RenderBox* last_child = children[children.size()-1];
+
+      // Removing last_child height to update it with the following max comparison
+      accumulated_height -= last_child->get_height();
+      accumulated_height += std::max<float>(render_box_child->get_height(), last_child->get_height());
+    }
+    else
+    {
       accumulated_height += render_box_child->get_height();
+    }
 
     render_box->add_child(render_box_child);
   }
+
   render_box->compute_height(accumulated_height);
 
   // Apply reflow() if render_box has display_type = inline
