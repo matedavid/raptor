@@ -42,8 +42,7 @@ protected:
   // content_width/height is only the space taken up by the content area box
   float content_width = -1, content_height = -1;
 
-public: 
-  // TEMPORARY?
+public: // TEMPORARY?
   EdgeValues<float> margin;
   EdgeValues<float> padding;
   EdgeValues<float> content;
