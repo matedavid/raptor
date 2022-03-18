@@ -83,14 +83,15 @@ public:
   // boxes (for example, when we have two inline tags)
   float get_ref_y() const;
 
-  //void set_width(float _width)   { width = _width; }
-  //void set_height(float _height) { height = _height; }
 
   float get_width()  const { return box_width;  }
   float get_height() const { return box_height; }
 
   float get_content_width()  const { return content_width; }
   float get_content_height() const { return content_height; }
+
+  // This method is mainly used to compute the bottom sibling's y position value
+  float get_vertical_separation() const;
 
   void add_child(RenderBox* child) { children.push_back(child); }
   std::vector<RenderBox*> get_children() const { return children; }

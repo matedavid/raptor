@@ -39,11 +39,11 @@ std::pair<float, float> RenderBox::compute_xy_reference()
   if (parent == nullptr)
     return { 0, 0 };
 
-  std::vector<RenderBox*> sibilings = parent->children;
-  if (sibilings.size() < 1)
+  std::vector<RenderBox*> siblings = parent->children;
+  if (siblings.size() < 1)
     return { parent->get_x(), parent->get_y() };
 
-  RenderBox* last_sibiling = sibilings[sibilings.size()-1];
+  RenderBox* last_sibiling = siblings[siblings.size()-1];
   if (last_sibiling->display_type == RenderBoxDisplayType::Inline and display_type == RenderBoxDisplayType::Inline)
   {
     float xref = last_sibiling->get_x() + last_sibiling->get_width();
@@ -58,7 +58,8 @@ std::pair<float, float> RenderBox::compute_xy_reference()
   // If last_sibiling or current render_box has display_type = block, block starts in new line,
   // so yref has to take into account height of last_sibiling
   float xref = last_sibiling->get_x();
-  float yref = last_sibiling->get_y() + last_sibiling->get_height();
+  //float yref = last_sibiling->get_y() + last_sibiling->get_height();
+  float yref = last_sibiling->get_y() + last_sibiling->get_vertical_separation();
 
   return { xref, yref };
 }
@@ -107,7 +108,7 @@ void RenderBox::layout(float container_width)
   auto [xref, yref] = compute_xy_reference();
   x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
   y = yref + node->style.margin_top + border_top_value + node->style.padding_top;
-
+  
   /*
   // Compute padding, border and margin edges
   padding.top = y - node->style.padding_top;
@@ -203,6 +204,17 @@ float RenderBox::get_ref_y() const
   float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.;
   return y - node->style.margin_top - border_top_value - node->style.padding_top;
 }
+
+float RenderBox::get_vertical_separation() const
+{
+  float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.;
+
+  if (display_type == RenderBoxDisplayType::Inline)
+    return content_height;
+  else if (display_type == RenderBoxDisplayType::Block)
+    return content_height + node->style.padding_bottom + border_bottom_value + node->style.margin_bottom;
+}
+
 
 void RenderBox::print(int number_tabs)
 {
