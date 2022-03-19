@@ -2,6 +2,10 @@ div {
   /*background-color: blue;*/
 }
 
-p {
-  color: black;
+#p_1 {
+  display: inline;
+}
+
+#p_2 {
+  display: inline;
 }

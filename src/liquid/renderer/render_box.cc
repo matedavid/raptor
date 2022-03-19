@@ -40,26 +40,23 @@ std::pair<float, float> RenderBox::compute_xy_reference()
     return { 0, 0 };
 
   std::vector<RenderBox*> siblings = parent->children;
-  if (siblings.size() < 1)
+  if (siblings.empty())
     return { parent->get_x(), parent->get_y() };
 
-  RenderBox* last_sibiling = siblings[siblings.size()-1];
-  if (last_sibiling->display_type == RenderBoxDisplayType::Inline and display_type == RenderBoxDisplayType::Inline)
+  RenderBox* last_sibling = siblings[siblings.size()-1];
+  if (last_sibling->display_type == RenderBoxDisplayType::Inline and display_type == RenderBoxDisplayType::Inline)
   {
-    float xref = last_sibiling->get_x() + last_sibiling->get_width();
-    float yref = last_sibiling->get_ref_y();
-
-    std::cout << "Referring to second div: " << last_sibiling->get_width() << std::endl;
-    std::cout << xref << " " << yref << std::endl;
+    float xref = last_sibling->get_x() + last_sibling->get_width();
+    float yref = last_sibling->get_ref_y();
 
     return { xref, yref };
   }
 
   // If last_sibiling or current render_box has display_type = block, block starts in new line,
   // so yref has to take into account height of last_sibiling
-  float xref = last_sibiling->get_x();
+  float xref = last_sibling->get_x();
   //float yref = last_sibiling->get_y() + last_sibiling->get_height();
-  float yref = last_sibiling->get_y() + last_sibiling->get_vertical_separation();
+  float yref = last_sibling->get_y() + last_sibling->get_vertical_separation();
 
   return { xref, yref };
 }
@@ -75,9 +72,9 @@ void RenderBox::layout(float container_width)
     display_type = RenderBoxDisplayType::Inline;
 
   // Compute border-width values (only top, right and left because bottom can't be used until height is computed)
-  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.;
-  float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.;
-  float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.;
+  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.f;
+  float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.f;
+  float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.f;
 
   // Compute width and height
   if (display_type == RenderBoxDisplayType::Block) 
@@ -108,7 +105,9 @@ void RenderBox::layout(float container_width)
   auto [xref, yref] = compute_xy_reference();
   x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
   y = yref + node->style.margin_top + border_top_value + node->style.padding_top;
-  
+
+  // TODO: Research how margins work, specifically margin-collapsing
+
   /*
   // Compute padding, border and margin edges
   padding.top = y - node->style.padding_top;
@@ -123,20 +122,23 @@ void RenderBox::layout(float container_width)
   margin.right = border.right + node->style.margin_right;
   margin.left = border.left - node->style.margin_left;
 
-  // margin-top collapsing from top-sibilings
-  if (parent != nullptr and parent->children.size() >= 1)
+  // margin-top collapsing from adjacent siblings
+  if (display_type != RenderBoxDisplayType::Inline and parent != nullptr and not parent->children.empty())
   {
-    RenderBox* sibiling = parent->children[parent->children.size()-1];
-    float max_margin = std::max<float>(node->style.margin_top, sibiling->node->style.margin_bottom);
-    float difference = (node->style.margin_top + sibiling->node->style.margin_bottom) - max_margin;
+    RenderBox* sibling = parent->children[parent->children.size()-1];
+    if (sibling->display_type != RenderBoxDisplayType::Inline)
+    {
+      float max_margin = std::max<float>(node->style.margin_top, sibling->node->style.margin_bottom);
+      float difference = (node->style.margin_top + sibling->node->style.margin_bottom) - max_margin;
 
-    y -= difference;
-    margin.top -= difference;
-    border.top -= difference;
-    padding.top -= difference;
+      std::cout << "Difference: " << difference << std::endl;
+
+      y -= difference;
+      // TODO: Update margin, padding...
+    }
   }
 
-  // margin-top collapsing from container
+  // TODO: margin-top collapsing from container
   float margin_top_accumulated = 0.;
   RenderBox* pr = parent;
   while (pr != nullptr and parent->children.size() == 0)
@@ -144,16 +146,17 @@ void RenderBox::layout(float container_width)
     margin_top_accumulated += pr->node->style.margin_top;
     pr = pr->parent;
   }
-  
+
   if (margin_top_accumulated > 0.)
   {
     float max_margin = std::max<float>(node->style.margin_top, margin_top_accumulated);
     float difference = (node->style.margin_top + margin_top_accumulated) - max_margin;
 
     y -= difference;
-    margin.top -= difference;
-    border.top -= difference;
-    padding.top -= difference;
+
+    // TODO: Update margin, padding...
+  }
+
   }
   */
 }
@@ -211,8 +214,8 @@ float RenderBox::get_vertical_separation() const
 
   if (display_type == RenderBoxDisplayType::Inline)
     return content_height;
-  else if (display_type == RenderBoxDisplayType::Block)
-    return content_height + node->style.padding_bottom + border_bottom_value + node->style.margin_bottom;
+
+  return content_height + node->style.padding_bottom + border_bottom_value + node->style.margin_bottom;
 }
 
 

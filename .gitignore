@@ -58,3 +58,7 @@ _deps
 build/
 .vscode
 src/gui/Fonts/
+
+# Clion things
+.idea
+cmake-build-debug/
