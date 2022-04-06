@@ -52,10 +52,9 @@ std::pair<float, float> RenderBox::compute_xy_reference()
     return { xref, yref };
   }
 
-  // If last_sibiling or current render_box has display_type = block, block starts in new line,
-  // so yref has to take into account height of last_sibiling
+  // If last_sibling or current render_box has display_type = block, block starts in new line,
+  // so yref has to take into account height of last_sibling
   float xref = last_sibling->get_x();
-  //float yref = last_sibiling->get_y() + last_sibiling->get_height();
   float yref = last_sibling->get_y() + last_sibling->get_vertical_separation();
 
   return { xref, yref };
@@ -97,8 +96,8 @@ void RenderBox::layout(float container_width)
   }
   else if (display_type == RenderBoxDisplayType::Inline)
   {
-    // If display = inline, box_width and content_width are computed based on the content-width, wich can't
-    // be computed in yet (printable objects are not layed out). To compute values, we have to wait for the reflow()
+    // If display = inline, box_width and content_width are computed based on the content-width, which can't
+    // be computed in yet (printable objects are not laid out). To compute values, we have to wait for the reflow()
   }
 
   // Determine (x,y) position
@@ -165,8 +164,8 @@ void RenderBox::reflow(float upstream_width)
 {
   if (display_type == RenderBoxDisplayType::Inline)
   {
-    float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.;
-    float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.;
+    float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.f;
+    float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.f;
 
     content_width = upstream_width;
     box_width = content_width + node->style.margin_left + border_left_value + node->style.padding_left
@@ -177,8 +176,8 @@ void RenderBox::reflow(float upstream_width)
 void RenderBox::compute_height(float accumulated_height)
 {
   // Top and Bottom border-width value
-  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.;
-  float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.;
+  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.f;
+  float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.f;
 
   // Compute padding border and margin bottom edge
   //padding.bottom = y + accumulated_height + node->style.padding_bottom;
@@ -204,13 +203,13 @@ void RenderBox::compute_height(float accumulated_height)
 
 float RenderBox::get_ref_y() const
 {
-  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.;
+  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.f;
   return y - node->style.margin_top - border_top_value - node->style.padding_top;
 }
 
 float RenderBox::get_vertical_separation() const
 {
-  float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.;
+  float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.f;
 
   if (display_type == RenderBoxDisplayType::Inline)
     return content_height;
