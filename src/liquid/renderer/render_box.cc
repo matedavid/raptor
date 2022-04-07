@@ -111,25 +111,39 @@ void RenderBox::layout(float container_width)
     //float adj_margin_top = 0.f;
     float adj_margin_bottom = 0.f;
 
+    // Get top element in the render tree
+    RenderBox* top_render_box = this;
+    while (top_render_box->parent != nullptr)
+      top_render_box = top_render_box->parent;
+
+    // Get the direct sibling reference value
+    RenderBox* direct_sibling = this;
     if (parent != nullptr and not parent->children.empty())
     {
       // Adjacent sibling under same container
-      RenderBox* direct_sibling = parent->children[parent->children.size() - 1];
+      direct_sibling = parent->children[parent->children.size() - 1];
       adj_margin_bottom = direct_sibling->node->style.margin_bottom;
-
-      // Go don direct siblings in the case there's more elements "inside"
-      while (not direct_sibling->children.empty())
-      {
-        adj_margin_bottom = std::max<float>(adj_margin_bottom, direct_sibling->node->style.margin_bottom);
-        direct_sibling = direct_sibling->children[direct_sibling->children.size()-1];
-      }
-
-      float max = std::max<float>(adj_margin_bottom, node->style.margin_top);
-      float difference = max - adj_margin_bottom;
-
-      margin_top_apply = difference;
+    }
+    else if (parent != top_render_box and not top_render_box->children.empty())
+    {
+      // Adjacent sibling in all the tree
+      direct_sibling = top_render_box->children[top_render_box->children.size()-1];
+      adj_margin_bottom = direct_sibling->node->style.margin_bottom;
     }
 
+    // Compute the adj_margin_bottom_value
+    while (not direct_sibling->children.empty())
+    {
+      adj_margin_bottom = std::max<float>(adj_margin_bottom, direct_sibling->node->style.margin_bottom);
+      direct_sibling = direct_sibling->children[direct_sibling->children.size()-1];
+    }
+
+    float max = std::max<float>(adj_margin_bottom, node->style.margin_top);
+    float translate = max - adj_margin_bottom;
+
+    std::cout << max << " " << adj_margin_bottom << " " << translate << std::endl;
+
+    margin_top_apply = translate;
   }
 
   x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
