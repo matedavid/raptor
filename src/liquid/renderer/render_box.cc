@@ -111,18 +111,25 @@ void RenderBox::layout(float container_width)
     //float adj_margin_top = 0.f;
     float adj_margin_bottom = 0.f;
 
-    // Adjacent sibling under same container
     if (parent != nullptr and not parent->children.empty())
     {
-      RenderBox* direct_sibling = parent->children[parent->children.size()-1];
+      // Adjacent sibling under same container
+      RenderBox* direct_sibling = parent->children[parent->children.size() - 1];
       adj_margin_bottom = direct_sibling->node->style.margin_bottom;
+
+      // Go don direct siblings in the case there's more elements "inside"
+      while (not direct_sibling->children.empty())
+      {
+        adj_margin_bottom = std::max<float>(adj_margin_bottom, direct_sibling->node->style.margin_bottom);
+        direct_sibling = direct_sibling->children[direct_sibling->children.size()-1];
+      }
 
       float max = std::max<float>(adj_margin_bottom, node->style.margin_top);
       float difference = max - adj_margin_bottom;
-      std::cout << difference << std::endl;
 
       margin_top_apply = difference;
     }
+
   }
 
   x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
