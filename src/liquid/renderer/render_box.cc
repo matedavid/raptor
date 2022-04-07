@@ -78,7 +78,7 @@ void RenderBox::layout(float container_width)
   // Compute width and height
   if (display_type == RenderBoxDisplayType::Block) 
   {
-    // If display = block, both the content width and the box width occupy occupy all of the possible space
+    // If display = block, both the content width and the box width occupy all the possible space
     // We have to account for margin, padding and border width to compute content_width
     box_width = container_width;
 
@@ -88,7 +88,7 @@ void RenderBox::layout(float container_width)
       content_width = box_width - node->style.margin_right - border_right_value - node->style.padding_right
                                 - node->style.margin_left - border_left_value - node->style.padding_left;
     } 
-    else 
+    else
     {
       content_width = node->style.width;
       content_height = node->style.height;
@@ -102,62 +102,32 @@ void RenderBox::layout(float container_width)
 
   // Determine (x,y) position
   auto [xref, yref] = compute_xy_reference();
-  x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
-  y = yref + node->style.margin_top + border_top_value + node->style.padding_top;
 
-  // TODO: Research how margins work, specifically margin-collapsing
+  float margin_top_apply = node->style.margin_top;
 
-  /*
-  // Compute padding, border and margin edges
-  padding.top = y - node->style.padding_top;
-  padding.right = x + width + node->style.padding_right;
-  padding.left = x - node->style.padding_left;
-
-  border.top = padding.top - border_top_value;
-  border.right = padding.right + border_right_value;
-  border.left = padding.left - border_left_value;
-
-  margin.top = border.top - node->style.margin_top;
-  margin.right = border.right + node->style.margin_right;
-  margin.left = border.left - node->style.margin_left;
-
-  // margin-top collapsing from adjacent siblings
-  if (display_type != RenderBoxDisplayType::Inline and parent != nullptr and not parent->children.empty())
+  // Margin collapsing for adjacent siblings
+  if (display_type != RenderBoxDisplayType::Inline)
   {
-    RenderBox* sibling = parent->children[parent->children.size()-1];
-    if (sibling->display_type != RenderBoxDisplayType::Inline)
+    //float adj_margin_top = 0.f;
+    float adj_margin_bottom = 0.f;
+
+    // Adjacent sibling under same container
+    if (parent != nullptr and not parent->children.empty())
     {
-      float max_margin = std::max<float>(node->style.margin_top, sibling->node->style.margin_bottom);
-      float difference = (node->style.margin_top + sibling->node->style.margin_bottom) - max_margin;
+      RenderBox* direct_sibling = parent->children[parent->children.size()-1];
+      adj_margin_bottom = direct_sibling->node->style.margin_bottom;
 
-      std::cout << "Difference: " << difference << std::endl;
+      float max = std::max<float>(adj_margin_bottom, node->style.margin_top);
+      float difference = max - adj_margin_bottom;
+      std::cout << difference << std::endl;
 
-      y -= difference;
-      // TODO: Update margin, padding...
+      margin_top_apply = difference;
     }
   }
 
-  // TODO: margin-top collapsing from container
-  float margin_top_accumulated = 0.;
-  RenderBox* pr = parent;
-  while (pr != nullptr and parent->children.size() == 0)
-  {
-    margin_top_accumulated += pr->node->style.margin_top;
-    pr = pr->parent;
-  }
+  x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
+  y = yref + margin_top_apply + border_top_value + node->style.padding_top;
 
-  if (margin_top_accumulated > 0.)
-  {
-    float max_margin = std::max<float>(node->style.margin_top, margin_top_accumulated);
-    float difference = (node->style.margin_top + margin_top_accumulated) - max_margin;
-
-    y -= difference;
-
-    // TODO: Update margin, padding...
-  }
-
-  }
-  */
 }
 
 void RenderBox::reflow(float upstream_width)

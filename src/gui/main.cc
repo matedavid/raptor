@@ -34,7 +34,7 @@ sf::VertexArray paint_text_overline(const liquid::RenderBoxText* text, liquid::C
 
 sf::VertexArray paint_text_line_through(const liquid::RenderBoxText* text, liquid::Color& color)
 {
-  float middle = (text->get_y() + text->get_y()+text->get_height())/2.;
+  float middle = (text->get_y() + text->get_y()+text->get_height())/2.f;
   sf::Color c = sf::Color(color.red, color.green, color.blue);
 
   sf::VertexArray line_through(sf::Lines, 2);
@@ -188,7 +188,7 @@ int main(int argc, char* argv[])
 
   while (window.isOpen())
   {
-    sf::Event event;
+    sf::Event event = sf::Event();
     while (window.pollEvent(event))
     {
       if (event.type == sf::Event::Closed)

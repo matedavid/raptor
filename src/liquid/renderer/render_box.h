@@ -37,17 +37,12 @@ protected:
   std::vector<RenderBox*> children;
 
   float x, y;
-  // box_width/height is all of the space taken up by the RenderBox (+padding +border +margin)
+  // box_width/height is all the space taken up by the RenderBox (+padding +border +margin)
   float box_width = -1, box_height = -1;
   // content_width/height is only the space taken up by the content area box
   float content_width = -1, content_height = -1;
 
-public: // TEMPORARY?
-  EdgeValues<float> margin;
-  EdgeValues<float> padding;
-  EdgeValues<float> content;
-
-public: 
+public:
   HTMLElement* node;
 
   virtual bool is_printable() const { return false; }
@@ -69,10 +64,9 @@ public:
   // Computes height from accumulated_height and all remaining margin/padding/border values
   void compute_height(float accumulated_height);
 
-
   RenderBoxDisplayType get_display_type() const { return display_type; }
 
-  void set_x(float _x) { x = _x;; }
+  void set_x(float _x) { x = _x; }
   void set_y(float _y) { y = _y; }
 
   float get_x() const { return x; }
