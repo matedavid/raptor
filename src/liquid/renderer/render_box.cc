@@ -126,29 +126,31 @@ void RenderBox::layout(float container_width)
     }
     else if (parent != top_render_box and not top_render_box->children.empty())
     {
-      // Adjacent sibling in all the tree
+      // Adjacent sibling in all the tree (different containers)
       direct_sibling = top_render_box->children[top_render_box->children.size()-1];
       adj_margin_bottom = direct_sibling->node->style.margin_bottom;
     }
 
-    // Compute the adj_margin_bottom_value
+    // Compute the adj_margin_bottom_value from the direct sibling
     while (not direct_sibling->children.empty())
     {
       adj_margin_bottom = std::max<float>(adj_margin_bottom, direct_sibling->node->style.margin_bottom);
       direct_sibling = direct_sibling->children[direct_sibling->children.size()-1];
     }
 
+    float distance = yref - (direct_sibling->get_ref_y()+direct_sibling->box_height);
+
     float max = std::max<float>(adj_margin_bottom, node->style.margin_top);
-    float translate = max - adj_margin_bottom;
+    float translate = max-distance;
 
-    std::cout << max << " " << adj_margin_bottom << " " << translate << std::endl;
+    //std::cout << "(" << node->element_value << " - " << direct_sibling->node->element_value << ":" << (this == direct_sibling) << ") Distance: " << distance << " " << translate << std::endl;
 
-    margin_top_apply = translate;
+    if (this != direct_sibling)
+      margin_top_apply = translate;
   }
 
   x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
   y = yref + margin_top_apply + border_top_value + node->style.padding_top;
-
 }
 
 void RenderBox::reflow(float upstream_width)
@@ -174,7 +176,6 @@ void RenderBox::compute_height(float accumulated_height)
   //padding.bottom = y + accumulated_height + node->style.padding_bottom;
   //border.bottom = padding.bottom + border_bottom_value;
   //margin.bottom  = border.bottom + node->style.margin_bottom;
-
 
   content_height = accumulated_height;
 
