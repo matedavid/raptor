@@ -2,10 +2,16 @@ div {
   /*background-color: blue;*/
 }
 
+p {
+  /*color: white;*/
+}
+
 #p_1 {
-  display: inline;
 }
 
 #p_2 {
-  display: inline;
+}
+
+.inside_div {
+    margin-bottom: 200px;
 }
