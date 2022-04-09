@@ -8,7 +8,7 @@
 
 sf::VertexArray paint_text_underline(const liquid::RenderBoxText* text, liquid::Color& color)
 {
-  sf::Color c = sf::Color(color.red, color.green, color.blue);
+  sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
   sf::VertexArray underline(sf::Lines, 2);
   underline[0].position = sf::Vector2f(text->get_x(), text->get_y()+text->get_height()+1);
@@ -21,7 +21,7 @@ sf::VertexArray paint_text_underline(const liquid::RenderBoxText* text, liquid::
 
 sf::VertexArray paint_text_overline(const liquid::RenderBoxText* text, liquid::Color& color)
 {
-  sf::Color c = sf::Color(color.red, color.green, color.blue);
+  sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
   sf::VertexArray overline(sf::Lines, 2);
   overline[0].position = sf::Vector2f(text->get_x(), text->get_y());
@@ -35,7 +35,7 @@ sf::VertexArray paint_text_overline(const liquid::RenderBoxText* text, liquid::C
 sf::VertexArray paint_text_line_through(const liquid::RenderBoxText* text, liquid::Color& color)
 {
   float middle = (text->get_y() + text->get_y()+text->get_height())/2.f;
-  sf::Color c = sf::Color(color.red, color.green, color.blue);
+  sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
   sf::VertexArray line_through(sf::Lines, 2);
   line_through[0].position = sf::Vector2f(text->get_x(), middle);
@@ -52,12 +52,10 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
   {
     if (render_tree->type() == liquid::RenderBoxType::Txt)
     {
-      liquid::RenderBoxText* render_box_text = dynamic_cast<liquid::RenderBoxText*>(render_tree);
-      if (render_box_text == nullptr)
-        return;
+      auto render_box_text = dynamic_cast<liquid::RenderBoxText*>(render_tree);
 
       // Apply Text css elements
-      liquid::Text* text_element = dynamic_cast<liquid::Text*>(render_box_text->node);
+      auto text_element = dynamic_cast<liquid::Text*>(render_box_text->node);
       if (text_element == nullptr)
         return;
 
@@ -74,10 +72,14 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
       text.setPosition(render_box_text->get_x(), render_box_text->get_y());
 
       // font-size
-      text.setCharacterSize(font_size);
+      text.setCharacterSize((unsigned int)font_size);
       
       // color
-      sf::Color text_color = sf::Color(text_element->style.color.red, text_element->style.color.green, text_element->style.color.blue, text_element->style.color.alpha*255);
+      sf::Color text_color = sf::Color(
+              text_element->style.color.red,
+              text_element->style.color.green,
+              text_element->style.color.blue,
+              text_element->style.color.alpha*255);
       text.setFillColor(text_color);
 
       // font-style
@@ -115,9 +117,7 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
     }
     else if (render_tree->type() == liquid::RenderBoxType::Img)
     {
-      liquid::RenderBoxImage* render_box_image = dynamic_cast<liquid::RenderBoxImage*>(render_tree);
-      if (render_box_image == nullptr)
-        return;
+      auto render_box_image = dynamic_cast<liquid::RenderBoxImage*>(render_tree);
 
       std::string src = render_box_image->get_src();
 
@@ -146,11 +146,11 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
       if (render_box_image->img_width == -1)
         scale_factor.x = 1.;
       else 
-        scale_factor.x = render_box_image->img_width / image_size.x;
+        scale_factor.x = render_box_image->img_width / float(image_size.x);
       if (render_box_image->img_height == -1)
         scale_factor.y = 1.;
       else
-        scale_factor.y = render_box_image->img_height / image_size.y;
+        scale_factor.y = render_box_image->img_height / float(image_size.y);
 
       image_sprite.setScale(scale_factor);
       window.draw(image_sprite);
