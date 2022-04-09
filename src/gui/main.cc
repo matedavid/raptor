@@ -11,9 +11,9 @@ sf::VertexArray paint_text_underline(const liquid::RenderBoxText* text, liquid::
   sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
   sf::VertexArray underline(sf::Lines, 2);
-  underline[0].position = sf::Vector2f(text->get_x(), text->get_y()+text->get_height()+1);
+  underline[0].position = sf::Vector2f(text->get_x(), text->get_y()+text->get_content_height());
   underline[0].color = c;
-  underline[1].position = sf::Vector2f(text->get_x()+text->get_width(), text->get_y()+text->get_height()+1);
+  underline[1].position = sf::Vector2f(text->get_x()+text->get_content_width(), text->get_y()+text->get_content_height());
   underline[1].color = c;
 
   return underline;
@@ -26,7 +26,7 @@ sf::VertexArray paint_text_overline(const liquid::RenderBoxText* text, liquid::C
   sf::VertexArray overline(sf::Lines, 2);
   overline[0].position = sf::Vector2f(text->get_x(), text->get_y());
   overline[0].color = c;
-  overline[1].position = sf::Vector2f(text->get_x()+text->get_width(), text->get_y());
+  overline[1].position = sf::Vector2f(text->get_x()+text->get_content_width(), text->get_y());
   overline[1].color = c;
 
   return overline;
@@ -34,13 +34,13 @@ sf::VertexArray paint_text_overline(const liquid::RenderBoxText* text, liquid::C
 
 sf::VertexArray paint_text_line_through(const liquid::RenderBoxText* text, liquid::Color& color)
 {
-  float middle = (text->get_y() + text->get_y()+text->get_height())/2.f;
+  float middle = (text->get_y() + text->get_y()+text->get_content_height())/2.f;
   sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
   sf::VertexArray line_through(sf::Lines, 2);
   line_through[0].position = sf::Vector2f(text->get_x(), middle);
   line_through[0].color = c;
-  line_through[1].position = sf::Vector2f(text->get_x()+text->get_width(), middle);
+  line_through[1].position = sf::Vector2f(text->get_x()+text->get_content_width(), middle);
   line_through[1].color = c;
 
   return line_through;
