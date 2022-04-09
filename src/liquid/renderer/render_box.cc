@@ -108,7 +108,6 @@ void RenderBox::layout(float container_width)
   // Margin collapsing for adjacent siblings
   if (display_type != RenderBoxDisplayType::Inline)
   {
-    //float adj_margin_top = 0.f;
     float adj_margin_bottom = 0.f;
 
     // Get top element in the render tree
@@ -147,6 +146,13 @@ void RenderBox::layout(float container_width)
 
     if (this != direct_sibling)
       margin_top_apply = translate;
+  }
+
+  // Margin collapsing for parent and first/last child elements
+  if (display_type != RenderBoxDisplayType::Inline and parent != nullptr and parent->children.empty() and parent->node->style.padding_top == 0 and parent->node->style.border_style[0] == "none")
+  {
+    float parent_mt = parent->node->style.margin_top;
+    margin_top_apply = node->style.margin_top-parent_mt;
   }
 
   x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
