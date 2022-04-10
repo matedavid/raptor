@@ -126,11 +126,11 @@ void RenderBox::layout(float container_width)
     else if (parent != top_render_box and not top_render_box->children.empty())
     {
       // Adjacent sibling in all the tree (different containers)
-      direct_sibling = top_render_box->children[top_render_box->children.size()-1];
+      direct_sibling = top_render_box->children[top_render_box->children.size()-1]; // Get the first child of current node's parent
       adj_margin_bottom = direct_sibling->node->style.margin_bottom;
     }
 
-    // Compute the adj_margin_bottom_value from the direct sibling
+    // Compute the adj_margin_bottom_value from the direct sibling (maximum of all the margins of all the margins)
     while (not direct_sibling->children.empty())
     {
       adj_margin_bottom = std::max<float>(adj_margin_bottom, direct_sibling->node->style.margin_bottom);
@@ -142,17 +142,32 @@ void RenderBox::layout(float container_width)
     float max = std::max<float>(adj_margin_bottom, node->style.margin_top);
     float translate = max-distance;
 
-    //std::cout << "(" << node->element_value << " - " << direct_sibling->node->element_value << ":" << (this == direct_sibling) << ") Distance: " << distance << " " << translate << std::endl;
 
     if (this != direct_sibling)
+    {
+      //std::cout << "(" << node->element_value << "," << node->id << ") Adjacent sibling: " << translate << std::endl;
       margin_top_apply = translate;
+    }
   }
 
   // Margin collapsing for parent and first/last child elements
-  if (display_type != RenderBoxDisplayType::Inline and parent != nullptr and parent->children.empty() and parent->node->style.padding_top == 0 and parent->node->style.border_style[0] == "none")
+  if (display_type != RenderBoxDisplayType::Inline and node->style.margin_top != 0.f and parent != nullptr and parent->children.empty() and parent->node->style.padding_top == 0.f and parent->node->style.border_style[0] == "none")
   {
     float parent_mt = parent->node->style.margin_top;
-    margin_top_apply = node->style.margin_top-parent_mt;
+
+    RenderBox* p = parent;
+    while (p != nullptr)
+    {
+      if (not p->children.empty())
+        break;
+      parent_mt = std::max<float>(parent_mt, p->node->style.margin_top);
+      p = p->parent;
+    }
+
+    //std::cout << "(" << node->element_value << "," << node->id << ") Parent and first child: " << node->style.margin_top - parent_mt << std::endl;
+
+    //margin_top_apply = node->style.margin_top-parent_mt;
+    margin_top_apply = margin_top_apply-parent_mt; // TODO: Not sure this is ok
   }
 
   x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
