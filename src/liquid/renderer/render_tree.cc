@@ -22,7 +22,6 @@ float generate_text_tree(Text* text, RenderBox* parent, float width)
   parent->add_child(render_box_text);
   text_height += render_box_text->get_height();
 
-
   return text_height;
 }
 
@@ -46,7 +45,7 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
   float accumulated_height = 0.f;
   for (HTMLElement* child : element->child_elements())
   {
-    float container_width = render_box->get_width();
+    float container_width = render_box->get_content_width();
     if (render_box->get_display_type() == RenderBoxDisplayType::Inline)
       container_width = width;
 
