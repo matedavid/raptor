@@ -164,10 +164,15 @@ void RenderBox::layout(float container_width)
       p = p->parent;
     }
 
-    //std::cout << "(" << node->element_value << "," << node->id << ") Parent and first child: " << node->style.margin_top - parent_mt << std::endl;
-
-    //margin_top_apply = node->style.margin_top-parent_mt;
     margin_top_apply = margin_top_apply-parent_mt; // TODO: Not sure this is ok
+
+    // Apply margin collapsing to parents
+    p = parent;
+    while (p != nullptr and p->children.empty())
+    {
+      p->y += margin_top_apply;
+      p = p->parent;
+    }
   }
 
   x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
