@@ -158,6 +158,18 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
     return;
   }
 
+  if (render_tree->node->style.background_color.alpha != 0.f)
+  {
+    liquid::Color c = render_tree->node->style.background_color;
+
+    sf::RectangleShape background;
+    background.setPosition(render_tree->get_border_x(), render_tree->get_border_y());
+    background.setSize(sf::Vector2f(render_tree->get_width(), render_tree->get_height()));
+    background.setFillColor(sf::Color(c.red, c.green, c.blue, c.alpha*255.f));
+
+    window.draw(background);
+  }
+
   for (liquid::RenderBox* child : render_tree->get_children())
   {
     paint(window, child);

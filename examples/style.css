@@ -1,7 +1,12 @@
 div {
-  padding-top: 10px;
+  background-color: blue;
 }
 
 p {
+}
+
+.pw {
+  color: white;
+  padding-top: 10px;
 }
 

@@ -8,19 +8,19 @@ float generate_text_tree(Text* text, RenderBox* parent, float width)
   render_box_text->layout(width);
 
   float text_height = 0.;
-  while (render_box_text->get_width() > width)
+  while (render_box_text->get_box_width() > width)
   {
     std::string split_content = render_box_text->split_content(width);
 
     parent->add_child(render_box_text);
-    text_height += render_box_text->get_height();
+    text_height += render_box_text->get_box_height();
 
     render_box_text = new RenderBoxText(text, parent);
     render_box_text->set_content(split_content);
   }
 
   parent->add_child(render_box_text);
-  text_height += render_box_text->get_height();
+  text_height += render_box_text->get_box_height();
 
   return text_height;
 }
@@ -69,12 +69,16 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
       RenderBox* last_child = children[children.size()-1];
 
       // Removing last_child height to update it with the following max comparison
-      accumulated_height -= last_child->get_height();
-      accumulated_height += std::max<float>(render_box_child->get_height(), last_child->get_height());
+      accumulated_height -= last_child->get_box_height();
+      accumulated_height += std::max<float>(render_box_child->get_box_height(), last_child->get_box_height());
     }
     else
     {
-      accumulated_height += render_box_child->get_height();
+      // Margin collapsing with parent and first-child
+      if (render_box->get_y() == render_box_child->get_ref_y() and render_box_child->node->style.margin_top != 0.)
+        accumulated_height += render_box_child->get_height();
+      else
+        accumulated_height += render_box_child->get_box_height();
     }
 
     render_box->add_child(render_box_child);
@@ -91,11 +95,11 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
     {
       if (child->get_display_type() == RenderBoxDisplayType::Block)
       {
-        upstream_width = child->get_width(); 
+        upstream_width = child->get_box_width();
         break;
       }
       else if (child->get_display_type() == RenderBoxDisplayType::Inline or child->type() == RenderBoxType::Txt)
-        upstream_width += child->get_width();
+        upstream_width += child->get_box_width();
     }
 
     render_box->reflow(upstream_width);

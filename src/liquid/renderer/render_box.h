@@ -56,7 +56,7 @@ public:
   RenderBox(HTMLElement* element, RenderBox* parent);
 
   // Computes the (x,y) reference position 
-  std::pair<float, float> compute_xy_reference();
+  std::pair<float, float> compute_xy_reference() const;
   // Computes the layout of the object 
   virtual void layout(float container_width);
   // Method for reflow
@@ -66,20 +66,24 @@ public:
 
   RenderBoxDisplayType get_display_type() const { return display_type; }
 
-  void set_x(float _x) { x = _x; }
-  void set_y(float _y) { y = _y; }
-
   float get_x() const { return x; }
   float get_y() const { return y; }
+
+  // Gets the x/y value including the padding and the border
+  float get_border_x() const;
+  float get_border_y() const;
   
   // Creating different function for ref_y because, when using get_y() as a reference point, the return value
   // has already taken into account the margin, border and padding values, so it's not a good reference value for other
   // boxes (for example, when we have two inline tags)
   float get_ref_y() const;
 
+  float get_box_width()  const { return box_width;  }
+  float get_box_height() const { return box_height; }
 
-  float get_width()  const { return box_width;  }
-  float get_height() const { return box_height; }
+  // Returns width/height containing content + padding + border
+  float get_width() const;
+  float get_height() const;
 
   float get_content_width()  const { return content_width; }
   float get_content_height() const { return content_height; }
