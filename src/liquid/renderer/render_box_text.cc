@@ -33,7 +33,7 @@ void RenderBoxText::layout(float container_width)
   content_width = box_width = t.getLocalBounds().width;
 
   // Compute height
-  content_height = box_height = node->style.font_size * 1.15;
+  content_height = box_height = node->style.font_size * 1.3;
 }
 
 std::string RenderBoxText::split_content(uint container_width)
