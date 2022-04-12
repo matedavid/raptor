@@ -137,11 +137,10 @@ void RenderBox::layout(float container_width)
       direct_sibling = direct_sibling->children[direct_sibling->children.size()-1];
     }
 
-    float distance = yref - (direct_sibling->get_ref_y()+direct_sibling->box_height);
+    float distance = yref - (direct_sibling->get_y()+direct_sibling->get_height());
 
     float max = std::max<float>(adj_margin_bottom, node->style.margin_top);
     float translate = max-distance;
-
 
     if (this != direct_sibling)
     {
