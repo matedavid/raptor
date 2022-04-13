@@ -18,13 +18,16 @@ public:
   bool is_printable() const override { return true; }
   RenderBoxType type() const override { return RenderBoxType::Txt; }
 
+private:
+  static float get_text_width(const std::string& content, float font_size);
+
 public:
   RenderBoxText();
   RenderBoxText(Text* text_element, RenderBox* parent);
 
   void layout(float container_width) override;
 
-  std::string split_content(uint container_width);
+  std::string split_content(float container_width);
 
   std::string get_content() const;
   void set_content(const std::string& new_content);

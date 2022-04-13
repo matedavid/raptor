@@ -8,7 +8,7 @@ float generate_text_tree(Text* text, RenderBox* parent, float width)
   render_box_text->layout(width);
 
   float text_height = 0.;
-  while (render_box_text->get_box_width() > width)
+  while (render_box_text->get_box_width() >= width)
   {
     std::string split_content = render_box_text->split_content(width);
 
@@ -16,6 +16,7 @@ float generate_text_tree(Text* text, RenderBox* parent, float width)
     text_height += render_box_text->get_box_height();
 
     render_box_text = new RenderBoxText(text, parent);
+    render_box_text->layout(width);
     render_box_text->set_content(split_content);
   }
 
