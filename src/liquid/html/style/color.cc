@@ -12,7 +12,7 @@ Color color_from_string(const std::string& color_name)
   else if (color_name == "silver")
     return Color{192,192,192};
   else if (color_name == "gray" or color_name == "grey")
-    return Color{80,80,80};
+    return Color{128,128,128};
   else if (color_name == "white")
     return Color{255,255,255};
   else if (color_name == "maroon")
