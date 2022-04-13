@@ -65,9 +65,12 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
 
     std::vector<RenderBox*> children = render_box->get_children();
     // Case where we have to compute height of two inline elements
-    if (not children.empty() and render_box_child->get_ref_y() == children[children.size()-1]->get_ref_y())
+    //if (not children.empty() and render_box_child->get_ref_y() == children[children.size()-1]->get_ref_y())
+    if (not children.empty() and render_box_child->get_display_type() == RenderBoxDisplayType::Inline and children[children.size()-1]->get_display_type() == RenderBoxDisplayType::Inline)
     {
       RenderBox* last_child = children[children.size()-1];
+
+      std::cout << "two inline elements" << std::endl;
 
       // Removing last_child height to update it with the following max comparison
       accumulated_height -= last_child->get_box_height();
