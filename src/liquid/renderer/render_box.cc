@@ -176,6 +176,15 @@ void RenderBox::layout(float container_width)
 
   x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
   y = yref + margin_top_apply + border_top_value + node->style.padding_top;
+
+  // position = relative
+  if (node->style.position == "relative")
+  {
+    y += node->style.top;
+    y -= node->style.bottom;
+    x += node->style.left;
+    x -= node->style.right;
+  }
 }
 
 void RenderBox::reflow(float upstream_width)

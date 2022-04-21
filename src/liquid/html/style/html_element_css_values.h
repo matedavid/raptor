@@ -18,6 +18,12 @@ struct HTMLElementCSSValues
   std::string display = "inline";
   std::string position = "static";
 
+  // Top,bottom,left,right
+  float top    = 0;
+  float bottom = 0;
+  float left   = 0;
+  float right  = 0;
+
   // Font
   std::string font_style = "normal";
   std::string font_variant = "normal";

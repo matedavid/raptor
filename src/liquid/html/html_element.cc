@@ -247,9 +247,32 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
 	else if (property == "position")
 		style.position = value[0];
 
+	// top,bottom,left,right
+	else if (property == "top")
+	{
+		CSSNumber top = parse_number(value[0]);
+		style.top = get_css_number(top, style.font_size);
+	}
+	else if (property == "bottom")
+	{
+		CSSNumber bottom = parse_number(value[0]);
+		style.bottom = get_css_number(bottom, style.font_size);
+	}
+	else if (property == "left")
+	{
+		CSSNumber left = parse_number(value[0]);
+		style.left = get_css_number(left, style.font_size);
+	}
+	else if (property == "right")
+	{
+		CSSNumber right = parse_number(value[0]);
+		style.right = get_css_number(right, style.font_size);
+	}
+
 	// Font
 	else if (property == "font")
 	{
+		// TODO: 
 	}
 	else if (property == "font-style")
 	{
