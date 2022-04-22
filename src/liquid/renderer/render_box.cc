@@ -80,13 +80,11 @@ void RenderBox::layout(float container_width)
   {
     // If display = block, both the content width and the box width occupy all the possible space
     // We have to account for margin, padding and border width to compute content_width
-    box_width = container_width;
-
     if (node->style.width == -1) 
     {
-      // width is set to auto = computed automatically
-      content_width = box_width - node->style.margin_right - border_right_value - node->style.padding_right
-                                - node->style.margin_left - border_left_value - node->style.padding_left;
+      // width is set to auto => computed automatically
+      content_width = container_width - node->style.margin_right - border_right_value - node->style.padding_right
+                                      - node->style.margin_left - border_left_value - node->style.padding_left;
     } 
     else
     {
@@ -195,8 +193,10 @@ void RenderBox::reflow(float upstream_width)
     float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.f;
 
     content_width = upstream_width;
+    /*
     box_width = content_width + node->style.margin_left + border_left_value + node->style.padding_left
                               + node->style.margin_right + border_right_value + node->style.padding_right;
+    */
   }
 }
 
@@ -213,10 +213,9 @@ void RenderBox::compute_height(float accumulated_height)
 
   content_height = accumulated_height;
 
+  /*
   if (display_type == RenderBoxDisplayType::Inline)
   {
-    // Apparently, in Inline elements, margin and padding top/bottom are not applied
-    // thus not modifying the height of box
     box_height = accumulated_height + border_top_value + border_bottom_value;
   }
   else
@@ -224,7 +223,7 @@ void RenderBox::compute_height(float accumulated_height)
     box_height = accumulated_height + node->style.margin_top + border_top_value + node->style.padding_top +
                                       node->style.margin_bottom + border_bottom_value + node->style.padding_bottom;
   }
-
+  */
 }
 
 float RenderBox::get_border_x() const
@@ -241,10 +240,30 @@ float RenderBox::get_border_y() const
 
 float RenderBox::get_ref_y() const
 {
-  //float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.f;
-  //return y - node->style.margin_top - border_top_value - node->style.padding_top;
-
   return compute_xy_reference().second;
+}
+
+float RenderBox::get_box_width() const
+{ 
+  float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.f;
+  float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.f;
+
+  return content_width + node->style.margin_left + border_left_value + node->style.padding_left
+                       + node->style.margin_right + border_right_value + node->style.padding_right;
+}
+
+float RenderBox::get_box_height() const
+{
+  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.f;
+  float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.f;
+
+  // Apparently, in Inline elements, margin and padding top/bottom are not applied
+  // thus not modifying the height of box
+  if (display_type == RenderBoxDisplayType::Inline)
+    return content_height + border_top_value + border_bottom_value;
+
+  return content_height + node->style.margin_top + border_top_value + node->style.padding_top
+                        + node->style.margin_bottom + border_bottom_value + node->style.padding_bottom;
 }
 
 float RenderBox::get_width() const
@@ -282,7 +301,7 @@ void RenderBox::print(int number_tabs)
   }
 
   //std::cout << "(" << node->element_value << "): (" << x << "," << y << ")"  << std::endl;
-  printf("(%s): (%.1f, %.1f) w=%.1f h=%.1f cw=%.1f ch=%.1f\n", node->element_value.c_str(), x, y, box_width, box_height, content_width, content_height);
+  printf("(%s): (%.1f, %.1f) w=%.1f h=%.1f cw=%.1f ch=%.1f\n", node->element_value.c_str(), x, y, get_box_width(), get_box_height(), content_width, content_height);
 
   // std::cout << "(" << node->element_value << ") RenderBox: (" << x << "," << y << ") width=" << width << " height="  << height << 
     // " margin=(" << margin.top << " " << margin.right << " " << margin.bottom << " " << margin.left << ")" << 

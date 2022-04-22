@@ -37,8 +37,6 @@ protected:
   std::vector<RenderBox*> children;
 
   float x, y;
-  // box_width/height is all the space taken up by the RenderBox (+padding +border +margin)
-  float box_width = -1, box_height = -1;
   // content_width/height is only the space taken up by the content area box
   float content_width = -1, content_height = -1;
 
@@ -78,8 +76,9 @@ public:
   // boxes (for example, when we have two inline tags)
   float get_ref_y() const;
 
-  float get_box_width()  const { return box_width;  }
-  float get_box_height() const { return box_height; }
+  // box_width/height is all the space taken up by the RenderBox (+padding +border +margin)
+  float get_box_width()  const;
+  float get_box_height() const;
 
   // Returns width/height containing content + padding + border
   float get_width() const;

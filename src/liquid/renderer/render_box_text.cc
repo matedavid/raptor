@@ -34,10 +34,10 @@ void RenderBoxText::layout(float container_width)
 
   // Compute width
   //content_width = box_width = t.getLocalBounds().width;
-  content_width = box_width = get_text_width(content, node->style.font_size);
+  content_width = get_text_width(content, node->style.font_size);
 
   // Compute height (approximation)
-  content_height = box_height = node->style.font_size * 1.3f;
+  content_height = node->style.font_size * 1.25f;
 }
 
 std::string RenderBoxText::split_content(float container_width)
@@ -64,8 +64,7 @@ void RenderBoxText::set_content(const std::string& new_content)
 {
   content = new_content;
 
-  //content_width = box_width = t.getLocalBounds().width;
-  content_width = box_width = get_text_width(content, node->style.font_size);
+  content_width = get_text_width(content, node->style.font_size);
 }
 
 float RenderBoxText::get_font_size() const
