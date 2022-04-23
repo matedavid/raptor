@@ -1,4 +1,7 @@
 .p2 {
-  position:relative;
-  right: 10px;
+  position: absolute;
+}
+
+.p1 {
+  position: absolute;
 }

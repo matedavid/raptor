@@ -19,6 +19,15 @@ enum RenderBoxType
   Img 
 };
 
+enum RenderBoxPosition 
+{
+  Static,
+  Relative,
+  Absolute,
+  Fixed,
+  Sticky
+};
+
 template<typename T> 
 struct EdgeValues
 {
@@ -32,6 +41,10 @@ class RenderBox
 {
 protected:
   RenderBoxDisplayType display_type;
+  RenderBoxPosition position;
+
+  // Specifies if the render_box is in the normal document flow
+  bool in_flow = true;
 
   RenderBox* parent;
   std::vector<RenderBox*> children;
@@ -63,6 +76,9 @@ public:
   void compute_height(float accumulated_height);
 
   RenderBoxDisplayType get_display_type() const { return display_type; }
+  RenderBoxPosition get_position_type()   const { return position; }
+
+  bool in_document_flow() const { return in_flow; }
 
   float get_x() const { return x; }
   float get_y() const { return y; }

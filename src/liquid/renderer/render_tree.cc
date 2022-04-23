@@ -62,29 +62,42 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
     }
 
     RenderBox* render_box_child = generate_render_tree(child, render_box, container_width);
+    render_box->add_child(render_box_child);
 
     std::vector<RenderBox*> children = render_box->get_children();
     // Case where we have to compute height of two inline elements
-    if (not children.empty() and render_box_child->get_display_type() == RenderBoxDisplayType::Inline and children[children.size()-1]->get_display_type() == RenderBoxDisplayType::Inline)
+    if (not children.size() > 1 and render_box_child->get_display_type() == RenderBoxDisplayType::Inline 
+        and children[children.size()-2]->get_display_type() == RenderBoxDisplayType::Inline)
     {
-      RenderBox* last_child = children[children.size()-1];
+      RenderBox* last_child = children[children.size()-2];
 
       std::cout << "two inline elements" << std::endl;
 
       // Removing last_child height to update it with the following max comparison
       accumulated_height -= last_child->get_box_height();
-      accumulated_height += std::max<float>(render_box_child->get_box_height(), last_child->get_box_height());
+
+      if (not render_box_child->in_document_flow() and not last_child->in_document_flow())
+        continue;
+
+      float max = std::max<float>(render_box_child->get_box_height(), last_child->get_box_height());
+      if (not render_box_child->in_document_flow())
+        max = last_child->get_box_height();
+      else if (not last_child->in_document_flow())
+        max = render_box_child->get_box_height();
+
+      accumulated_height += max;
     }
     else
     {
+      if (not render_box_child->in_document_flow())
+        continue;
+
       // Margin collapsing with parent and first-child
       if (render_box->get_y() == render_box_child->get_ref_y() and render_box_child->node->style.margin_top != 0.)
         accumulated_height += render_box_child->get_height();
       else
         accumulated_height += render_box_child->get_box_height();
     }
-
-    render_box->add_child(render_box_child);
   }
 
   render_box->compute_height(accumulated_height);

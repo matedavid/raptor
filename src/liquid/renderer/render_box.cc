@@ -8,6 +8,18 @@ bool is_number(const std::string& value)
 {
   return value.find_first_not_of("0123456789.") == std::string::npos;
 }
+
+// Returns if a children is blocking the parent/first-child margin collapsing
+bool has_child_blocking_mc(const std::vector<RenderBox*>& children)
+{
+  if (children.empty())
+    return false;
+
+  for (auto child : children)
+    if (child->in_document_flow()) return true;
+
+  return false;
+}
 /* ===== ==== ===== */
 
 float RenderBox::resolve_border_width(const std::string& border_width_value) const
@@ -51,6 +63,29 @@ std::pair<float, float> RenderBox::compute_xy_reference() const
 
     return { xref, yref };
   }
+  else if (not last_sibling->in_flow)
+  {
+    // If last_sibling is not in the normal document flow, get the next direct sibling that it's in the document flow u
+    // if exists, otherwise, use the parent as reference
+    int idx = siblings.size()-1;
+    while (idx >= 0)
+    {
+      RenderBox* sibling = siblings[idx--];
+      if (not sibling->in_flow)
+        continue;
+
+      float xref = sibling->get_x() + sibling->get_box_width();
+      float yref = sibling->get_ref_y();
+
+      return { xref, yref };
+    }
+    
+    if (parent == nullptr)
+      return { 0, 0 };
+
+    // Using parent as reference
+    return { parent->get_x(), parent->get_y() };
+  }
 
   // If last_sibling or current render_box has display_type = block, block starts in new line,
   // so yref has to take into account height of last_sibling
@@ -69,6 +104,21 @@ void RenderBox::layout(float container_width)
     display_type = RenderBoxDisplayType::Block;
   else if (node->style.display == "inline")
     display_type = RenderBoxDisplayType::Inline;
+
+  // Specify and set position
+  if (node->style.position == "static")
+    position = RenderBoxPosition::Static;
+  else if (node->style.position == "relative")
+    position = RenderBoxPosition::Relative;
+  else if (node->style.position == "absolute")
+    position = RenderBoxPosition::Absolute;
+  else if (node->style.position == "fixed")
+    position = RenderBoxPosition::Fixed;
+  else if (node->style.position == "sticky")
+    position = RenderBoxPosition::Sticky;
+
+  // Set if render_box is in the normal document flow
+  in_flow = position != RenderBoxPosition::Absolute and position != RenderBoxPosition::Fixed;
 
   // Compute border-width values (only top, right and left because bottom can't be used until height is computed)
   float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.f;
@@ -101,8 +151,19 @@ void RenderBox::layout(float container_width)
   // Determine (x,y) position
   auto [xref, yref] = compute_xy_reference();
 
-  float margin_top_apply = node->style.margin_top;
+  if (position == RenderBoxPosition::Absolute)
+  {
+    x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
+    y = yref + node->style.margin_top + border_top_value + node->style.padding_top;
 
+    y += node->style.top;
+    y -= node->style.bottom;
+    x += node->style.left;
+    x -= node->style.right;
+    return;
+  }
+
+  float margin_top_apply = node->style.margin_top;
   // Margin collapsing for adjacent siblings
   if (display_type != RenderBoxDisplayType::Inline)
   {
@@ -129,7 +190,7 @@ void RenderBox::layout(float container_width)
     }
 
     // Compute the adj_margin_bottom_value from the direct sibling (maximum of all the margins of all the margins)
-    while (not direct_sibling->children.empty())
+    while (not direct_sibling->children.empty() and direct_sibling->children[direct_sibling->children.size()-1]->type() == RenderBoxType::Default)
     {
       adj_margin_bottom = std::max<float>(adj_margin_bottom, direct_sibling->node->style.margin_bottom);
       direct_sibling = direct_sibling->children[direct_sibling->children.size()-1];
@@ -140,7 +201,7 @@ void RenderBox::layout(float container_width)
     float max = std::max<float>(adj_margin_bottom, node->style.margin_top);
     float translate = max-distance;
 
-    if (this != direct_sibling)
+    if (this != direct_sibling and direct_sibling->in_flow)
     {
       //std::cout << "(" << node->element_value << "," << node->id << ") Adjacent sibling: " << translate << std::endl;
       margin_top_apply = translate;
@@ -148,7 +209,9 @@ void RenderBox::layout(float container_width)
   }
 
   // Margin collapsing for parent and first/last child elements
-  if (display_type != RenderBoxDisplayType::Inline and node->style.margin_top != 0.f and parent != nullptr and parent->children.empty() and parent->node->style.padding_top == 0.f and parent->node->style.border_style[0] == "none")
+  if (display_type != RenderBoxDisplayType::Inline and node->style.margin_top != 0.f 
+      and parent != nullptr and not has_child_blocking_mc(parent->children) //parent->children.empty() 
+      and parent->node->style.padding_top == 0.f and parent->node->style.border_style[0] == "none")
   {
     float parent_mt = parent->node->style.margin_top;
 
@@ -176,7 +239,7 @@ void RenderBox::layout(float container_width)
   y = yref + margin_top_apply + border_top_value + node->style.padding_top;
 
   // position = relative
-  if (node->style.position == "relative")
+  if (position == RenderBoxPosition::Relative)
   {
     y += node->style.top;
     y -= node->style.bottom;
