@@ -3,6 +3,8 @@
 #include "liquid/html/html_element.h"
 #include "liquid/html/text.h"
 
+#include <SFML/Graphics/Text.hpp>
+
 namespace liquid {
 
 enum RenderBoxDisplayType
@@ -50,6 +52,7 @@ protected:
   std::vector<RenderBox*> children;
 
   float x, y;
+  float xref, yref;
   // content_width/height is only the space taken up by the content area box
   float content_width = -1, content_height = -1;
 

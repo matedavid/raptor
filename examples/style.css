@@ -1,7 +1,3 @@
-.p2 {
-  position: absolute;
-}
-
-.p1 {
-  position: absolute;
+p {
+  display: inline;
 }

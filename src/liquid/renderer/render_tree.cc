@@ -66,7 +66,7 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
 
     std::vector<RenderBox*> children = render_box->get_children();
     // Case where we have to compute height of two inline elements
-    if (not children.size() > 1 and render_box_child->get_display_type() == RenderBoxDisplayType::Inline 
+    if (children.size() > 1 and render_box_child->get_display_type() == RenderBoxDisplayType::Inline 
         and children[children.size()-2]->get_display_type() == RenderBoxDisplayType::Inline)
     {
       RenderBox* last_child = children[children.size()-2];
@@ -87,13 +87,13 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
 
       accumulated_height += max;
     }
-    else
+    else if (render_box_child->get_display_type() != RenderBoxDisplayType::Inline)
     {
       if (not render_box_child->in_document_flow())
         continue;
 
       // Margin collapsing with parent and first-child
-      if (render_box->get_y() == render_box_child->get_ref_y() and render_box_child->node->style.margin_top != 0.)
+      if (render_box->get_y() == render_box_child->get_ref_y() and render_box_child->node->style.margin_top != 0.f)
         accumulated_height += render_box_child->get_height();
       else
         accumulated_height += render_box_child->get_box_height();

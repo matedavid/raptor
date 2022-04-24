@@ -20,6 +20,17 @@ bool has_child_blocking_mc(const std::vector<RenderBox*>& children)
 
   return false;
 }
+
+float space_width(float font_size) 
+{
+  sf::Font font;
+  if (not font.loadFromFile("/home/david/workspace/raptor/src/gui/Fonts/Arial-Font/arial_1.ttf"))
+    std::cout << "Error loading font" << std::endl;
+
+  sf::Text t(" ", font, (uint)font_size);
+  return t.getLocalBounds().width;
+
+}
 /* ===== ==== ===== */
 
 float RenderBox::resolve_border_width(const std::string& border_width_value) const
@@ -58,14 +69,14 @@ std::pair<float, float> RenderBox::compute_xy_reference() const
   RenderBox* last_sibling = siblings[siblings.size()-1];
   if (last_sibling->display_type == RenderBoxDisplayType::Inline and display_type == RenderBoxDisplayType::Inline)
   {
-    float xref = last_sibling->get_x() + last_sibling->get_box_width();
+    float xref = last_sibling->get_x() + last_sibling->get_box_width() + space_width(node->style.font_size);
     float yref = last_sibling->get_ref_y();
 
     return { xref, yref };
   }
   else if (not last_sibling->in_flow)
   {
-    // If last_sibling is not in the normal document flow, get the next direct sibling that it's in the document flow u
+    // If last_sibling is not in the normal document flow, get the next direct sibling that it's in the document flow 
     // if exists, otherwise, use the parent as reference
     int idx = siblings.size()-1;
     while (idx >= 0)
@@ -145,11 +156,13 @@ void RenderBox::layout(float container_width)
   else if (display_type == RenderBoxDisplayType::Inline)
   {
     // If display = inline, box_width and content_width are computed based on the content-width, which can't
-    // be computed in yet (printable objects are not laid out). To compute values, we have to wait for the reflow()
+    // be computed yet (printable objects have not been layed out). To compute values, we have to wait for the reflow()
   }
 
   // Determine (x,y) position
-  auto [xref, yref] = compute_xy_reference();
+  auto [_xref, _yref] = compute_xy_reference();
+  xref = _xref;
+  yref = _yref;
 
   if (position == RenderBoxPosition::Absolute)
   {
@@ -235,8 +248,16 @@ void RenderBox::layout(float container_width)
     }
   }
 
-  x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
-  y = yref + margin_top_apply + border_top_value + node->style.padding_top;
+  if (display_type == RenderBoxDisplayType::Inline)
+  {
+    x = xref + border_left_value;
+    y = yref + border_top_value;
+  }
+  else
+  {
+    x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
+    y = yref + margin_top_apply + border_top_value + node->style.padding_top;
+  }
 
   // position = relative
   if (position == RenderBoxPosition::Relative)
@@ -303,7 +324,8 @@ float RenderBox::get_border_y() const
 
 float RenderBox::get_ref_y() const
 {
-  return compute_xy_reference().second;
+  //return compute_xy_reference().second;
+  return yref;
 }
 
 float RenderBox::get_box_width() const
