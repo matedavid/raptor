@@ -9,18 +9,6 @@ bool is_number(const std::string& value)
   return value.find_first_not_of("0123456789.") == std::string::npos;
 }
 
-// Returns if a children is blocking the parent/first-child margin collapsing
-bool has_child_blocking_mc(const std::vector<RenderBox*>& children)
-{
-  if (children.empty())
-    return false;
-
-  for (auto child : children)
-    if (child->in_document_flow()) return true;
-
-  return false;
-}
-
 float space_width(float font_size) 
 {
   sf::Font font;
@@ -30,6 +18,28 @@ float space_width(float font_size)
   sf::Text t(" ", font, (uint)font_size);
   return t.getLocalBounds().width;
 
+}
+
+// Returns if a children is blocking the parent/first-child margin collapsing
+bool has_child_blocking_mc(const std::vector<RenderBox*>& children)
+{
+  if (children.empty())
+    return false;
+
+  for (auto child : children)
+    if (child->in_document_flow() and child->get_content_height() != 0.f) return true;
+
+  return false;
+}
+
+// Returns the first children that is in the normal document flow from vector
+RenderBox* first_children_in_flow(const std::vector<RenderBox*>& children)
+{
+  for (auto iter = children.rbegin(); iter != children.rend(); ++iter)
+  {
+    if ((*iter)->in_document_flow()) return *iter;
+  }
+  return nullptr;
 }
 /* ===== ==== ===== */
 
@@ -76,6 +86,8 @@ std::pair<float, float> RenderBox::compute_xy_reference() const
   }
   else if (not last_sibling->in_flow)
   {
+    std::cout << node->id << " sibling not in normal document flow" << std::endl;
+
     // If last_sibling is not in the normal document flow, get the next direct sibling that it's in the document flow 
     // if exists, otherwise, use the parent as reference
     int idx = siblings.size()-1;
@@ -85,8 +97,9 @@ std::pair<float, float> RenderBox::compute_xy_reference() const
       if (not sibling->in_flow)
         continue;
 
-      float xref = sibling->get_x() + sibling->get_box_width();
-      float yref = sibling->get_ref_y();
+      //float xref = sibling->get_x() + sibling->get_box_width();
+      float xref = sibling->xref;
+      float yref = sibling->yref + sibling->get_box_height();
 
       return { xref, yref };
     }
@@ -189,17 +202,28 @@ void RenderBox::layout(float container_width)
 
     // Get the direct sibling reference value
     RenderBox* direct_sibling = this;
-    if (parent != nullptr and not parent->children.empty())
+    // TODO: look for better solution to check if first_children_in_flow is nullptr instead of calling the same function twice
+    if (parent != nullptr and not parent->children.empty() and first_children_in_flow(parent->children) != nullptr)
     {
       // Adjacent sibling under same container
-      direct_sibling = parent->children[parent->children.size() - 1];
+      direct_sibling = first_children_in_flow(parent->children);
       adj_margin_bottom = direct_sibling->node->style.margin_bottom;
+
+      /*
+      direct_sibling = parent->children[parent->children.size() - 1];
+      adj_margin_bottom = direct_sibling->node->style.margin_bottom;S
+      */
     }
-    else if (parent != top_render_box and not top_render_box->children.empty())
+    else if (parent != top_render_box and not top_render_box->children.empty() and first_children_in_flow(top_render_box->children) != nullptr)
     {
       // Adjacent sibling in all the tree (different containers)
+      direct_sibling = first_children_in_flow(top_render_box->children);
+      adj_margin_bottom = direct_sibling->node->style.margin_bottom;
+
+      /*
       direct_sibling = top_render_box->children[top_render_box->children.size()-1]; // Get the first child of current node's parent
       adj_margin_bottom = direct_sibling->node->style.margin_bottom;
+      */
     }
 
     // Compute the adj_margin_bottom_value from the direct sibling (maximum of all the margins of all the margins)
@@ -223,7 +247,7 @@ void RenderBox::layout(float container_width)
 
   // Margin collapsing for parent and first/last child elements
   if (display_type != RenderBoxDisplayType::Inline and node->style.margin_top != 0.f 
-      and parent != nullptr and not has_child_blocking_mc(parent->children) //parent->children.empty() 
+      and parent != nullptr and not has_child_blocking_mc(parent->children) 
       and parent->node->style.padding_top == 0.f and parent->node->style.border_style[0] == "none")
   {
     float parent_mt = parent->node->style.margin_top;
@@ -231,8 +255,6 @@ void RenderBox::layout(float container_width)
     RenderBox* p = parent;
     while (p != nullptr)
     {
-      if (not p->children.empty())
-        break;
       parent_mt = std::max<float>(parent_mt, p->node->style.margin_top);
       p = p->parent;
     }
