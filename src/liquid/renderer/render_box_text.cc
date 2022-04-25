@@ -8,7 +8,7 @@ float RenderBoxText::get_text_width(const std::string& content, float font_size)
 {
   // TODO: Find better way to do this?
   sf::Font font;
-  if (not font.loadFromFile("/home/david/workspace/raptor/src/gui/Fonts/Arial-Font/arial_1.ttf"))
+  if (not font.loadFromFile("../src/gui/Fonts/LiberationSans-Regular.ttf"))
     std::cout << "Error loading font" << std::endl;
 
   sf::Text t(content, font, (uint)font_size);

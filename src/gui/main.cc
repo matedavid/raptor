@@ -63,12 +63,12 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
       std::string content = render_box_text->get_content();
 
       sf::Font font;
-      if (not font.loadFromFile("/home/david/workspace/raptor/src/gui/Fonts/Arial-Font/arial_1.ttf"))
+      if (not font.loadFromFile("../src/gui/Fonts/LiberationSans-Regular.ttf"))
         return;
 
       sf::Text text;
-      text.setString(content);
       text.setFont(font);
+      text.setString(content);
       text.setPosition(render_box_text->get_x(), render_box_text->get_y());
 
       // font-size

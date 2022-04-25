@@ -12,7 +12,7 @@ bool is_number(const std::string& value)
 float space_width(float font_size) 
 {
   sf::Font font;
-  if (not font.loadFromFile("/home/david/workspace/raptor/src/gui/Fonts/Arial-Font/arial_1.ttf"))
+  if (not font.loadFromFile("../src/gui/Fonts/LiberationSans-Regular.ttf"))
     std::cout << "Error loading font" << std::endl;
 
   sf::Text t(" ", font, (uint)font_size);
@@ -86,8 +86,6 @@ std::pair<float, float> RenderBox::compute_xy_reference() const
   }
   else if (not last_sibling->in_flow)
   {
-    std::cout << node->id << " sibling not in normal document flow" << std::endl;
-
     // If last_sibling is not in the normal document flow, get the next direct sibling that it's in the document flow 
     // if exists, otherwise, use the parent as reference
     int idx = siblings.size()-1;
@@ -255,6 +253,9 @@ void RenderBox::layout(float container_width)
     RenderBox* p = parent;
     while (p != nullptr)
     {
+      if (not p->children.empty() and first_children_in_flow(p->children) != nullptr)
+        break;
+
       parent_mt = std::max<float>(parent_mt, p->node->style.margin_top);
       p = p->parent;
     }
