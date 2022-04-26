@@ -22,8 +22,6 @@ Viewport::Viewport(HTMLElement* element, float width, float height)
   compute_lowest_y(tree, lowest_y);
 
   tree->print(0);
-
-  std::cout << lowest_y << std::endl;
 }
 
 void Viewport::update_width(float new_width)
