@@ -25,11 +25,8 @@ int main(int argc, char* argv[])
 
   liquid::Viewport viewport(document.body, WIDTH, HEIGHT);
 
-	//liquid::RenderBox* render_tree = liquid::generate_render_tree(document.body, nullptr, 960);
-  //render_tree->print(0);
-
   window.clear(sf::Color::White);
-  //paint(window, render_tree);
+  paint(window, viewport.tree, viewport);
   window.display();
 
   while (window.isOpen())
@@ -46,14 +43,24 @@ int main(int argc, char* argv[])
         sf::View resized_view = sf::View(sf::FloatRect(0.f, 0.f, event.size.width, event.size.height));
         window.setView(resized_view);
 
-        //render_tree = liquid::generate_render_tree(document.body, nullptr, event.size.width);
+        viewport.update_width(event.size.width);
+        viewport.update_height(event.size.height);
+
         window.clear(sf::Color::White);
-        //paint(window, render_tree);
+        paint(window, viewport.tree, viewport);
         window.display();
       }
       else if (event.type == sf::Event::MouseWheelScrolled)
       {
         std::cout << "Mouse wheel scrolled: " << event.mouseWheelScroll.delta << std::endl;
+        if (event.mouseWheelScroll.delta > 0)
+          viewport.scroll_up();
+        else if (event.mouseWheelScroll.delta < 0)
+          viewport.scroll_down();
+
+        window.clear(sf::Color::White);
+        paint(window, viewport.tree, viewport);
+        window.display();
       }
     }
   }

@@ -7,8 +7,4 @@
 #include "liquid/renderer/render_tree.h"
 #include "liquid/renderer/viewport.h"
 
-namespace liquid {
-
-void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree);
-  
-}
+void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree, liquid::Viewport& viewport);

@@ -239,6 +239,7 @@ void RenderBox::layout(float container_width)
     if (this != direct_sibling and direct_sibling->in_flow)
     {
       //std::cout << "(" << node->element_value << "," << node->id << ") Adjacent sibling: " << translate << std::endl;
+      adjacent_sibling_mc = true;
       margin_top_apply = translate;
     }
   }
@@ -266,6 +267,8 @@ void RenderBox::layout(float container_width)
     p = parent;
     while (p != nullptr and p->children.empty())
     {
+      parent_first_child_mc = true;
+
       p->y += margin_top_apply;
       p = p->parent;
     }
@@ -369,6 +372,9 @@ float RenderBox::get_box_height() const
   // thus not modifying the height of box
   if (display_type == RenderBoxDisplayType::Inline)
     return content_height + border_top_value + border_bottom_value;
+  else if (adjacent_sibling_mc)
+    return content_height + border_top_value + node->style.padding_top
+                          + node->style.margin_bottom + border_bottom_value + node->style.padding_bottom;
 
   return content_height + node->style.margin_top + border_top_value + node->style.padding_top
                         + node->style.margin_bottom + border_bottom_value + node->style.padding_bottom;

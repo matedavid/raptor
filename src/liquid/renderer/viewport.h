@@ -9,13 +9,14 @@ namespace liquid {
 class Viewport 
 {
 private:
-  RenderBox* tree;
-
   float width, height;
   float x, y;
   float lowest_y;
 
-  float scroll_factor = 2.f;
+  float scroll_factor = 4.f;
+  
+public:
+  RenderBox* tree;
 
 private:
   static void compute_lowest_y(RenderBox* tree, float& min);
@@ -28,6 +29,9 @@ public:
   
   void scroll_up();
   void scroll_down();
+
+  float get_x() { return x; }
+  float get_y() { return y; }
 };
 
 }

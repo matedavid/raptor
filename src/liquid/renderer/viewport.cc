@@ -7,7 +7,7 @@ void Viewport::compute_lowest_y(RenderBox* tree, float& min)
   if (tree == nullptr)
     return;
 
-  float computed_y = tree->get_y() + tree->get_box_height();
+  float computed_y = tree->get_y() + tree->get_content_height();
   min = std::max<float>(min, computed_y);
 
   for (auto child : tree->get_children())
@@ -42,7 +42,7 @@ void Viewport::scroll_up()
 
 void Viewport::scroll_down()
 {
-  if (y >= lowest_y) return;
+  if (y+height >= lowest_y) return;
   y += scroll_factor;
 }
 

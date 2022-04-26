@@ -40,7 +40,7 @@ sf::VertexArray paint_text_line_through(const liquid::RenderBoxText* text, liqui
   return line_through;
 }
 
-void paint_text(sf::RenderWindow& window, liquid::RenderBoxText* render_box_text)
+void paint_text(sf::RenderWindow& window, liquid::RenderBoxText* render_box_text, liquid::Viewport& viewport)
 {
   // Apply Text css elements
   auto text_element = dynamic_cast<liquid::Text*>(render_box_text->node);
@@ -57,7 +57,8 @@ void paint_text(sf::RenderWindow& window, liquid::RenderBoxText* render_box_text
   sf::Text text;
   text.setFont(font);
   text.setString(content);
-  text.setPosition(render_box_text->get_x(), render_box_text->get_y());
+
+  text.setPosition(render_box_text->get_x()-viewport.get_x(), render_box_text->get_y()-viewport.get_y());
 
   // font-size
   text.setCharacterSize((unsigned int)font_size);
@@ -105,7 +106,7 @@ void paint_text(sf::RenderWindow& window, liquid::RenderBoxText* render_box_text
   window.draw(text);
 }
 
-void paint_image(sf::RenderWindow& window, liquid::RenderBoxImage* render_box_image)
+void paint_image(sf::RenderWindow& window, liquid::RenderBoxImage* render_box_image, liquid::Viewport& viewport)
 {
   std::string src = render_box_image->get_src();
 
@@ -127,7 +128,8 @@ void paint_image(sf::RenderWindow& window, liquid::RenderBoxImage* render_box_im
 
   sf::Sprite image_sprite;
   image_sprite.setTexture(image_texture, true);
-  image_sprite.setPosition(render_box_image->get_x(), render_box_image->get_y());
+
+  image_sprite.setPosition(render_box_image->get_x()-viewport.get_x(), render_box_image->get_y()-viewport.get_y());
 
   // Apply width and height to sprite
   sf::Vector2f scale_factor;
@@ -144,19 +146,19 @@ void paint_image(sf::RenderWindow& window, liquid::RenderBoxImage* render_box_im
   window.draw(image_sprite);
 }
 
-void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
+void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree, liquid::Viewport& viewport)
 {
   if (render_tree->is_printable())
   {
     if (render_tree->type() == liquid::RenderBoxType::Txt)
     {
       auto render_box_text = dynamic_cast<liquid::RenderBoxText*>(render_tree);
-      paint_text(window, render_box_text);
+      paint_text(window, render_box_text, viewport);
     }
     else if (render_tree->type() == liquid::RenderBoxType::Img)
     {
       auto render_box_image = dynamic_cast<liquid::RenderBoxImage*>(render_tree);
-      paint_image(window, render_box_image);
+      paint_image(window, render_box_image, viewport);
     }
     return;
   }
@@ -175,6 +177,6 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree)
 
   for (liquid::RenderBox* child : render_tree->get_children())
   {
-    paint(window, child);
+    paint(window, child, viewport);
   }
 }

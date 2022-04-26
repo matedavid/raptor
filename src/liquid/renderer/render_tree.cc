@@ -93,7 +93,8 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
         continue;
 
       // Margin collapsing with parent and first-child
-      if (render_box->get_y() == render_box_child->get_ref_y() and render_box_child->node->style.margin_top != 0.f)
+      //if (render_box->get_y() == render_box_child->get_ref_y() and render_box_child->node->style.margin_top != 0.f)
+      if (render_box->parent_first_child_mc)
         accumulated_height += render_box_child->get_height();
       else
         accumulated_height += render_box_child->get_box_height();

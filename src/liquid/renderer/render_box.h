@@ -61,6 +61,9 @@ public:
 
   virtual bool is_printable() const { return false; }
   virtual RenderBoxType type() const { return RenderBoxType::Default; }
+  
+  bool parent_first_child_mc = false;
+  bool adjacent_sibling_mc = false;
 
 private:
   float resolve_border_width(const std::string& border_width_value) const;
