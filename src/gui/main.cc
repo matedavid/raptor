@@ -5,6 +5,7 @@
 #include "liquid/html/html_document.h"
 #include "liquid/html/text.h"
 #include "liquid/renderer/render_tree.h"
+#include "liquid/renderer/viewport.h"
 
 sf::VertexArray paint_text_underline(const liquid::RenderBoxText* text, liquid::Color& color)
 {
@@ -185,17 +186,22 @@ int main(int argc, char* argv[])
   else
     file_path = "/home/david/workspace/raptor/examples/index.html";
 
-  sf::RenderWindow window(sf::VideoMode(1024, 512), "Raptor", sf::Style::Default);
+  const float WIDTH = 960;
+  const float HEIGHT = 540;
+
+  sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Raptor", sf::Style::Default);
 
 	liquid::HTMLDocument document = liquid::HTMLDocument();
 	document.from_file(file_path);
-
   window.setTitle(document.title);
-	liquid::RenderBox* render_tree = liquid::generate_render_tree(document.body, nullptr, 1024);
-  render_tree->print(0);
+
+  liquid::Viewport viewport = liquid::Viewport(document.body, WIDTH, HEIGHT);
+
+	//liquid::RenderBox* render_tree = liquid::generate_render_tree(document.body, nullptr, 960);
+  //render_tree->print(0);
 
   window.clear(sf::Color::White);
-  paint(window, render_tree);
+  //paint(window, render_tree);
   window.display();
 
   while (window.isOpen())
@@ -212,10 +218,14 @@ int main(int argc, char* argv[])
         sf::View new_view = sf::View(sf::FloatRect(0.f, 0.f, event.size.width, event.size.height));
         window.setView(new_view);
 
-        render_tree = liquid::generate_render_tree(document.body, nullptr, event.size.width);
+        //render_tree = liquid::generate_render_tree(document.body, nullptr, event.size.width);
         window.clear(sf::Color::White);
-        paint(window, render_tree);
+        //paint(window, render_tree);
         window.display();
+      }
+      else if (event.type == sf::Event::MouseWheelScrolled)
+      {
+        std::cout << "Mouse wheel scrolled: " << event.mouseWheelScroll.delta << std::endl;
       }
     }
   }
