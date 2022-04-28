@@ -9,6 +9,7 @@
 #define WIDTH 960
 #define HEIGHT 540
 
+/*
 int main(int argc, char* argv[])
 {
 	std::filesystem::path file_path;
@@ -67,3 +68,5 @@ int main(int argc, char* argv[])
   
   return 0;
 }
+*/
+

@@ -19,9 +19,15 @@ file(GLOB Sources
 find_package(SFML COMPONENTS REQUIRED system window graphics network audio)
 include_directories(${SFML_INCLUDE_DIR})
 
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
+
 add_executable(${project_name} ${Sources})
 target_include_directories(${project_name} PRIVATE ${SRC_INCLUDE_PATH})
 
+# Link SFML
 target_link_libraries(${project_name} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
 target_link_libraries(${project_name} sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
+
+# Link Qt5
+target_link_libraries(${project_name} Qt5::Widgets)
 
