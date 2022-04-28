@@ -398,11 +398,10 @@ float RenderBox::get_height() const
 
 float RenderBox::get_vertical_separation() const
 {
-  float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.f;
-
   if (display_type == RenderBoxDisplayType::Inline)
     return content_height;
 
+  float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.f;
   return content_height + node->style.padding_bottom + border_bottom_value + node->style.margin_bottom;
 }
 
@@ -415,7 +414,7 @@ void RenderBox::print(int number_tabs)
   }
 
   //std::cout << "(" << node->element_value << "): (" << x << "," << y << ")"  << std::endl;
-  printf("(%s): (%.1f, %.1f) w=%.1f h=%.1f cw=%.1f ch=%.1f\n", node->element_value.c_str(), x, y, get_box_width(), get_box_height(), content_width, content_height);
+  printf("(%s): (%.1f, %.1f) bw=%.1f bh=%.1f w=%.1f h=%.1f\n", node->element_value.c_str(), x, y, get_box_width(), get_box_height(), get_width(), get_height());
 
   // std::cout << "(" << node->element_value << ") RenderBox: (" << x << "," << y << ") width=" << width << " height="  << height << 
     // " margin=(" << margin.top << " " << margin.right << " " << margin.bottom << " " << margin.left << ")" << 

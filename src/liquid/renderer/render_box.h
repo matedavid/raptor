@@ -63,6 +63,7 @@ public:
   virtual RenderBoxType type() const { return RenderBoxType::Default; }
   
   bool parent_first_child_mc = false;
+  bool parent_last_child_mc = false;
   bool adjacent_sibling_mc = false;
 
 private:
