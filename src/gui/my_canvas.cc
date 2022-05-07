@@ -1,7 +1,4 @@
 #include "my_canvas.h"
-#include <iostream>
-#include <string>
-#include <QDir>
 
 MyCanvas::MyCanvas(QWidget *Parent, const QPoint &Position, const QSize &Size) : QSFMLCanvas(Parent, Position, Size)
 {

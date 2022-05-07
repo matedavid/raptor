@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
 #include "my_canvas.h"
 #include <QFrame>
 
+// https://becomingindiedev.blogspot.com/2013/10/qt-5-and-sfml-20-integration.html
 int main(int argc, char *argv[])
 {
   QApplication App(argc, argv);

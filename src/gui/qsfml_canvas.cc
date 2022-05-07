@@ -37,7 +37,8 @@ void QSFMLCanvas::showEvent(QShowEvent *)
     // Let the derived class do its specific stuff
     OnInit();
     // Setup the timer to trigger a refresh at specified framerate
-    connect(&myTimer, SIGNAL(timeout()), this, SLOT(repaint()));
+    //connect(&myTimer, SIGNAL(timeout()), this, SLOT(repaint()));
+
     myTimer.start();
     myInitialized = true;
   }
@@ -46,12 +47,14 @@ QPaintEngine *QSFMLCanvas::paintEngine() const
 {
   return 0;
 }
+
 void QSFMLCanvas::paintEvent(QPaintEvent *)
 {
   // Let the derived class do its specific stuff
-  OnUpdate();
+  //OnUpdate();
   // Display on screen
   RenderWindow::display();
 }
+
 void QSFMLCanvas::OnInit() {}
 void QSFMLCanvas::OnUpdate() {}
