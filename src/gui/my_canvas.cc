@@ -6,6 +6,8 @@ MyCanvas::MyCanvas(QWidget *Parent, const QPoint &Position, const QSize &Size) :
 
 void MyCanvas::OnInit()
 {
+  RenderWindow::clear(sf::Color::White);
+
   sf::Font font;
   if (not font.loadFromFile("../src/gui/Fonts/LiberationSans-Regular.ttf"))
     return;
@@ -16,6 +18,8 @@ void MyCanvas::OnInit()
 
   text.setPosition(0, 0);
   text.setCharacterSize(20);
+
+  text.setFillColor(sf::Color::Black);
 
   RenderWindow::draw(text);
 
