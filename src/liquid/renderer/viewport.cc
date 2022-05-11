@@ -15,9 +15,14 @@ void Viewport::compute_lowest_y(RenderBox* tree, float& min)
 }
 
 Viewport::Viewport(HTMLElement* element, float width, float height)
-  : width(width), height(height), x(0.f), y(0.f)
+  : width(width), height(height), x(0.f), y(0.f), element_tree(element)
 {
-  tree = generate_render_tree(element, nullptr, width);
+  render();
+}
+
+void Viewport::render()
+{
+  tree = generate_render_tree(element_tree, nullptr, width);
   lowest_y = 0.f;
   compute_lowest_y(tree, lowest_y);
 
@@ -27,6 +32,7 @@ Viewport::Viewport(HTMLElement* element, float width, float height)
 void Viewport::update_width(float new_width)
 {
   width = new_width;
+  render();
 }
 
 void Viewport::update_height(float new_height)

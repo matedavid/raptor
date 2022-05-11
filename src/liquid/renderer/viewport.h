@@ -17,12 +17,15 @@ private:
   
 public:
   RenderBox* tree;
+  HTMLElement* element_tree;
 
 private:
   static void compute_lowest_y(RenderBox* tree, float& min);
 
 public:
   Viewport(HTMLElement* element, float width, float height);
+
+  void render();
 
   void update_width(float new_width);
   void update_height(float new_height);
