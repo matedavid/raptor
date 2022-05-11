@@ -376,7 +376,7 @@ std::vector<std::pair<float, float>> RenderBox::get_border_edges() const
   float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.f;
 
   float x_left = x - node->style.padding_left - border_left_value;
-  float x_right = x + content_width + node->style.padding_right + border_right_value;
+  float x_right = x + content_width + node->style.padding_right;
 
   float y_top = y - node->style.padding_top - border_top_value;
   float y_bottom = y + content_height + node->style.padding_bottom + border_bottom_value;
