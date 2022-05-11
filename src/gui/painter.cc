@@ -1,5 +1,75 @@
 #include "painter.h"
 
+void paint_border(sf::RenderWindow& window, liquid::RenderBox* render_box)
+{
+  auto edges = render_box->get_border_edges();
+  auto top_left = edges[0];
+  auto top_right = edges[1];
+  auto bottom_left = edges[2];
+  auto bottom_right = edges[3];
+
+  if (render_box->node->style.border_style[0] != "none") // top
+  {
+    std::string style = render_box->node->style.border_style[0];
+    liquid::Color color = render_box->node->style.border_color[0];
+
+    sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
+
+    sf::VertexArray border_top(sf::Lines, 2);
+    border_top[0].position = sf::Vector2f(top_left.first, top_left.second);
+    border_top[0].color = c;
+    border_top[1].position = sf::Vector2f(top_right.first, top_right.second);
+    border_top[1].color = c;
+
+    window.draw(border_top);
+  }
+  if (render_box->node->style.border_style[1] != "none") // right
+  {
+    std::string style = render_box->node->style.border_style[1];
+    liquid::Color color = render_box->node->style.border_color[1];
+
+    sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
+
+    sf::VertexArray border_top(sf::Lines, 2);
+    border_top[0].position = sf::Vector2f(top_right.first, top_right.second);
+    border_top[0].color = c;
+    border_top[1].position = sf::Vector2f(bottom_right.first, bottom_right.second);
+    border_top[1].color = c;
+
+    window.draw(border_top);
+  }
+  if (render_box->node->style.border_style[2] != "none") // bottom
+  {
+    std::string style = render_box->node->style.border_style[2];
+    liquid::Color color = render_box->node->style.border_color[2];
+
+    sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
+
+    sf::VertexArray border_top(sf::Lines, 2);
+    border_top[0].position = sf::Vector2f(bottom_left.first, bottom_left.second);
+    border_top[0].color = c;
+    border_top[1].position = sf::Vector2f(bottom_right.first, bottom_right.second);
+    border_top[1].color = c;
+
+    window.draw(border_top);
+  }
+  if (render_box->node->style.border_style[3] != "none") // left 
+  {
+    std::string style = render_box->node->style.border_style[3];
+    liquid::Color color = render_box->node->style.border_color[3];
+
+    sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
+
+    sf::VertexArray border_top(sf::Lines, 2);
+    border_top[0].position = sf::Vector2f(top_left.first, top_left.second);
+    border_top[0].color = c;
+    border_top[1].position = sf::Vector2f(bottom_left.first, bottom_left.second);
+    border_top[1].color = c;
+
+    window.draw(border_top);
+  }
+}
+
 sf::VertexArray paint_text_underline(const liquid::RenderBoxText* text, liquid::Color& color)
 {
   sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
@@ -162,7 +232,8 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree, liquid::Vie
     }
     return;
   }
-
+   
+  // background-color
   if (render_tree->node->style.background_color.alpha != 0.f)
   {
     liquid::Color c = render_tree->node->style.background_color;
@@ -174,6 +245,9 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree, liquid::Vie
 
     window.draw(background);
   }
+
+  // border
+  paint_border(window, render_tree);
 
   for (liquid::RenderBox* child : render_tree->get_children())
   {

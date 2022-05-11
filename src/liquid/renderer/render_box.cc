@@ -396,6 +396,27 @@ float RenderBox::get_height() const
   return content_height + node->style.padding_top + node->style.padding_bottom + border_top_value + border_bottom_value;
 }
 
+std::vector<std::pair<float, float>> RenderBox::get_border_edges() const
+{
+  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.f;
+  float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.f;
+  float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.f;
+  float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.f;
+
+  float x_left = x - node->style.padding_left - border_left_value;
+  float x_right = x + content_width + node->style.padding_right + border_right_value;
+
+  float y_top = y - node->style.padding_top - border_top_value;
+  float y_bottom = y + content_height + node->style.padding_bottom + border_bottom_value;
+
+  auto top_left = std::make_pair(x_left, y_top);
+  auto top_right = std::make_pair(x_right, y_top);
+  auto bottom_left = std::make_pair(x_left, y_bottom);
+  auto bottom_right = std::make_pair(x_right, y_bottom);
+
+  return { top_left, top_right, bottom_left, bottom_right };
+}
+
 float RenderBox::get_vertical_separation() const
 {
   if (display_type == RenderBoxDisplayType::Inline)
@@ -413,12 +434,7 @@ void RenderBox::print(int number_tabs)
     std::cout << "  ";
   }
 
-  //std::cout << "(" << node->element_value << "): (" << x << "," << y << ")"  << std::endl;
   printf("(%s): (%.1f, %.1f) bw=%.1f bh=%.1f w=%.1f h=%.1f\n", node->element_value.c_str(), x, y, get_box_width(), get_box_height(), get_width(), get_height());
-
-  // std::cout << "(" << node->element_value << ") RenderBox: (" << x << "," << y << ") width=" << width << " height="  << height << 
-    // " margin=(" << margin.top << " " << margin.right << " " << margin.bottom << " " << margin.left << ")" << 
-    // " padding=(" << padding.top << " " << padding.right << " " << padding.bottom << " " << padding.left << ")" << std::endl;
 
   for (auto child : children)
   {

@@ -1,7 +1,3 @@
-div {
-  background-color: green;
-}
-
-#abs {
-  position: absolute;
+.border {
+  border-style: solid;
 }

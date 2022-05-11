@@ -110,6 +110,8 @@ public:
   float get_content_width()  const { return content_width; }
   float get_content_height() const { return content_height; }
 
+  std::vector<std::pair<float, float>> get_border_edges() const;
+
   // This method is mainly used to compute the bottom sibling's y position value
   float get_vertical_separation() const;
 
