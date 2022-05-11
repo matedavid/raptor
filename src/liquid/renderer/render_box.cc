@@ -131,7 +131,7 @@ void RenderBox::layout(float container_width)
   // Compute width and height
   if (display_type == RenderBoxDisplayType::Block) 
   {
-    // If display = block, both the content width and the box width occupy all the possible space
+    // If display = block, the width occupies all the possible space
     // We have to account for margin, padding and border width to compute content_width
     if (node->style.width == -1) 
     {
@@ -142,12 +142,17 @@ void RenderBox::layout(float container_width)
     else
     {
       content_width = node->style.width;
+    }
+
+    // To compute height we need to wait for compute_height() call, except if it's specified
+    if (node->style.height != -1) 
+    {
       content_height = node->style.height;
     }
   }
   else if (display_type == RenderBoxDisplayType::Inline)
   {
-    // If display = inline, box_width and content_width are computed based on the content-width, which can't
+    // If display = inline, the width is computed  based on the children's width, which can't
     // be computed yet (printable objects have not been layed out). To compute values, we have to wait for the reflow()
   }
 
@@ -293,28 +298,14 @@ void RenderBox::reflow(float upstream_width)
 
 void RenderBox::compute_height(float accumulated_height)
 {
-  // Top and Bottom border-width value
+
+  if (content_height != -1)
+    return;
+
   float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.f;
   float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.f;
 
-  // Compute padding border and margin bottom edge
-  //padding.bottom = y + accumulated_height + node->style.padding_bottom;
-  //border.bottom = padding.bottom + border_bottom_value;
-  //margin.bottom  = border.bottom + node->style.margin_bottom;
-
   content_height = accumulated_height;
-
-  /*
-  if (display_type == RenderBoxDisplayType::Inline)
-  {
-    box_height = accumulated_height + border_top_value + border_bottom_value;
-  }
-  else
-  {
-    box_height = accumulated_height + node->style.margin_top + border_top_value + node->style.padding_top +
-                                      node->style.margin_bottom + border_bottom_value + node->style.padding_bottom;
-  }
-  */
 }
 
 float RenderBox::get_border_x() const
