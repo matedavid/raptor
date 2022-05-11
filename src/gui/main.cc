@@ -62,6 +62,18 @@ int main(int argc, char* argv[])
         paint(window, viewport.tree, viewport);
         window.display();
       }
+      else if (event.type == sf::Event::KeyPressed and event.key.control and sf::Keyboard::isKeyPressed(sf::Keyboard::R)) 
+      {
+        liquid::HTMLDocument document = liquid::HTMLDocument();
+        document.from_file(file_path);
+        window.setTitle(document.title);
+
+        viewport  = liquid::Viewport(document.body, WIDTH, HEIGHT);
+
+        window.clear(sf::Color::White);
+        paint(window, viewport.tree, viewport);
+        window.display();
+      }
     }
   }
   
