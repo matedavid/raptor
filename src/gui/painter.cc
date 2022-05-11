@@ -12,14 +12,13 @@ void paint_border(sf::RenderWindow& window, liquid::RenderBox* render_box)
   {
     std::string style = render_box->node->style.border_style[0];
     liquid::Color color = render_box->node->style.border_color[0];
+    float width = resolve_border_width(render_box->node->style.border_width[0]);
 
     sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
-    sf::VertexArray border_top(sf::Lines, 2);
-    border_top[0].position = sf::Vector2f(top_left.first, top_left.second);
-    border_top[0].color = c;
-    border_top[1].position = sf::Vector2f(top_right.first, top_right.second);
-    border_top[1].color = c;
+    sf::RectangleShape border_top(sf::Vector2f(top_right.first-top_left.first, width));
+    border_top.setPosition(top_left.first, top_left.second);
+    border_top.setFillColor(c);
 
     window.draw(border_top);
   }
@@ -27,46 +26,43 @@ void paint_border(sf::RenderWindow& window, liquid::RenderBox* render_box)
   {
     std::string style = render_box->node->style.border_style[1];
     liquid::Color color = render_box->node->style.border_color[1];
+    float width = resolve_border_width(render_box->node->style.border_width[1]);
 
     sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
-    sf::VertexArray border_top(sf::Lines, 2);
-    border_top[0].position = sf::Vector2f(top_right.first, top_right.second);
-    border_top[0].color = c;
-    border_top[1].position = sf::Vector2f(bottom_right.first, bottom_right.second);
-    border_top[1].color = c;
+    sf::RectangleShape border_right(sf::Vector2f(width, bottom_right.second-top_right.second));
+    border_right.setPosition(top_right.first, top_right.second);
+    border_right.setFillColor(c);
 
-    window.draw(border_top);
+    window.draw(border_right);
   }
   if (render_box->node->style.border_style[2] != "none") // bottom
   {
     std::string style = render_box->node->style.border_style[2];
     liquid::Color color = render_box->node->style.border_color[2];
+    float width = resolve_border_width(render_box->node->style.border_width[2]);
 
     sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
-    sf::VertexArray border_top(sf::Lines, 2);
-    border_top[0].position = sf::Vector2f(bottom_left.first, bottom_left.second);
-    border_top[0].color = c;
-    border_top[1].position = sf::Vector2f(bottom_right.first, bottom_right.second);
-    border_top[1].color = c;
+    sf::RectangleShape border_bottom(sf::Vector2f(bottom_right.first-bottom_left.first+width, width));
+    border_bottom.setPosition(bottom_left.first, bottom_left.second);
+    border_bottom.setFillColor(c);
 
-    window.draw(border_top);
+    window.draw(border_bottom);
   }
   if (render_box->node->style.border_style[3] != "none") // left 
   {
     std::string style = render_box->node->style.border_style[3];
     liquid::Color color = render_box->node->style.border_color[3];
+    float width = resolve_border_width(render_box->node->style.border_width[3]);
 
     sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
-    sf::VertexArray border_top(sf::Lines, 2);
-    border_top[0].position = sf::Vector2f(top_left.first, top_left.second);
-    border_top[0].color = c;
-    border_top[1].position = sf::Vector2f(bottom_left.first, bottom_left.second);
-    border_top[1].color = c;
+    sf::RectangleShape border_left(sf::Vector2f(width, bottom_left.second-top_left.second));
+    border_left.setPosition(top_left.first, top_left.second);
+    border_left.setFillColor(c);
 
-    window.draw(border_top);
+    window.draw(border_left);
   }
 }
 

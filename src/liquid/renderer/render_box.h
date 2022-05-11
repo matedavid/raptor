@@ -1,5 +1,6 @@
 #pragma once
 
+#include "utils.h"
 #include "liquid/html/html_element.h"
 #include "liquid/html/text.h"
 
@@ -65,9 +66,6 @@ public:
   bool parent_first_child_mc = false;
   bool parent_last_child_mc = false;
   bool adjacent_sibling_mc = false;
-
-private:
-  float resolve_border_width(const std::string& border_width_value) const;
 
 public:
   RenderBox();
