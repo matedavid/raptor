@@ -1,6 +1,6 @@
 #include "painter.h"
 
-void paint_border(sf::RenderWindow& window, liquid::RenderBox* render_box)
+void paint_border(sf::RenderWindow& window, liquid::RenderBox* render_box, liquid::Viewport& viewport)
 {
   auto edges = render_box->get_border_edges();
   auto top_left = edges[0];
@@ -17,7 +17,7 @@ void paint_border(sf::RenderWindow& window, liquid::RenderBox* render_box)
     sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
     sf::RectangleShape border_top(sf::Vector2f(top_right.first-top_left.first, width));
-    border_top.setPosition(top_left.first, top_left.second);
+    border_top.setPosition(top_left.first-viewport.get_x(), top_left.second-viewport.get_y());
     border_top.setFillColor(c);
 
     window.draw(border_top);
@@ -31,7 +31,7 @@ void paint_border(sf::RenderWindow& window, liquid::RenderBox* render_box)
     sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
     sf::RectangleShape border_right(sf::Vector2f(width, bottom_right.second-top_right.second));
-    border_right.setPosition(top_right.first, top_right.second);
+    border_right.setPosition(top_right.first-viewport.get_x(), top_right.second-viewport.get_y());
     border_right.setFillColor(c);
 
     window.draw(border_right);
@@ -45,7 +45,7 @@ void paint_border(sf::RenderWindow& window, liquid::RenderBox* render_box)
     sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
     sf::RectangleShape border_bottom(sf::Vector2f(bottom_right.first-bottom_left.first+width, width));
-    border_bottom.setPosition(bottom_left.first, bottom_left.second);
+    border_bottom.setPosition(bottom_left.first-viewport.get_x(), bottom_left.second-viewport.get_y());
     border_bottom.setFillColor(c);
 
     window.draw(border_bottom);
@@ -59,48 +59,48 @@ void paint_border(sf::RenderWindow& window, liquid::RenderBox* render_box)
     sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
     sf::RectangleShape border_left(sf::Vector2f(width, bottom_left.second-top_left.second));
-    border_left.setPosition(top_left.first, top_left.second);
+    border_left.setPosition(top_left.first-viewport.get_x(), top_left.second-viewport.get_y());
     border_left.setFillColor(c);
 
     window.draw(border_left);
   }
 }
 
-sf::VertexArray paint_text_underline(const liquid::RenderBoxText* text, liquid::Color& color)
+sf::VertexArray paint_text_underline(const liquid::RenderBoxText* text, liquid::Color& color, liquid::Viewport& viewport)
 {
   sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
   sf::VertexArray underline(sf::Lines, 2);
-  underline[0].position = sf::Vector2f(text->get_x(), text->get_y()+text->get_content_height());
+  underline[0].position = sf::Vector2f(text->get_x() - viewport.get_x(), text->get_y()+text->get_content_height() - viewport.get_y());
   underline[0].color = c;
-  underline[1].position = sf::Vector2f(text->get_x()+text->get_content_width(), text->get_y()+text->get_content_height());
+  underline[1].position = sf::Vector2f(text->get_x()+text->get_content_width() - viewport.get_x(), text->get_y()+text->get_content_height() - viewport.get_y());
   underline[1].color = c;
 
   return underline;
 }
 
-sf::VertexArray paint_text_overline(const liquid::RenderBoxText* text, liquid::Color& color)
+sf::VertexArray paint_text_overline(const liquid::RenderBoxText* text, liquid::Color& color, liquid::Viewport& viewport)
 {
   sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
   sf::VertexArray overline(sf::Lines, 2);
-  overline[0].position = sf::Vector2f(text->get_x(), text->get_y());
+  overline[0].position = sf::Vector2f(text->get_x() - viewport.get_x(), text->get_y() - viewport.get_y());
   overline[0].color = c;
-  overline[1].position = sf::Vector2f(text->get_x()+text->get_content_width(), text->get_y());
+  overline[1].position = sf::Vector2f(text->get_x()+text->get_content_width() - viewport.get_x(), text->get_y() - viewport.get_y());
   overline[1].color = c;
 
   return overline;
 }
 
-sf::VertexArray paint_text_line_through(const liquid::RenderBoxText* text, liquid::Color& color)
+sf::VertexArray paint_text_line_through(const liquid::RenderBoxText* text, liquid::Color& color, liquid::Viewport& viewport)
 {
   float middle = (text->get_y() + text->get_y()+text->get_content_height())/2.f;
   sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
   sf::VertexArray line_through(sf::Lines, 2);
-  line_through[0].position = sf::Vector2f(text->get_x(), middle);
+  line_through[0].position = sf::Vector2f(text->get_x() - viewport.get_x(), middle - viewport.get_y());
   line_through[0].color = c;
-  line_through[1].position = sf::Vector2f(text->get_x()+text->get_content_width(), middle);
+  line_through[1].position = sf::Vector2f(text->get_x()+text->get_content_width() - viewport.get_x(), middle - viewport.get_y());
   line_through[1].color = c;
 
   return line_through;
@@ -154,17 +154,17 @@ void paint_text(sf::RenderWindow& window, liquid::RenderBoxText* render_box_text
     
     if (text_decoration_line == "underline")
     {
-      sf::VertexArray underline = paint_text_underline(render_box_text, text_element->style.text_decoration_color);
+      sf::VertexArray underline = paint_text_underline(render_box_text, text_element->style.text_decoration_color, viewport);
       window.draw(underline);
     }
     else if (text_decoration_line == "overline")
     {
-      sf::VertexArray overline = paint_text_overline(render_box_text, text_element->style.text_decoration_color);
+      sf::VertexArray overline = paint_text_overline(render_box_text, text_element->style.text_decoration_color, viewport);
       window.draw(overline);
     }
     else if (text_decoration_line == "line-through")
     {
-      sf::VertexArray line_through = paint_text_line_through(render_box_text, text_element->style.text_decoration_color);
+      sf::VertexArray line_through = paint_text_line_through(render_box_text, text_element->style.text_decoration_color, viewport);
       window.draw(line_through);
     }
   }
@@ -235,7 +235,7 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree, liquid::Vie
     liquid::Color c = render_tree->node->style.background_color;
 
     sf::RectangleShape background;
-    background.setPosition(render_tree->get_border_x(), render_tree->get_border_y());
+    background.setPosition(render_tree->get_border_x()-viewport.get_x(), render_tree->get_border_y()-viewport.get_y());
     background.setSize(sf::Vector2f(render_tree->get_width(), render_tree->get_height()));
     background.setFillColor(sf::Color(c.red, c.green, c.blue, c.alpha*255.f));
 
@@ -243,7 +243,7 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree, liquid::Vie
   }
 
   // border
-  paint_border(window, render_tree);
+  paint_border(window, render_tree, viewport);
 
   for (liquid::RenderBox* child : render_tree->get_children())
   {
