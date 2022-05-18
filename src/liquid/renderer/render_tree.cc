@@ -43,6 +43,18 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
   RenderBox* render_box = new RenderBox(element, parent);
   render_box->layout(width);
 
+  if (element->element_value == "li") 
+  {
+    RenderBoxMarkerType type;
+    if (parent->node->element_value == "ul") 
+      type = RenderBoxMarkerType::UnorderedList;
+    else if (parent->node->element_value == "ol") 
+      type = RenderBoxMarkerType::OrderedList;
+
+    RenderBoxMarker* marker = new RenderBoxMarker(type, render_box->get_x(), render_box->get_y());
+    parent->add_child((RenderBox*)marker);
+  }
+
   float accumulated_height = 0.f;
   for (HTMLElement* child : element->child_elements())
   {

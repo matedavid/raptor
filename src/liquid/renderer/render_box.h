@@ -20,7 +20,8 @@ enum RenderBoxType
 {
   Default,
   Txt,
-  Img 
+  Img,
+  Marker
 };
 
 enum RenderBoxPosition 

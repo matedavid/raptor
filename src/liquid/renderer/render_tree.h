@@ -5,6 +5,7 @@
 #include "render_box.h"
 #include "render_box_text.h"
 #include "render_box_img.h"
+#include "render_box_marker.h"
 
 #include "liquid/html/html_element.h"
 #include "liquid/html/html_image_element.h"

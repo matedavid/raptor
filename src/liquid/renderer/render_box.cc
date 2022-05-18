@@ -408,6 +408,12 @@ void RenderBox::print(int number_tabs)
     std::cout << "  ";
   }
 
+  if (type() == RenderBoxType::Marker)
+  {
+    std::cout << ":marker" << std::endl;
+    return;
+  }
+
   printf("(%s): (%.1f, %.1f) bw=%.1f bh=%.1f w=%.1f h=%.1f\n", node->element_value.c_str(), x, y, get_box_width(), get_box_height(), get_width(), get_height());
 
   for (auto child : children)
