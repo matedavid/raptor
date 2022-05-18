@@ -1,10 +1,4 @@
-div {
-  width: 300px;
-  height: 1000px;
-  background-color: green;
-}
-
-.border {
-  border-style: solid;
-  text-decoration: underline overline line-through;
+p {
+  display: list-item;
+  list-style-type: circle;
 }

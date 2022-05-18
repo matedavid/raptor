@@ -107,6 +107,8 @@ void RenderBox::layout(float container_width)
     display_type = RenderBoxDisplayType::Block;
   else if (node->style.display == "inline")
     display_type = RenderBoxDisplayType::Inline;
+  else if (node->style.display == "list-item")
+    display_type = RenderBoxDisplayType::ListItem;
 
   // Specify and set position
   if (node->style.position == "static")
@@ -129,7 +131,7 @@ void RenderBox::layout(float container_width)
   float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.f;
 
   // Compute width and height
-  if (display_type == RenderBoxDisplayType::Block) 
+  if (display_type == RenderBoxDisplayType::Block or display_type == RenderBoxDisplayType::ListItem) 
   {
     // If display = block, the width occupies all the possible space
     // We have to account for margin, padding and border width to compute content_width

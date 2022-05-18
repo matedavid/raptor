@@ -22,7 +22,9 @@ Viewport::Viewport(HTMLElement* element, float width, float height)
 
 void Viewport::render()
 {
+  std::cout << "Hello there" << std::endl;
   tree = generate_render_tree(element_tree, nullptr, width);
+  std::cout << "Hello there 2" << std::endl;
   lowest_y = 0.f;
   compute_lowest_y(tree, lowest_y);
 

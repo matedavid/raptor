@@ -100,7 +100,7 @@ ul {
   margin-bottom: 1em;
   margin-left: 0px;
   margin-right: 0px;
-  /*padding-left: 40px;*/
+  padding-left: 40px;
 }
 
 ol {
@@ -110,7 +110,11 @@ ol {
   margin-bottom: 1em;
   margin-left: 0;
   margin-right: 0;
-  /*padding-left: 40px;*/
+  padding-left: 40px;
+}
+
+li {
+  display: list-item;
 }
 
 img {

@@ -12,7 +12,8 @@ enum RenderBoxDisplayType
 {
   None,
   Block,
-  Inline
+  Inline,
+  ListItem
 };
 
 enum RenderBoxType 
