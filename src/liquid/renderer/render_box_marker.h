@@ -13,13 +13,18 @@ enum RenderBoxMarkerType
 class RenderBoxMarker : public RenderBox 
 {
 private:
+  HTMLElement* li_element;
   RenderBoxMarkerType marker_type;
 
 public:
-  RenderBoxMarker(RenderBoxMarkerType type, float xpos, float ypos);
+  RenderBoxMarker(RenderBoxMarkerType type, HTMLElement* element, float xpos, float ypos);
+
   RenderBoxType type() const override { return RenderBoxType::Marker; }
+  bool is_printable() const override { return true; }
 
   std::string get_marker() const;
+  float get_font_size() const;
+  Color get_text_color() const;
 };
 
 }

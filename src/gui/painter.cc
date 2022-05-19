@@ -212,6 +212,31 @@ void paint_image(sf::RenderWindow& window, liquid::RenderBoxImage* render_box_im
   window.draw(image_sprite);
 }
 
+void paint_marker(sf::RenderWindow& window, liquid::RenderBoxMarker* marker, liquid::Viewport& viewport)
+{
+  std::string marker_str = marker->get_marker() + " ";
+  float font_size = marker->get_font_size();
+  liquid::Color color = marker->get_text_color();
+
+  sf::Font font;
+  if (not font.loadFromFile("../src/gui/Fonts/LiberationSans-Regular.ttf"))
+    return;
+
+  sf::Text text;
+  text.setFont(font);
+  text.setString(marker_str);
+  text.setCharacterSize(font_size);
+  text.setFillColor(sf::Color(color.red, color.green, color.blue, color.alpha*255.));
+
+  float width = text.getLocalBounds().width;
+
+  float xpos = marker->get_x() - width;
+  float ypos = marker->get_y();
+
+  text.setPosition(xpos-viewport.get_x(), ypos-viewport.get_y());
+  window.draw(text);
+}
+
 void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree, liquid::Viewport& viewport)
 {
   if (render_tree->is_printable())
@@ -225,6 +250,11 @@ void paint(sf::RenderWindow& window, liquid::RenderBox* render_tree, liquid::Vie
     {
       auto render_box_image = dynamic_cast<liquid::RenderBoxImage*>(render_tree);
       paint_image(window, render_box_image, viewport);
+    }
+    else if (render_tree->type() == liquid::RenderBoxType::Marker)
+    {
+      auto marker = dynamic_cast<liquid::RenderBoxMarker*>(render_tree);
+      paint_marker(window, marker, viewport);
     }
     return;
   }

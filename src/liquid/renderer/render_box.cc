@@ -12,7 +12,6 @@ float space_width(float font_size)
 
   sf::Text t(" ", font, (uint)font_size);
   return t.getLocalBounds().width;
-
 }
 
 // Returns if a children is blocking the parent/first-child margin collapsing

@@ -51,7 +51,7 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
     else if (parent->node->element_value == "ol") 
       type = RenderBoxMarkerType::OrderedList;
 
-    RenderBoxMarker* marker = new RenderBoxMarker(type, render_box->get_x(), render_box->get_y());
+    RenderBoxMarker* marker = new RenderBoxMarker(type, element, render_box->get_x(), render_box->get_y());
     parent->add_child((RenderBox*)marker);
   }
 
