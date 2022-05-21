@@ -91,7 +91,7 @@ std::pair<float, float> RenderBox::compute_xy_reference() const
 
   // If last_sibling or current render_box has display_type = block, block starts in new line,
   // so yref has to take into account height of last_sibling
-  float xref = last_sibling->get_x();
+  float xref = last_sibling->get_ref_x();
   float yref = last_sibling->get_y() + last_sibling->get_vertical_separation();
 
   return { xref, yref };
@@ -319,12 +319,6 @@ float RenderBox::get_border_y() const
 {
   float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.f;
   return y - node->style.padding_top - border_top_value;
-}
-
-float RenderBox::get_ref_y() const
-{
-  //return compute_xy_reference().second;
-  return yref;
 }
 
 float RenderBox::get_box_width() const

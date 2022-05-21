@@ -94,10 +94,11 @@ public:
   float get_border_x() const;
   float get_border_y() const;
   
-  // Creating different function for ref_y because, when using get_y() as a reference point, the return value
+  // Creating different function for ref_x/y because, when using get_x/y() as a reference point, the return value
   // has already taken into account the margin, border and padding values, so it's not a good reference value for other
   // boxes (for example, when we have two inline tags)
-  float get_ref_y() const;
+  float get_ref_x() const { return xref; }
+  float get_ref_y() const { return yref; }
 
   // box_width/height is all the space taken up by the RenderBox (+padding +border +margin)
   float get_box_width()  const;

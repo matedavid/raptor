@@ -228,12 +228,7 @@ void paint_marker(sf::RenderWindow& window, liquid::RenderBoxMarker* marker, liq
   text.setCharacterSize(font_size);
   text.setFillColor(sf::Color(color.red, color.green, color.blue, color.alpha*255.));
 
-  float width = text.getLocalBounds().width;
-
-  float xpos = marker->get_x() - width;
-  float ypos = marker->get_y();
-
-  text.setPosition(xpos-viewport.get_x(), ypos-viewport.get_y());
+  text.setPosition(marker->get_x()-viewport.get_x(), marker->get_y()-viewport.get_y());
   window.draw(text);
 }
 

@@ -18,12 +18,10 @@ private:
   int m_number;
 
 public:
-  RenderBoxMarker(RenderBoxMarkerType type, HTMLElement* element, float xpos, float ypos);
+  RenderBoxMarker(RenderBoxMarkerType type, HTMLElement* element, float xpos, float ypos, int number);
 
   RenderBoxType type() const override { return RenderBoxType::Marker; }
   bool is_printable() const override { return true; }
-
-  void set_number(int number);
 
   std::string get_marker() const;
   float get_font_size() const;

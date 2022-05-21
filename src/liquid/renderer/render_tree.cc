@@ -61,9 +61,7 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
       ++cfg.counter;
     }
 
-    RenderBoxMarker* marker = new RenderBoxMarker(type, element, render_box->get_x(), render_box->get_y());
-    std::cout << cfg.counter << std::endl;
-    marker->set_number(cfg.counter);
+    RenderBoxMarker* marker = new RenderBoxMarker(type, element, render_box->get_border_x(), render_box->get_border_y(), cfg.counter);
     parent->add_child((RenderBox*)marker);
   }
 
