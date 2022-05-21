@@ -17,8 +17,8 @@ int main_2(int argc, const char* argv[])
 	std::cout << "Printing resulting HTML AST:" << std::endl;
 	//liquid::print_html_element(document.html, 0);
 
-	//liquid::RenderBox rb(document.body, 1024, 512);
-	liquid::RenderBox* box = liquid::generate_render_tree(document.body, nullptr, 1024);
+	auto cfg = liquid::RendererConfig{};
+	liquid::RenderBox* box = liquid::generate_render_tree(document.body, nullptr, 1024, cfg);
 	box->print(0);
 
   return 0;

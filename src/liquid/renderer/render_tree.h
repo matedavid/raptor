@@ -13,6 +13,12 @@
 
 namespace liquid {
 
-RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float width);
+struct RendererConfig
+{
+  RenderBox* list_renderbox = nullptr; // The <ol> or <ul> RenderBox instance or nullptr
+  int counter = 0; // Counter for counted list markers (e.g. <ol>)
+};
+
+RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float width, RendererConfig& cfg);
 
 }

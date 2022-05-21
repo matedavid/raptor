@@ -9,10 +9,15 @@ RenderBoxMarker::RenderBoxMarker(RenderBoxMarkerType type, HTMLElement* element,
   y = ypos;
 }
 
+void RenderBoxMarker::set_number(int number)
+{
+  m_number = number;
+}
+
 std::string RenderBoxMarker::get_marker() const 
 {
   if (marker_type == RenderBoxMarkerType::OrderedList)
-    return "1.";
+    return std::to_string(m_number) + ".";
   else if (marker_type == RenderBoxMarkerType::UnorderedList)
     return "*";
 

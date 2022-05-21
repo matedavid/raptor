@@ -22,7 +22,8 @@ Viewport::Viewport(HTMLElement* element, float width, float height)
 
 void Viewport::render()
 {
-  tree = generate_render_tree(element_tree, nullptr, width);
+  auto cfg = liquid::RendererConfig{};
+  tree = generate_render_tree(element_tree, nullptr, width, cfg);
   lowest_y = 0.f;
   compute_lowest_y(tree, lowest_y);
 

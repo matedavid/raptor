@@ -26,7 +26,7 @@ float generate_text_tree(Text* text, RenderBox* parent, float width)
   return text_height;
 }
 
-RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float width)
+RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float width, RendererConfig& cfg)
 {
   // Generate Image
   if (element->element_value == "img")
@@ -43,15 +43,27 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
   RenderBox* render_box = new RenderBox(element, parent);
   render_box->layout(width);
 
+  // If element is <ul> or <ol>, set appropriate parameters in RenderConfig
+  if (element->element_value == "ul" or element->element_value == "ol")
+  {
+    cfg.list_renderbox = render_box;
+    cfg.counter = 0;
+  }
+
   if (element->element_value == "li") 
   {
     RenderBoxMarkerType type;
-    if (parent->node->element_value == "ul") 
+    if (cfg.list_renderbox == nullptr or cfg.list_renderbox->node->element_value == "ul")
       type = RenderBoxMarkerType::UnorderedList;
-    else if (parent->node->element_value == "ol") 
+    else if (cfg.list_renderbox != nullptr and cfg.list_renderbox->node->element_value == "ol")
+    {
       type = RenderBoxMarkerType::OrderedList;
+      ++cfg.counter;
+    }
 
     RenderBoxMarker* marker = new RenderBoxMarker(type, element, render_box->get_x(), render_box->get_y());
+    std::cout << cfg.counter << std::endl;
+    marker->set_number(cfg.counter);
     parent->add_child((RenderBox*)marker);
   }
 
@@ -73,7 +85,7 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
       continue;
     }
 
-    RenderBox* render_box_child = generate_render_tree(child, render_box, container_width);
+    RenderBox* render_box_child = generate_render_tree(child, render_box, container_width, cfg);
     render_box->add_child(render_box_child);
 
     std::vector<RenderBox*> children = render_box->get_children();
@@ -133,6 +145,10 @@ RenderBox* generate_render_tree(HTMLElement* element, RenderBox* parent, float w
 
     render_box->reflow(upstream_width);
   }
+
+  // If element is <ul> or <ol>, reset parameters in RendererConfig 
+  if (element->element_value == "ul" or element->element_value == "ol")
+    cfg.list_renderbox = nullptr;
 
   return render_box;
 }
