@@ -1,3 +1,3 @@
 Raptor
 ---
-Just another browser
+Just a simple browser
