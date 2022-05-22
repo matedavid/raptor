@@ -554,16 +554,22 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
       }
 
       if (i == 0)
+			{
         style.border_width = {border_width_value, border_width_value, border_width_value, border_width_value};
+			}
       else if (i == 1)
       {
-        style.border_width[1] = border_width_value; // right
-        style.border_width[3] = border_width_value; // left
+				style.border_width.right = border_width_value;
+				style.border_width.left = border_width_value;
       }
       else if (i == 2)
-        style.border_width[2] = border_width_value; // bottom
+			{
+				style.border_width.bottom = border_width_value;
+			}
       else if (i == 3)
-        style.border_width[3] = border_width_value; // left
+			{
+				style.border_width.left = border_width_value;
+			}
     }
   }
   else if (property == "border-style")
@@ -572,16 +578,22 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
     {
       std::string border_style_value = value[i];
       if (i == 0)
+			{
         style.border_style = {border_style_value, border_style_value, border_style_value, border_style_value};
+			}
       else if (i == 1)
       {
-        style.border_style[1] = border_style_value; // right
-        style.border_style[3] = border_style_value; // left
+				style.border_style.right = border_style_value;
+				style.border_style.left = border_style_value;
       }
       else if (i == 2)
-        style.border_style[2] = border_style_value; // bottom
+			{
+				style.border_style.bottom = border_style_value;
+			}
       else if (i == 3)
-        style.border_style[3] = border_style_value; // left
+			{
+				style.border_style.left = border_style_value;
+			}
     }
   }
   else if (property == "border-color")
@@ -590,16 +602,22 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
     {
       std::string border_color_value = value[i];
       if (i == 0)
+			{
         style.border_color = {parse_color(border_color_value), parse_color(border_color_value), parse_color(border_color_value), parse_color(border_color_value)};
+			}
       else if (i == 1)
       {
-        style.border_color[1] = parse_color(border_color_value); // right
-        style.border_color[3] = parse_color(border_color_value); // left
+				style.border_color.right = parse_color(border_color_value);
+				style.border_color.left = parse_color(border_color_value);
       }
       else if (i == 2)
-        style.border_color[2] = parse_color(border_color_value); // bottom
+			{
+				style.border_color.bottom = parse_color(border_color_value);
+			}
       else if (i == 3)
-        style.border_color[3] = parse_color(border_color_value); // left
+			{
+				style.border_color.left = parse_color(border_color_value);
+			}
     }
   }
 

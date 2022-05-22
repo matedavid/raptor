@@ -125,9 +125,9 @@ void RenderBox::layout(float container_width)
   in_flow = position != RenderBoxPosition::Absolute and position != RenderBoxPosition::Fixed;
 
   // Compute border-width values (only top, right and left because bottom can't be used until height is computed)
-  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.f;
-  float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.f;
-  float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.f;
+  float border_top_value = node->style.border_style.top != "none" ? resolve_border_width(node->style.border_width.top) : 0.f;
+  float border_right_value = node->style.border_style.right != "none" ? resolve_border_width(node->style.border_width.right) : 0.f;
+  float border_left_value = node->style.border_style.left != "none" ? resolve_border_width(node->style.border_width.left) : 0.f;
 
   // Compute width and height
   if (display_type == RenderBoxDisplayType::Block or display_type == RenderBoxDisplayType::ListItem) 
@@ -234,7 +234,7 @@ void RenderBox::layout(float container_width)
   // Margin collapsing for parent and first/last child elements
   if (display_type != RenderBoxDisplayType::Inline and node->style.margin_top != 0.f 
       and parent != nullptr and not has_child_blocking_mc(parent->children) 
-      and parent->node->style.padding_top == 0.f and parent->node->style.border_style[0] == "none")
+      and parent->node->style.padding_top == 0.f and parent->node->style.border_style.top == "none")
   {
     float parent_mt = parent->node->style.margin_top;
 
@@ -286,8 +286,8 @@ void RenderBox::reflow(float upstream_width)
 {
   if (display_type == RenderBoxDisplayType::Inline)
   {
-    float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.f;
-    float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.f;
+    float border_right_value = node->style.border_style.right != "none" ? resolve_border_width(node->style.border_width.right) : 0.f;
+    float border_left_value = node->style.border_style.left != "none" ? resolve_border_width(node->style.border_width.left) : 0.f;
 
     content_width = upstream_width;
     /*
@@ -303,28 +303,28 @@ void RenderBox::compute_height(float accumulated_height)
   if (content_height != -1)
     return;
 
-  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.f;
-  float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.f;
+  float border_top_value = node->style.border_style.top != "none" ? resolve_border_width(node->style.border_width.top) : 0.f;
+  float border_bottom_value = node->style.border_style.bottom != "none" ? resolve_border_width(node->style.border_width.bottom) : 0.f;
 
   content_height = accumulated_height;
 }
 
 float RenderBox::get_border_x() const
 {
-  float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.f;
+  float border_left_value = node->style.border_style.left != "none" ? resolve_border_width(node->style.border_width.left) : 0.f;
   return x - node->style.padding_left - border_left_value;
 }
 
 float RenderBox::get_border_y() const
 {
-  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.f;
+  float border_top_value = node->style.border_style.top != "none" ? resolve_border_width(node->style.border_width.top) : 0.f;
   return y - node->style.padding_top - border_top_value;
 }
 
 float RenderBox::get_box_width() const
 { 
-  float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.f;
-  float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.f;
+  float border_right_value = node->style.border_style.right != "none" ? resolve_border_width(node->style.border_width.right) : 0.f;
+  float border_left_value = node->style.border_style.left != "none" ? resolve_border_width(node->style.border_width.left) : 0.f;
 
   return content_width + node->style.margin_left + border_left_value + node->style.padding_left
                        + node->style.margin_right + border_right_value + node->style.padding_right;
@@ -332,8 +332,8 @@ float RenderBox::get_box_width() const
 
 float RenderBox::get_box_height() const
 {
-  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.f;
-  float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.f;
+  float border_top_value = node->style.border_style.top != "none" ? resolve_border_width(node->style.border_width.top) : 0.f;
+  float border_bottom_value = node->style.border_style.bottom != "none" ? resolve_border_width(node->style.border_width.bottom) : 0.f;
 
   // Apparently, in Inline elements, margin and padding top/bottom are not applied
   // thus not modifying the height of box
@@ -349,26 +349,26 @@ float RenderBox::get_box_height() const
 
 float RenderBox::get_width() const
 {
-  float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.f;
-  float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.f;
+  float border_right_value = node->style.border_style.right != "none" ? resolve_border_width(node->style.border_width.right) : 0.f;
+  float border_left_value = node->style.border_style.left != "none" ? resolve_border_width(node->style.border_width.left) : 0.f;
 
   return content_width + node->style.padding_left + node->style.padding_right + border_left_value + border_right_value;
 }
 
 float RenderBox::get_height() const
 {
-  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.f;
-  float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.f;
+  float border_top_value = node->style.border_style.top != "none" ? resolve_border_width(node->style.border_width.top) : 0.f;
+  float border_bottom_value = node->style.border_style.bottom != "none" ? resolve_border_width(node->style.border_width.bottom) : 0.f;
 
   return content_height + node->style.padding_top + node->style.padding_bottom + border_top_value + border_bottom_value;
 }
 
 std::vector<std::pair<float, float>> RenderBox::get_border_edges() const
 {
-  float border_top_value = node->style.border_style[0] != "none" ? resolve_border_width(node->style.border_width[0]) : 0.f;
-  float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.f;
-  float border_right_value = node->style.border_style[1] != "none" ? resolve_border_width(node->style.border_width[1]) : 0.f;
-  float border_left_value = node->style.border_style[3] != "none" ? resolve_border_width(node->style.border_width[3]) : 0.f;
+  float border_top_value = node->style.border_style.top != "none" ? resolve_border_width(node->style.border_width.top) : 0.f;
+  float border_bottom_value = node->style.border_style.bottom != "none" ? resolve_border_width(node->style.border_width.bottom) : 0.f;
+  float border_right_value = node->style.border_style.right != "none" ? resolve_border_width(node->style.border_width.right) : 0.f;
+  float border_left_value = node->style.border_style.left != "none" ? resolve_border_width(node->style.border_width.left) : 0.f;
 
   float x_left = x - node->style.padding_left - border_left_value;
   float x_right = x + content_width + node->style.padding_right;
@@ -389,7 +389,7 @@ float RenderBox::get_vertical_separation() const
   if (display_type == RenderBoxDisplayType::Inline)
     return content_height;
 
-  float border_bottom_value = node->style.border_style[2] != "none" ? resolve_border_width(node->style.border_width[2]) : 0.f;
+  float border_bottom_value = node->style.border_style.bottom != "none" ? resolve_border_width(node->style.border_width.bottom) : 0.f;
   return content_height + node->style.padding_bottom + border_bottom_value + node->style.margin_bottom;
 }
 

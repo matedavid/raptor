@@ -33,15 +33,6 @@ enum RenderBoxPosition
   Sticky
 };
 
-template<typename T> 
-struct EdgeValues
-{
-  T top;
-  T right;
-  T bottom;
-  T left;
-};
-
 class RenderBox
 {
 protected:

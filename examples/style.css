@@ -1,2 +1,4 @@
-li {
+p {
+  border-style: solid;
+  border-color: red blue green yellow;
 }

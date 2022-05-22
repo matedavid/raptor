@@ -9,6 +9,15 @@
 
 namespace liquid {
 
+template<typename T> 
+struct EdgeValues
+{
+  T top;
+  T right;
+  T bottom;
+  T left;
+};
+
 struct HTMLElementCSSValues
 {
   Color color = Color{0, 0, 0}; // black
@@ -59,9 +68,9 @@ struct HTMLElementCSSValues
   std::string text_decoration_style = "solid";
 
   // Border (vector represents = {top, right, bottom, left})
-  std::vector<std::string> border_width = {"medium", "medium", "medium", "medium"};
-  std::vector<std::string> border_style = {"none", "none", "none", "none"};
-  std::vector<Color> border_color = { Color{0,0,0}, Color{0,0,0}, Color{0,0,0}, Color{0,0,0} }; // black 
+  EdgeValues<std::string> border_width = {"medium", "medium", "medium", "medium"};
+  EdgeValues<std::string> border_style = {"none", "none", "none", "none"};
+  EdgeValues<Color> border_color = { Color{0,0,0}, Color{0,0,0}, Color{0,0,0}, Color{0,0,0} }; // black
 };
 
 }

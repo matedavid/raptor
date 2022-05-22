@@ -8,11 +8,11 @@ void paint_border(sf::RenderWindow& window, liquid::RenderBox* render_box, liqui
   auto bottom_left = edges[2];
   auto bottom_right = edges[3];
 
-  if (render_box->node->style.border_style[0] != "none") // top
+  if (render_box->node->style.border_style.top != "none") // top
   {
-    std::string style = render_box->node->style.border_style[0];
-    liquid::Color color = render_box->node->style.border_color[0];
-    float width = resolve_border_width(render_box->node->style.border_width[0]);
+    std::string style = render_box->node->style.border_style.top;
+    liquid::Color color = render_box->node->style.border_color.top;
+    float width = resolve_border_width(render_box->node->style.border_width.top);
 
     sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
@@ -22,11 +22,11 @@ void paint_border(sf::RenderWindow& window, liquid::RenderBox* render_box, liqui
 
     window.draw(border_top);
   }
-  if (render_box->node->style.border_style[1] != "none") // right
+  if (render_box->node->style.border_style.right != "none") // right
   {
-    std::string style = render_box->node->style.border_style[1];
-    liquid::Color color = render_box->node->style.border_color[1];
-    float width = resolve_border_width(render_box->node->style.border_width[1]);
+    std::string style = render_box->node->style.border_style.right;
+    liquid::Color color = render_box->node->style.border_color.right;
+    float width = resolve_border_width(render_box->node->style.border_width.right);
 
     sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
@@ -36,11 +36,11 @@ void paint_border(sf::RenderWindow& window, liquid::RenderBox* render_box, liqui
 
     window.draw(border_right);
   }
-  if (render_box->node->style.border_style[2] != "none") // bottom
+  if (render_box->node->style.border_style.bottom != "none") // bottom
   {
-    std::string style = render_box->node->style.border_style[2];
-    liquid::Color color = render_box->node->style.border_color[2];
-    float width = resolve_border_width(render_box->node->style.border_width[2]);
+    std::string style = render_box->node->style.border_style.bottom;
+    liquid::Color color = render_box->node->style.border_color.bottom;
+    float width = resolve_border_width(render_box->node->style.border_width.bottom);
 
     sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
@@ -50,11 +50,11 @@ void paint_border(sf::RenderWindow& window, liquid::RenderBox* render_box, liqui
 
     window.draw(border_bottom);
   }
-  if (render_box->node->style.border_style[3] != "none") // left 
+  if (render_box->node->style.border_style.left != "none") // left 
   {
-    std::string style = render_box->node->style.border_style[3];
-    liquid::Color color = render_box->node->style.border_color[3];
-    float width = resolve_border_width(render_box->node->style.border_width[3]);
+    std::string style = render_box->node->style.border_style.left;
+    liquid::Color color = render_box->node->style.border_color.left;
+    float width = resolve_border_width(render_box->node->style.border_width.left);
 
     sf::Color c = sf::Color(color.red, color.green, color.blue, color.alpha*255.f);
 
