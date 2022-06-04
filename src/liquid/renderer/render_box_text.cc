@@ -1,7 +1,5 @@
 #include "render_box_text.h"
 
-#include "cmath"
-
 namespace liquid {
 
 float RenderBoxText::get_text_width(const std::string& content, float font_size)

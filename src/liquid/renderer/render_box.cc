@@ -192,22 +192,12 @@ void RenderBox::layout(float container_width)
       // Adjacent sibling under same container
       direct_sibling = first_children_in_flow(parent->children);
       adj_margin_bottom = direct_sibling->node->style.margin_bottom;
-
-      /*
-      direct_sibling = parent->children[parent->children.size() - 1];
-      adj_margin_bottom = direct_sibling->node->style.margin_bottom;S
-      */
     }
     else if (parent != top_render_box and not top_render_box->children.empty() and first_children_in_flow(top_render_box->children) != nullptr)
     {
       // Adjacent sibling in all the tree (different containers)
       direct_sibling = first_children_in_flow(top_render_box->children);
       adj_margin_bottom = direct_sibling->node->style.margin_bottom;
-
-      /*
-      direct_sibling = top_render_box->children[top_render_box->children.size()-1]; // Get the first child of current node's parent
-      adj_margin_bottom = direct_sibling->node->style.margin_bottom;
-      */
     }
 
     // Compute the adj_margin_bottom_value from the direct sibling (maximum of all the margins of all the margins)
@@ -224,7 +214,6 @@ void RenderBox::layout(float container_width)
 
     if (this != direct_sibling and direct_sibling->in_flow)
     {
-      //std::cout << "(" << node->element_value << "," << node->id << ") Adjacent sibling: " << translate << std::endl;
       adjacent_sibling_mc = true;
       margin_top_apply = translate;
     }
@@ -289,10 +278,6 @@ void RenderBox::reflow(float upstream_width)
     float border_left_value = node->style.border_style.left != "none" ? resolve_border_width(node->style.border_width.left) : 0.f;
 
     content_width = upstream_width;
-    /*
-    box_width = content_width + node->style.margin_left + border_left_value + node->style.padding_left
-                              + node->style.margin_right + border_right_value + node->style.padding_right;
-    */
   }
 }
 
