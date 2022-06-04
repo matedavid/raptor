@@ -59,6 +59,8 @@ std::pair<float, float> RenderBox::compute_xy_reference() const
   RenderBox* last_sibling = siblings[siblings.size()-1];
   if (last_sibling->display_type == RenderBoxDisplayType::Inline and display_type == RenderBoxDisplayType::Inline)
   {
+    // If current element and nearest sibling are inline
+    // Should display elements horizontally (one next to the other)
     float xref = last_sibling->get_x() + last_sibling->get_box_width() + space_width(node->style.font_size);
     float yref = last_sibling->get_ref_y();
 
@@ -81,9 +83,6 @@ std::pair<float, float> RenderBox::compute_xy_reference() const
 
       return { xref, yref };
     }
-    
-    if (parent == nullptr)
-      return { 0, 0 };
 
     // Using parent as reference
     return { parent->get_x(), parent->get_y() };

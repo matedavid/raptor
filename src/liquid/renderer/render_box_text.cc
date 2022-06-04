@@ -22,18 +22,17 @@ RenderBoxText::RenderBoxText()
 RenderBoxText::RenderBoxText(Text* text_element, RenderBox* parent)
 {
   this->parent = parent;
-  node = text_element;
+  this->node = text_element;
   content = text_element->content();
 }
 
 void RenderBoxText::layout(float container_width)
 {
-  auto [xref, yref] = compute_xy_reference();
-  x = xref;
-  y = yref;
+  auto [_xref, _yref] = compute_xy_reference();
+  x = xref = _xref;
+  y = yref = _yref;
 
   // Compute width
-  //content_width = box_width = t.getLocalBounds().width;
   content_width = get_text_width(content, node->style.font_size);
 
   // Compute height (approximation)
