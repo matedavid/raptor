@@ -1,16 +1,21 @@
 #include <iostream>
-
 #include <SFML/Graphics.hpp>
 
 #include "liquid/html/html_document.h"
 #include "liquid/renderer/viewport.h"
 #include "painter.h"
 
+#include "network/url.h"
+
 #define WIDTH 960
 #define HEIGHT 540
 
 int main(int argc, char* argv[])
 {
+  auto url = network::parse_url("https://localhost:8000");
+  std::cout << url.protocol << " " << url.path << std::endl;
+
+  /*
 	std::filesystem::path file_path;
   if (argc > 1)
     file_path = argv[1];
@@ -76,6 +81,7 @@ int main(int argc, char* argv[])
       }
     }
   }
+  */
   
   return 0;
 }

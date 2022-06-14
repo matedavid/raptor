@@ -14,6 +14,7 @@ file(GLOB Sources
     "src/liquid/renderer/*.cc"
     
     "src/gui/*.cc"
+    "src/network/*.cc"
 )
 
 find_package(SFML COMPONENTS REQUIRED system window graphics network audio)
