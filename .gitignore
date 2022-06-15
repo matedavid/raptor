@@ -58,6 +58,7 @@ _deps
 build/
 .vscode
 src/gui/Fonts/
+.github
 
 # Clion things
 .idea
