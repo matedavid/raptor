@@ -1,6 +1,6 @@
 # Raptor
 
-Just a simple browser, developed for learning purposed.
+Just a simple browser, developed for learning purposes.
 
 ## Requirements
 * SFML 2.5.1
