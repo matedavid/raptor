@@ -18,10 +18,10 @@ URL parse_url(const std::string& url)
 
     URLProtocol p;
     if (protocol == "file")
-      p = URLProtocol::File;
+      p = URLProtocol::Local;
     else if (protocol == "http")
       p = URLProtocol::Http;
-    else if (protocol == "http")
+    else if (protocol == "https")
       p = URLProtocol::Https;
 
     return URL{p, path};
@@ -30,7 +30,7 @@ URL parse_url(const std::string& url)
   if (url[0] == '/')
   {
     // Identical to 'file://'
-    return URL{URLProtocol::File, url};
+    return URL{URLProtocol::Local, url};
   }
   else if (url[0] != '/') 
   {

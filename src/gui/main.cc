@@ -5,18 +5,18 @@
 #include "liquid/renderer/viewport.h"
 #include "painter.h"
 
-#include "network/url.h"
+#include "network/network.h"
 
 #define WIDTH 960
 #define HEIGHT 540
 
 int main(int argc, char* argv[])
 {
-  auto url = network::parse_url("https://localhost:8000");
-  std::cout << url.protocol << " " << url.path << std::endl;
+  // std::string url = "https://localhost:8000";
+  // std::string f = "https://localhost:8000/image.jpg";
+  // auto result = network::resolve(f);
 
-  /*
-	std::filesystem::path file_path;
+	std::string file_path;
   if (argc > 1)
     file_path = argv[1];
   else
@@ -24,8 +24,13 @@ int main(int argc, char* argv[])
 
   sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Raptor", sf::Style::Default);
 
-	liquid::HTMLDocument document = liquid::HTMLDocument();
-	document.from_file(file_path);
+	liquid::HTMLDocument document;
+  auto result = network::resolve(file_path);
+  if (result.from_file)
+    document.from_file(result.content);
+  else
+    document.from_string(result.content);
+
   window.setTitle(document.title);
 
   liquid::Viewport viewport(document.body, WIDTH, HEIGHT);
@@ -81,7 +86,6 @@ int main(int argc, char* argv[])
       }
     }
   }
-  */
   
   return 0;
 }

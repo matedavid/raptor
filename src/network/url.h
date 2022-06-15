@@ -6,7 +6,7 @@ namespace network {
 
 enum URLProtocol
 {
-  File,
+  Local,
   Http,
   Https
 };
