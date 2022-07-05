@@ -2,6 +2,16 @@
 
 namespace network {
 
+static std::string get_domain(const std::string& path) 
+{
+  int delim_pos = path.find("/");
+  if (delim_pos < 0 or delim_pos >= path.length())
+    return "";
+
+  std::string domain = path.substr(0, delim_pos);
+  return domain;
+}
+
 URL parse_url(const std::string& url) 
 {
   if (url.empty())
@@ -24,20 +34,30 @@ URL parse_url(const std::string& url)
     else if (protocol == "https")
       p = URLProtocol::Https;
 
-    return URL{p, path};
+    std::string domain = get_domain(path);
+    return URL{p, path, domain};
   }
 
   if (url[0] == '/')
   {
     // Identical to 'file://'
-    return URL{URLProtocol::Local, url};
+    std::string domain = get_domain(url);
+    return URL{URLProtocol::Local, url, domain};
   }
   else if (url[0] != '/') 
   {
     // Should default to http protocol if no '/' in the beginning 
     // e.g. localhost:8000 == http://localhost:8000
-    return URL{URLProtocol::Http, url};
+    std::string domain = get_domain(url);
+    return URL{URLProtocol::Http, url, domain};
   }
+}
+
+std::string resolve_hostname(const std::string& hostname)
+{
+  hostent* h = gethostbyname(hostname.c_str());
+  char* ip = inet_ntoa(*(struct in_addr*)h->h_addr_list[0]);
+  return std::string(ip);
 }
 
 }
