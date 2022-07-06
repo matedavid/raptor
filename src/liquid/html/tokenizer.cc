@@ -259,7 +259,7 @@ void Tokenizer::consume_markup_declaration_open_state()
 		current_token = Token{TokenType::Comment, ""};
 		current_state = State::CommentStart;
 	}
-	else if (peek_consume_forward(7) == "DOCTYPE")
+	else if (peek_consume_forward(7) == "DOCTYPE" or peek_consume_forward(7) == "doctype")
 	{
 		m_position += 7+1;
 		current_state = State::DOCTYPE;
