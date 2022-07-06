@@ -41,6 +41,7 @@ private:
     BeforeHead,
     InHead,
     InHeadNoscript,
+    InStyle,
     AfterHead,
     InBody,
     InTable,
@@ -90,6 +91,7 @@ private:
   void before_html_mode();
   void before_head_mode();
   void in_head_mode();
+  void in_style_mode();
   //void in_head_no_script_mode();
   void after_head_mode();
   void in_body_mode();

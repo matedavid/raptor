@@ -195,7 +195,9 @@ void HTMLParser::in_head_mode()
   }
   else if (token.type == TokenType::StartTag and token.value == "meta")
   {
-		// TODO: Implement
+		// Every meta tag is self-closing, even if "token.self_closing" is false (doesn't finish with />)
+		HTMLElement* meta_element = new HTMLElement(token, open_elements.top(), m_document_path);
+		open_elements.top()->insert_child(meta_element);
   }
   else if (token.type == TokenType::StartTag and token.value == "title")
   {
@@ -209,6 +211,14 @@ void HTMLParser::in_head_mode()
     original_insertion_mode = current_insertion_mode;
     current_insertion_mode = InsertionMode::TextMode;
   }
+	else if (token.type == TokenType::StartTag and token.value == "style")
+	{
+		HTMLElement* style_element = new HTMLElement(token, open_elements.top(), m_document_path);
+		open_elements.push(style_element);
+
+		original_insertion_mode = current_insertion_mode;
+		current_insertion_mode = InsertionMode::InStyle;
+	}
 	// TODO: Missing multple parts, not implementing at the moment
   else if (token.type == TokenType::EndTag and token.value == "head")
   {
@@ -234,6 +244,24 @@ void HTMLParser::in_head_mode()
     reconsume_token = true;
     current_insertion_mode = InsertionMode::AfterHead;
   }
+}
+
+void HTMLParser::in_style_mode()
+{
+	Token token = m_tokenizer.current();
+	if (token.type == TokenType::EndTag && token.value == "style")
+	{
+		HTMLElement* script_element = open_elements.top();
+		open_elements.pop();
+		open_elements.top()->insert_child(script_element);
+
+		current_insertion_mode = original_insertion_mode;
+	}
+	else 
+	{
+		HTMLElement* style_element = open_elements.top();
+		insert_character(token, style_element);
+	}
 }
 
 void HTMLParser::after_head_mode()
@@ -533,6 +561,9 @@ HTMLHtmlElement* HTMLParser::parse(Tokenizer& tokenizer, const std::string& docu
 				break;
 			case InsertionMode::InHead:
 				in_head_mode();
+				break;
+			case InsertionMode::InStyle:
+				in_style_mode();
 				break;
       case InsertionMode::AfterHead:
         after_head_mode();

@@ -40,8 +40,7 @@ void HTMLDocument::from_string(const std::string& content)
 		if (text_elements.size() != 0)
 		{
 			Text* text = dynamic_cast<Text*>(text_elements[0]);
-			if (text != nullptr)
-				title = text->content();
+			title = text->content();
 		}
 	}
 
@@ -84,6 +83,25 @@ void HTMLDocument::from_string(const std::string& content)
 			for (CSSBlock block : css_blocks)
 				add_css_block(block);
 		}
+	}
+
+	// TODO: Get CSS from style elements
+	std::vector<HTMLElement*> style_elements = head->get_elements_by_tag_name("style");
+	for (HTMLElement* style : style_elements)
+	{
+		if (not style->contains_attribute("type") or style->get_attribute("type")->value() != "text/css")
+			continue;
+
+		std::vector<HTMLElement*> text_elements = style->get_elements_by_tag_name("text");
+		if (text_elements.size() == 0)
+			continue;
+
+		Text* text = dynamic_cast<Text*>(text_elements[0]);
+		std::string style_string = text->content();
+
+		std::vector<CSSBlock> css_blocks = css_parser.from_string(style_string);
+		for (CSSBlock block : css_blocks)
+			add_css_block(block);
 	}
 }
 
