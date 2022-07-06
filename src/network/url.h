@@ -18,7 +18,6 @@ struct URL
 {
   URLProtocol protocol;
   std::string path;
-  std::string domain;
 };
 
 URL parse_url(const std::string& url);

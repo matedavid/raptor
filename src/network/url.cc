@@ -2,16 +2,6 @@
 
 namespace network {
 
-static std::string get_domain(const std::string& path) 
-{
-  int delim_pos = path.find("/");
-  if (delim_pos < 0 or delim_pos >= path.length())
-    return "";
-
-  std::string domain = path.substr(0, delim_pos);
-  return domain;
-}
-
 URL parse_url(const std::string& url) 
 {
   if (url.empty())
@@ -34,22 +24,19 @@ URL parse_url(const std::string& url)
     else if (protocol == "https")
       p = URLProtocol::Https;
 
-    std::string domain = get_domain(path);
-    return URL{p, path, domain};
+    return URL{p, path};
   }
 
   if (url[0] == '/')
   {
     // Identical to 'file://'
-    std::string domain = get_domain(url);
-    return URL{URLProtocol::Local, url, domain};
+    return URL{URLProtocol::Local, url};
   }
   else if (url[0] != '/') 
   {
     // Should default to http protocol if no '/' in the beginning 
     // e.g. localhost:8000 == http://localhost:8000
-    std::string domain = get_domain(url);
-    return URL{URLProtocol::Http, url, domain};
+    return URL{URLProtocol::Http, url};
   }
 }
 

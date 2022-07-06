@@ -1,4 +1,5 @@
 #include <filesystem>
+#include <cpr/cpr.h>
 
 #include "url.h"
 
@@ -6,7 +7,7 @@ namespace network {
 
 struct ResolveResult 
 {
-  // Indicates 
+  // Indicates if the content argument is a file path
   bool from_file;
 
   // Could be either the content of the file as a string,

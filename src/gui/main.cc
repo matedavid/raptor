@@ -10,26 +10,25 @@
 #define WIDTH 960
 #define HEIGHT 540
 
-int main(int argc, char* argv[])
+liquid::HTMLDocument load_from_result(network::ResolveResult& result)
 {
-  // std::string url = "https://localhost:8000";
-  // std::string f = "https://localhost:8000/image.jpg";
-  // auto result = network::resolve(f);
-
-	std::string file_path;
-  if (argc > 1)
-    file_path = argv[1];
-  else
-    file_path = "/home/david/workspace/raptor/examples/index.html";
-
-  sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Raptor", sf::Style::Default);
-
-	liquid::HTMLDocument document;
-  auto result = network::resolve(file_path);
-  if (result.from_file)
+  liquid::HTMLDocument document;
+  if (result.from_file) 
     document.from_file(result.content);
   else
     document.from_string(result.content);
+
+  return document;
+}
+
+int main(int argc, char* argv[])
+{
+  std::string url = "https://example.com/";
+  auto result = network::resolve(url);
+
+	liquid::HTMLDocument document = load_from_result(result);
+
+  sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Raptor", sf::Style::Default);
 
   window.setTitle(document.title);
 
@@ -75,7 +74,7 @@ int main(int argc, char* argv[])
       else if (event.type == sf::Event::KeyPressed and event.key.control and sf::Keyboard::isKeyPressed(sf::Keyboard::R)) 
       {
         liquid::HTMLDocument document = liquid::HTMLDocument();
-        document.from_file(file_path);
+	      document = load_from_result(result);
         window.setTitle(document.title);
 
         viewport  = liquid::Viewport(document.body, WIDTH, HEIGHT);
