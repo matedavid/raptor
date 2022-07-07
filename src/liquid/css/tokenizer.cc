@@ -88,6 +88,11 @@ void CSSTokenizer::consume_before_selector()
 	{
 		// Ignore the token
 	}
+	// TODO: Temporal solution; @ char is for '@media', and (/) should be treated accordingly
+	else if (c == '@' or c == '(' or c == ')')
+	{
+		// Ignore
+	}
 	else
 	{
 		// Unknown character
