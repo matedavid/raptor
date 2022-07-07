@@ -26,8 +26,6 @@ static ResolveResult resolve_http_url(const URL& url)
     exit(1);
   }
 
-  std::cout << r.text << std::endl;
-
   return ResolveResult{
     .from_file=false,
     .content=r.text,
