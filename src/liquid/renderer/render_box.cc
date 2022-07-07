@@ -28,7 +28,7 @@ RenderBox::RenderBox(HTMLElement* node, RenderBox* parent)
     position = RenderBoxPosition::Sticky;
 }
 
-void RenderBox::compute_height()
+float RenderBox::compute_height()
 {
 }
 
@@ -36,14 +36,19 @@ void RenderBox::layout()
 {
 }
 
+void RenderBox::insert_child(RenderBox* child)
+{
+  children.push_back(child);
+}
+
 void RenderBox::print(int n_tabs)
 {
   for (int i = 0; i < n_tabs; ++i)
-    std::cout << "\t";
+    std::cout << "  ";
 
-  printf("[RenderBox (%s)]\n", node->element_value);
-
-  for (RenderBox* child : children)
+  printf("[RenderBox (%s)]\n", node->element_value.c_str());
+  
+  for (auto child : children) 
     child->print(n_tabs+1);
 }
 

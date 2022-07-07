@@ -35,14 +35,12 @@ enum RenderBoxPosition
 class RenderBox
 {
 private:
-  // RenderBoxType m_type = RenderBoxType::Default;
-  // bool m_printable     = false;
-
   // display css property
   RenderBoxDisplay  display;
   // position css property
   RenderBoxPosition position;
 
+protected:
   // The HTML element that the RenderBox encapsulates  
   HTMLElement* node;
   // The parent of the current RenderBox
@@ -58,10 +56,12 @@ public:
   RenderBox(HTMLElement* node, RenderBox* parent);
 
   // Computes the height of the RenderBox
-  void compute_height();
+  float compute_height();
 
   // Lays out the RenderBox on the DOM
   void layout();
+
+  void insert_child(RenderBox* child);
 
   // DEBUG
   virtual void print(int n_tabs);
