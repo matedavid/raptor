@@ -43,11 +43,19 @@ private:
 protected:
   // The HTML element that the RenderBox encapsulates  
   HTMLElement* node;
+
   // The parent of the current RenderBox
   RenderBox* parent;
 
   // RenderBox children 
   std::vector<RenderBox*> children;
+
+  // Height of the content box
+  float content_height;
+  // Height of the content box + padding + border_width
+  float height;
+  // Height of the complete render box (box_height + margin)
+  float margin_height;
 
 public:
   virtual RenderBoxType type() const { return RenderBoxType::Default; }
@@ -56,10 +64,10 @@ public:
   RenderBox(HTMLElement* node, RenderBox* parent);
 
   // Computes the height of the RenderBox
-  float compute_height();
+  virtual float compute_height();
 
   // Lays out the RenderBox on the DOM
-  void layout();
+  virtual void layout();
 
   void insert_child(RenderBox* child);
 
