@@ -18,6 +18,10 @@ struct EdgeValues
   T left;
 };
 
+const float BORDER_WIDTH_THIN   = 1.f;
+const float BORDER_WIDTH_MEDIUM = 3.f;
+const float BORDER_WIDTH_THICK  = 5.f;
+
 struct HTMLElementCSSValues
 {
   Color color = Color{0, 0, 0}; // black
@@ -68,7 +72,7 @@ struct HTMLElementCSSValues
   std::string text_decoration_style = "solid";
 
   // Border (vector represents = {top, right, bottom, left})
-  EdgeValues<std::string> border_width = {"medium", "medium", "medium", "medium"};
+  EdgeValues<float> border_width = {BORDER_WIDTH_MEDIUM, BORDER_WIDTH_MEDIUM, BORDER_WIDTH_MEDIUM, BORDER_WIDTH_MEDIUM};
   EdgeValues<std::string> border_style = {"none", "none", "none", "none"};
   EdgeValues<Color> border_color = { Color{0,0,0}, Color{0,0,0}, Color{0,0,0}, Color{0,0,0} }; // black
 };
