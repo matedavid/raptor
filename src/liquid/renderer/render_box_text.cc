@@ -17,7 +17,9 @@ float RenderBoxText::compute_height()
   }
 
   sf::Text t(content(), font, text->style.font_size);
-  return t.getGlobalBounds().height;
+
+  content_height = height = margin_height = t.getGlobalBounds().height;
+  return height;
 }
 
 std::string RenderBoxText::content() const
