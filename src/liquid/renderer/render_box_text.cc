@@ -7,6 +7,19 @@ RenderBoxText::RenderBoxText(Text* text, RenderBox* parent)
 {
 }
 
+float RenderBoxText::compute_height()
+{
+  sf::Font font;
+  if (not font.loadFromFile("../src/gui/Fonts/LiberationSans-Regular.ttf"))
+  {
+    std::cout << "Error loading font: compute_height" << std::endl;
+    exit(0);
+  }
+
+  sf::Text t(content(), font, text->style.font_size);
+  return t.getGlobalBounds().height;
+}
+
 std::string RenderBoxText::content() const
 {
   return text->content();
