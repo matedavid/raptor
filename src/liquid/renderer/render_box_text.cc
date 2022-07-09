@@ -7,7 +7,7 @@ RenderBoxText::RenderBoxText(Text* text, RenderBox* parent)
 {
 }
 
-float RenderBoxText::compute_height()
+Dimensions RenderBoxText::compute_dimensions(float)
 {
   sf::Font font;
   if (not font.loadFromFile("../src/gui/Fonts/LiberationSans-Regular.ttf"))
@@ -17,9 +17,10 @@ float RenderBoxText::compute_height()
   }
 
   sf::Text t(content(), font, text->style.font_size);
-
+  content_width = width = content_width = t.getGlobalBounds().width;
   content_height = height = margin_height = t.getGlobalBounds().height;
-  return height;
+
+  return {.width=width, .height=height};
 }
 
 std::string RenderBoxText::content() const

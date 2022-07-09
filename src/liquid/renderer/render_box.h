@@ -32,6 +32,12 @@ enum RenderBoxPosition
   Sticky,
 };
 
+struct Dimensions
+{
+  float width;
+  float height;
+};
+
 class RenderBox
 {
 private:
@@ -55,7 +61,18 @@ protected:
   // Height of the content box + padding + border_width
   float height;
   // Height of the complete render box (box_height + margin)
+  // NOTE: Maybe not necessary, as margin only pushes other elements way instead of contributing to height
+  //       could create get_margin() function instead that returns the margin values and then push other elements
   float margin_height;
+  
+  // Width of the content box
+  float content_width;
+  // Width of the content box + padding + border_width
+  float width;
+  // Height of the complete render box (box_height + margin)
+  // NOTE: Maybe not necessary, as margin only pushes other elements way instead of contributing to width 
+  //       could create get_margin() function instead that returns the margin values and then push other elements
+  float margin_width;
 
 public:
   virtual RenderBoxType type() const { return RenderBoxType::Default; }
@@ -64,7 +81,7 @@ public:
   RenderBox(HTMLElement* node, RenderBox* parent);
 
   // Computes the height of the RenderBox
-  virtual float compute_height();
+  virtual Dimensions compute_dimensions(float container_width);
 
   // Lays out the RenderBox on the DOM
   virtual void layout();
