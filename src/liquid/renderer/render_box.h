@@ -40,13 +40,12 @@ struct Dimensions
 
 class RenderBox
 {
-private:
+protected:
   // display css property
   RenderBoxDisplay  display;
   // position css property
   RenderBoxPosition position;
 
-protected:
   // The HTML element that the RenderBox encapsulates  
   HTMLElement* node;
 
@@ -55,6 +54,16 @@ protected:
 
   // RenderBox children 
   std::vector<RenderBox*> children;
+
+  // Margin values
+  EdgeValues<float> margin;
+  // Padding values
+  EdgeValues<float> padding;
+  // Border width values
+  EdgeValues<float> border_width;
+
+  // position in DOM
+  float x, y;
 
   // Height of the content box
   float content_height;
@@ -70,8 +79,7 @@ protected:
   // Width of the content box + padding + border_width
   float width;
   // Height of the complete render box (box_height + margin)
-  // NOTE: Maybe not necessary, as margin only pushes other elements way instead of contributing to width 
-  //       could create get_margin() function instead that returns the margin values and then push other elements
+  // NOTE: Idem margin_height
   float margin_width;
 
 public:
@@ -83,8 +91,8 @@ public:
   // Computes the height of the RenderBox
   virtual Dimensions compute_dimensions(float container_width);
 
-  // Lays out the RenderBox on the DOM
-  virtual void layout();
+  // Computes x & y position of the RenderBox
+  void layout();
 
   void insert_child(RenderBox* child);
 
