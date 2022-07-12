@@ -67,7 +67,6 @@ Dimensions RenderBox::compute_dimensions(float container_width)
   float height_val = node->style.height;
   float width_val  = node->style.width;
 
-
   // NOTE: Every alternative should give value to:
   // - content_height, height, margin_height 
   // - content_width, width, margin_width
@@ -78,9 +77,19 @@ Dimensions RenderBox::compute_dimensions(float container_width)
     margin_height = height + margin.top + margin.bottom;
 
     margin_width = container_width;
-    width = margin_width - margin.left - margin.right;
-    content_width = width_val == -1.f ? width - padding.left - padding.right - border_width.left - border_width.right
-                                      : width_val;
+
+    // If width = auto, width and content width are constrained by the container_width.
+    // If width is set to a value the reverse happens, width and content_width expand based on the specified value.
+    if (width_val == -1)
+    {
+      width = margin_width - margin.left - margin.right;
+      content_width = width - padding.left - padding.right - border_width.left - border_width.right;
+    } 
+    else
+    {
+      content_width = width_val;
+      width = content_width + padding.left + padding.right + border_width.left + border_width.right;
+    }
   }
   else if (display == RenderBoxDisplay::Inline)
   {
