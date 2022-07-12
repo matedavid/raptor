@@ -7,6 +7,14 @@
 
 namespace liquid {
 
+// TODO: Shouldn't be here
+struct Dimensions
+{
+  float width;
+  float height;
+};
+// // // 
+
 enum RenderBoxType
 {
   Default,
@@ -32,14 +40,37 @@ enum RenderBoxPosition
   Sticky,
 };
 
-struct Dimensions
-{
-  float width;
-  float height;
-};
-
 class RenderBox
 {
+private:
+  struct Line
+  {
+    bool horizontal;
+    std::vector<RenderBox*> elements;
+
+    float height;
+  };
+
+  // Constructs a line representation of the RenderBox's children.
+  // A line representation lays out elements vertically or horizontally, as they would be displayed
+  // in screen.
+  // 
+  // For example, Block elements would consist of independent lines (as they line break):
+  //  ___________
+  // |   Block   |
+  //  ‾‾‾‾‾‾‾‾‾‾‾
+  //  ___________
+  // |   Block   |
+  //  ‾‾‾‾‾‾‾‾‾‾‾
+  // And inline elements would populate a single line:
+  //  ____________________________________
+  // |   Inline   |   Inline   |   ...    |
+  //  ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+  // 
+  // This representation helps laying out elements, as it provides a clear representation of 
+  // elements that should be positioned horizontally and elements that should be positioned vertically.
+  std::vector<Line> layout_lines() const;
+
 protected:
   // display css property
   RenderBoxDisplay  display;

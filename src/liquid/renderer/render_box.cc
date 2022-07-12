@@ -107,9 +107,89 @@ Dimensions RenderBox::compute_dimensions(float container_width)
   return Dimensions{.width=width, .height=height};
 }
 
+std::vector<RenderBox::Line> RenderBox::layout_lines() const
+{
+  std::vector<Line> lines;
+  for (RenderBox* child : children)
+  {
+    if (child->display == RenderBoxDisplay::Block)
+    {
+      Line new_line = Line{.horizontal=false, .elements={child}, .height=child->height};
+      lines.push_back(new_line);
+    }
+    else if (child->display == RenderBoxDisplay::Inline)
+    {
+      if (not lines.empty() && lines[lines.size()-1].horizontal)
+      {
+        lines[lines.size()-1].elements.push_back(child);
+        lines[lines.size()-1].height = std::max<float>(child->height, lines[lines.size()-1].height);
+      }
+      else
+      {
+        Line new_line = Line{.horizontal=true, .elements={child}, .height=child->height};
+        lines.push_back(new_line);
+      }
+    }
+  }
+
+  return lines;
+}
+
 void RenderBox::layout()
 {
-  x, y = 0.f;
+  if (parent == nullptr)
+    x = y = 0.f;
+
+  // Get the line representation of the render_box's children
+  std::vector<Line> lines = layout_lines();
+
+  // Compute position
+  float height_offset = 0.f;
+  for (int idx = 0; idx < lines.size(); ++idx)
+  {
+    Line line = lines[idx];
+
+    if (not line.horizontal)
+    {
+      RenderBox* child = line.elements[0];
+
+      child->x = x;
+      child->y = y + height_offset;
+      child->layout();
+    }
+    else
+    {
+      float width_offset = 0.f;
+      for (RenderBox* child : line.elements)
+      {
+        child->x = x + width_offset;
+        child->y = y + height_offset;
+        child->layout();
+
+        // TODO: Should also include the width of a space to separate inline elements
+        width_offset += child->width;
+      }
+    }
+
+    // Adjacent siblings margin collapsing
+    float adjacent_siblings_margin_collapsing = 0.f;
+    if (idx+1 < lines.size())
+    {
+      Line second_line = lines[idx+1];
+
+      RenderBoxDisplay display_first_line  = line.elements[0]->display;
+      RenderBoxDisplay display_second_line = second_line.elements[0]->display;
+
+      if (display_first_line == RenderBoxDisplay::Block and display_second_line == RenderBoxDisplay::Block)
+        adjacent_siblings_margin_collapsing = std::max<float>(line.elements[0]->margin.bottom, second_line.elements[0]->margin.top);
+      else if (display_first_line == RenderBoxDisplay::Block and display_second_line == RenderBoxDisplay::Inline)
+        adjacent_siblings_margin_collapsing = line.elements[0]->margin.bottom;
+      else if (display_first_line == RenderBoxDisplay::Inline and display_second_line == RenderBoxDisplay::Block)
+        adjacent_siblings_margin_collapsing = second_line.elements[0]->margin.top;
+    }
+
+    height_offset += line.height + adjacent_siblings_margin_collapsing;
+  }
 }
 
 void RenderBox::insert_child(RenderBox* child)
