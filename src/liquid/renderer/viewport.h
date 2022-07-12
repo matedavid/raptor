@@ -10,7 +10,6 @@ class Viewport
 {
 private:
   static RenderBox* construct_render_tree(HTMLElement* element, RenderBox* parent);
-  static void compute_height(RenderBox* render_box);
 
 public:
   Viewport(HTMLElement* body);

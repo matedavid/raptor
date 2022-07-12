@@ -25,15 +25,16 @@ RenderBox* Viewport::construct_render_tree(HTMLElement* element, RenderBox* pare
   return render_box;
 }
 
-void Viewport::compute_height(RenderBox* render_box)
-{
-  render_box->compute_height();
-}
-
 Viewport::Viewport(HTMLElement* body)
 {
+  const float WIDTH = 1920.f;
+
   RenderBox* render_tree = construct_render_tree(body, nullptr);
+  Dimensions dims = render_tree->compute_dimensions(WIDTH);
+  render_tree->layout();
+
   render_tree->print(0);
+  std::cout << "Total height: " << dims.height << std::endl;
 }
 
 }

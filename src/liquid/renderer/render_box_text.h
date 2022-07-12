@@ -20,6 +20,7 @@ public:
   // Computes the height of the Text RenderBox
   Dimensions compute_dimensions(float) override;
 
+  // Returns the content of the text
   std::string content() const;
 
   void print(int n_tabs) override;
