@@ -5,6 +5,7 @@ namespace liquid {
 RenderBoxText::RenderBoxText(Text* text, RenderBox* parent)
   : text(text), RenderBox((HTMLElement*)text, parent)
 {
+  display = RenderBoxDisplay::Inline;
 }
 
 Dimensions RenderBoxText::compute_dimensions(float)
@@ -23,6 +24,11 @@ Dimensions RenderBoxText::compute_dimensions(float)
   return {.width=width, .height=height};
 }
 
+RenderBox::LayoutResult RenderBoxText::layout(LayoutParameters params={})
+{
+  return {};
+}
+
 std::string RenderBoxText::content() const
 {
   return text->content();
@@ -33,7 +39,7 @@ void RenderBoxText::print(int n_tabs)
   for (int i = 0; i < n_tabs; ++i)
     std::cout << "  ";
 
-  printf("[Text]: %s\n", content().c_str());
+  printf("[Text pos=(%.1f, %.1f)]: %s\n", x, y, content().c_str());
 }
 
 }

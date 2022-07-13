@@ -42,16 +42,7 @@ enum RenderBoxPosition
 
 class RenderBox
 {
-private:
-  struct Line
-  {
-    bool horizontal;
-    std::vector<RenderBox*> elements;
-
-    float height;
-  };
-
-  // Constructs a line representation of the RenderBox's children.
+protected:
   // A line representation lays out elements vertically or horizontally, as they would be displayed
   // in screen.
   // 
@@ -69,7 +60,29 @@ private:
   // 
   // This representation helps laying out elements, as it provides a clear representation of 
   // elements that should be positioned horizontally and elements that should be positioned vertically.
+  struct Line
+  {
+    bool horizontal;
+    std::vector<RenderBox*> elements;
+
+    float height;
+  };
+
+  // Constructs a line representation of the RenderBox's children.
   std::vector<Line> layout_lines() const;
+
+  // Input struct for Layout function
+  struct LayoutParameters
+  {
+    float margin_top_applied = 0.f;
+  };
+
+  // Result struct from Layout function 
+  struct LayoutResult
+  {
+    float accumulated_margin = 0.f;
+    float margin_top_remaining = 0.f;
+  };
 
 protected:
   // display css property
@@ -123,9 +136,14 @@ public:
   virtual Dimensions compute_dimensions(float container_width);
 
   // Computes x & y position of the RenderBox
-  void layout();
+  virtual LayoutResult layout(LayoutParameters params);
 
   void insert_child(RenderBox* child);
+
+  std::vector<RenderBox*> get_children() const { return children; }
+
+  float get_x() { return x; }
+  float get_y() { return y; }
 
   // DEBUG
   virtual void print(int n_tabs);

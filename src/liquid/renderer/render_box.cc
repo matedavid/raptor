@@ -135,8 +135,10 @@ std::vector<RenderBox::Line> RenderBox::layout_lines() const
   return lines;
 }
 
-void RenderBox::layout()
+RenderBox::LayoutResult RenderBox::layout(LayoutParameters params={})
 {
+  // The x and y values are initialized by the parent, if it's the first element,
+  // in the render tree, need to initialize the values from the same RenderBox
   if (parent == nullptr)
     x = y = 0.f;
 
@@ -145,6 +147,23 @@ void RenderBox::layout()
 
   // Apply horizontal margin offset
   x += margin.left;
+
+  LayoutResult result;
+
+  // First child margin collapsing
+  if (parent == nullptr)
+  {
+    y += margin.top;
+    params.margin_top_applied = margin.top;
+  }
+  else if (display == RenderBoxDisplay::Block and parent->children[0] == this and margin.top > params.margin_top_applied)
+  {
+    float remaining = margin.top - params.margin_top_applied;
+    y += remaining;
+
+    params.margin_top_applied = margin.top;
+    result.margin_top_remaining = remaining;
+  }
 
   // Compute position
   float height_offset = 0.f;
@@ -155,10 +174,16 @@ void RenderBox::layout()
     if (not line.horizontal)
     {
       RenderBox* child = line.elements[0];
-
       child->x = x;
       child->y = y + height_offset;
-      child->layout();
+
+      LayoutResult child_result = child->layout(params);
+      // Propagate margin collapsing upstream
+      if (child_result.margin_top_remaining != 0.f and idx == 0)
+      {
+        y += child_result.margin_top_remaining;
+        result.margin_top_remaining = child_result.margin_top_remaining;
+      }
     }
     else
     {
@@ -167,7 +192,7 @@ void RenderBox::layout()
       {
         child->x = x + width_offset;
         child->y = y + height_offset;
-        child->layout();
+        LayoutResult _ = child->layout(params);
 
         // TODO: Should also include the width of a space to separate inline elements
         width_offset += child->width;
@@ -193,6 +218,8 @@ void RenderBox::layout()
 
     height_offset += line.height + adjacent_siblings_margin_collapsing;
   }
+
+  return result;
 }
 
 void RenderBox::insert_child(RenderBox* child)

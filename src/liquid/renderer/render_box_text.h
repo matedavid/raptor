@@ -11,14 +11,20 @@ namespace liquid {
 
 class RenderBoxText : public RenderBox
 {
-private:
+public:
   Text* text;
 
 public:
+  RenderBoxType type() const override { return RenderBoxType::Txt; }
+  bool is_printable()  const override { return true; }
+
   RenderBoxText(Text* text, RenderBox* parent);
 
   // Computes the height of the Text RenderBox
   Dimensions compute_dimensions(float) override;
+
+  // Computes x & y position of the RenderBox
+  LayoutResult layout(LayoutParameters params) override;
 
   // Returns the content of the text
   std::string content() const;
