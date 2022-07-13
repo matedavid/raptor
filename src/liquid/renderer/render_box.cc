@@ -149,7 +149,7 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params={})
   x += margin.left;
 
   LayoutResult result;
-
+  
   // First child margin collapsing
   if (parent == nullptr)
   {
@@ -200,23 +200,23 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params={})
     }
 
     // Adjacent siblings margin collapsing
-    float adjacent_siblings_margin_collapsing = 0.f;
+    float adjacent_siblings_margin = 0.f;
     if (idx+1 < lines.size())
     {
-      Line second_line = lines[idx+1];
+      Line next_line = lines[idx+1];
 
-      RenderBoxDisplay display_first_line  = line.elements[0]->display;
-      RenderBoxDisplay display_second_line = second_line.elements[0]->display;
+      RenderBoxDisplay display_current_line  = line.elements[0]->display;
+      RenderBoxDisplay display_next_line = next_line.elements[0]->display;
 
-      if (display_first_line == RenderBoxDisplay::Block and display_second_line == RenderBoxDisplay::Block)
-        adjacent_siblings_margin_collapsing = std::max<float>(line.elements[0]->margin.bottom, second_line.elements[0]->margin.top);
-      else if (display_first_line == RenderBoxDisplay::Block and display_second_line == RenderBoxDisplay::Inline)
-        adjacent_siblings_margin_collapsing = line.elements[0]->margin.bottom;
-      else if (display_first_line == RenderBoxDisplay::Inline and display_second_line == RenderBoxDisplay::Block)
-        adjacent_siblings_margin_collapsing = second_line.elements[0]->margin.top;
+      if (display_current_line == RenderBoxDisplay::Block and display_next_line == RenderBoxDisplay::Block)
+        adjacent_siblings_margin = std::max<float>(line.elements[0]->margin.bottom, next_line.elements[0]->margin.top);
+      else if (display_current_line == RenderBoxDisplay::Block and display_next_line == RenderBoxDisplay::Inline)
+        adjacent_siblings_margin = line.elements[0]->margin.bottom;
+      else if (display_current_line == RenderBoxDisplay::Inline and display_next_line == RenderBoxDisplay::Block)
+        adjacent_siblings_margin = next_line.elements[0]->margin.top;
     }
 
-    height_offset += line.height + adjacent_siblings_margin_collapsing;
+    height_offset += line.height + adjacent_siblings_margin;
   }
 
   return result;
