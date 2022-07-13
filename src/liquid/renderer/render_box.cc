@@ -143,6 +143,9 @@ void RenderBox::layout()
   // Get the line representation of the render_box's children
   std::vector<Line> lines = layout_lines();
 
+  // Apply horizontal margin offset
+  x += margin.left;
+
   // Compute position
   float height_offset = 0.f;
   for (int idx = 0; idx < lines.size(); ++idx)
