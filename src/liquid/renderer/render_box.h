@@ -80,7 +80,7 @@ protected:
   // Result struct from Layout function 
   struct LayoutResult
   {
-    float accumulated_margin = 0.f;
+    float resulting_margin_top = 0.f;
     float margin_top_remaining = 0.f;
   };
 

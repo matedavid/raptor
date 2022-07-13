@@ -163,6 +163,8 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params={})
 
     params.margin_top_applied = margin.top;
     result.margin_top_remaining = remaining;
+
+    result.resulting_margin_top = margin.top;
   }
 
   // Compute position
@@ -170,6 +172,7 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params={})
   for (int idx = 0; idx < lines.size(); ++idx)
   {
     Line line = lines[idx];
+
 
     if (not line.horizontal)
     {
@@ -184,6 +187,8 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params={})
         y += child_result.margin_top_remaining;
         result.margin_top_remaining = child_result.margin_top_remaining;
       }
+      // Propagate the resulting margin top upwards 
+      result.resulting_margin_top = child_result.resulting_margin_top;
     }
     else
     {
@@ -208,15 +213,26 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params={})
       RenderBoxDisplay display_current_line  = line.elements[0]->display;
       RenderBoxDisplay display_next_line = next_line.elements[0]->display;
 
+      float next_line_margin_top = next_line.elements[0]->margin.top;
+      if (display_next_line == RenderBoxDisplay::Block)
+      {
+        LayoutResult tmp_res = next_line.elements[0]->layout({});
+        next_line_margin_top = std::max<float>(tmp_res.resulting_margin_top, next_line_margin_top);
+      }
+
       if (display_current_line == RenderBoxDisplay::Block and display_next_line == RenderBoxDisplay::Block)
-        adjacent_siblings_margin = std::max<float>(line.elements[0]->margin.bottom, next_line.elements[0]->margin.top);
+        adjacent_siblings_margin = std::max<float>(line.elements[0]->margin.bottom, next_line_margin_top);
       else if (display_current_line == RenderBoxDisplay::Block and display_next_line == RenderBoxDisplay::Inline)
         adjacent_siblings_margin = line.elements[0]->margin.bottom;
       else if (display_current_line == RenderBoxDisplay::Inline and display_next_line == RenderBoxDisplay::Block)
-        adjacent_siblings_margin = next_line.elements[0]->margin.top;
+        adjacent_siblings_margin = next_line_margin_top;
     }
 
     height_offset += line.height + adjacent_siblings_margin;
+
+    // To prevent next sibling from applying margin top again, as it's already been applied 
+    // with the adjacent sibling.
+    params.margin_top_applied = adjacent_siblings_margin;
   }
 
   return result;

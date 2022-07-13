@@ -8,6 +8,9 @@ namespace liquid {
 
 class Viewport
 {
+public:
+  RenderBox* render_tree;
+
 private:
   static RenderBox* construct_render_tree(HTMLElement* element, RenderBox* parent);
 
