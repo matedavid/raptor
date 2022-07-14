@@ -5,6 +5,8 @@
 
 #include "liquid/html/html_element.h"
 
+#include <SFML/Graphics/Text.hpp>
+
 namespace liquid {
 
 // TODO: Shouldn't be here

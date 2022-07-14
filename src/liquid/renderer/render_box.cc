@@ -198,8 +198,16 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
         params.yref = y + height_offset;
         child_result = child->layout(params);
 
-        // TODO: Should also include the width of a space to separate inline elements
-        width_offset += child->width;
+        // TODO: This logic should be in another file, for example, a utils file
+        sf::Font font;
+        if (not font.loadFromFile("../src/gui/Fonts/LiberationSans-Regular.ttf"))
+        {
+          std::cout << "Error loading font: compute_height" << std::endl;
+          exit(0);
+        }
+        float space_width = sf::Text(" ", font, child->node->style.font_size).getGlobalBounds().width;
+
+        width_offset += child->width + space_width;
       }
     }
 
@@ -235,6 +243,10 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
     // with the adjacent sibling.
     params.margin_top_applied = adjacent_siblings_margin;
   }
+
+  // TODO: Check if height property needs to be modified
+  std::cout << node->id << ": " << height_offset << std::endl;
+  /// 
 
   result.resulting_margin_top = std::max<float>(margin.top, result.resulting_margin_top);
   result.resulting_margin_bottom = std::max<float>(margin.bottom, result.resulting_margin_bottom);
