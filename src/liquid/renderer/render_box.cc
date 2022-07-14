@@ -231,8 +231,8 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
 
     height_offset += line_height + adjacent_siblings_margin;
 
-    // To prevent next sibling from applying margin top again, as it's already been applied 
-    // with the adjacent sibling.
+    // To prevent the following lines from applying margin top again, 
+    // as it has already been applied with the adjacent sibling
     params.margin_top_applied = adjacent_siblings_margin;
   }
 
