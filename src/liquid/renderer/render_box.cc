@@ -135,12 +135,11 @@ std::vector<RenderBox::Line> RenderBox::layout_lines() const
   return lines;
 }
 
-RenderBox::LayoutResult RenderBox::layout(LayoutParameters params={})
+RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
 {
-  // The x and y values are initialized by the parent, if it's the first element,
-  // in the render tree, need to initialize the values from the same RenderBox
-  if (parent == nullptr)
-    x = y = 0.f;
+  // Initialize x and y values
+  x = params.xref;
+  y = params.yref;
 
   // Get the line representation of the render_box's children
   std::vector<Line> lines = layout_lines();
@@ -148,6 +147,7 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params={})
   // Apply horizontal margin offset
   x += margin.left;
 
+  // Define result struct
   LayoutResult result;
   
   // First child margin collapsing
@@ -163,8 +163,6 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params={})
 
     params.margin_top_applied = margin.top;
     result.margin_top_remaining = remaining;
-
-    result.resulting_margin_top = margin.top;
   }
 
   // Compute position
@@ -173,31 +171,32 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params={})
   {
     Line line = lines[idx];
 
-
+    LayoutResult child_result;
     if (not line.horizontal)
     {
       RenderBox* child = line.elements[0];
-      child->x = x;
-      child->y = y + height_offset;
+      params.xref = x;
+      params.yref = y + height_offset;
 
-      LayoutResult child_result = child->layout(params);
+      child_result = child->layout(params);
       // Propagate margin collapsing upstream
       if (child_result.margin_top_remaining != 0.f and idx == 0)
       {
         y += child_result.margin_top_remaining;
         result.margin_top_remaining = child_result.margin_top_remaining;
       }
-      // Propagate the resulting margin top upwards 
+      // Propagate the resulting margin top/bottom upwards 
       result.resulting_margin_top = child_result.resulting_margin_top;
+      result.resulting_margin_bottom = child_result.resulting_margin_bottom;
     }
     else
     {
       float width_offset = 0.f;
       for (RenderBox* child : line.elements)
       {
-        child->x = x + width_offset;
-        child->y = y + height_offset;
-        LayoutResult _ = child->layout(params);
+        params.xref = x + width_offset;
+        params.yref = y + height_offset;
+        child_result = child->layout(params);
 
         // TODO: Should also include the width of a space to separate inline elements
         width_offset += child->width;
@@ -213,6 +212,8 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params={})
       RenderBoxDisplay display_current_line  = line.elements[0]->display;
       RenderBoxDisplay display_next_line = next_line.elements[0]->display;
 
+      float current_line_margin_bottom = std::max<float>(child_result.resulting_margin_bottom, margin.bottom);
+
       float next_line_margin_top = next_line.elements[0]->margin.top;
       if (display_next_line == RenderBoxDisplay::Block)
       {
@@ -221,9 +222,9 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params={})
       }
 
       if (display_current_line == RenderBoxDisplay::Block and display_next_line == RenderBoxDisplay::Block)
-        adjacent_siblings_margin = std::max<float>(line.elements[0]->margin.bottom, next_line_margin_top);
+        adjacent_siblings_margin = std::max<float>(current_line_margin_bottom, next_line_margin_top);
       else if (display_current_line == RenderBoxDisplay::Block and display_next_line == RenderBoxDisplay::Inline)
-        adjacent_siblings_margin = line.elements[0]->margin.bottom;
+        adjacent_siblings_margin = current_line_margin_bottom;
       else if (display_current_line == RenderBoxDisplay::Inline and display_next_line == RenderBoxDisplay::Block)
         adjacent_siblings_margin = next_line_margin_top;
     }
@@ -234,6 +235,9 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params={})
     // with the adjacent sibling.
     params.margin_top_applied = adjacent_siblings_margin;
   }
+
+  result.resulting_margin_top = std::max<float>(margin.top, result.resulting_margin_top);
+  result.resulting_margin_bottom = std::max<float>(margin.bottom, result.resulting_margin_bottom);
 
   return result;
 }

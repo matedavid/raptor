@@ -5,7 +5,6 @@ namespace liquid {
 RenderBoxText::RenderBoxText(Text* text, RenderBox* parent)
   : text(text), RenderBox((HTMLElement*)text, parent)
 {
-  display = RenderBoxDisplay::Inline;
 }
 
 Dimensions RenderBoxText::compute_dimensions(float)
@@ -24,10 +23,12 @@ Dimensions RenderBoxText::compute_dimensions(float)
   return {.width=width, .height=height};
 }
 
-RenderBox::LayoutResult RenderBoxText::layout(LayoutParameters params={})
-{
-  return {};
-}
+// RenderBox::LayoutResult RenderBoxText::layout(LayoutParameters params)
+// {
+//   x = params.xref;
+//   y = params.yref;
+//   return {};
+// }
 
 std::string RenderBoxText::content() const
 {

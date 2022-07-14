@@ -68,20 +68,26 @@ protected:
     float height;
   };
 
-  // Constructs a line representation of the RenderBox's children.
+  // Constructs a line representation of the RenderBox's children
   std::vector<Line> layout_lines() const;
 
   // Input struct for Layout function
   struct LayoutParameters
   {
+    float xref, yref;
     float margin_top_applied = 0.f;
   };
 
   // Result struct from Layout function 
   struct LayoutResult
   {
-    float resulting_margin_top = 0.f;
+    // Used to communicate to parent elements how much margin top 
+    // they should apply
     float margin_top_remaining = 0.f;
+
+    // The resulting margin top/bottom of a container
+    float resulting_margin_top = 0.f;
+    float resulting_margin_bottom = 0.f;
   };
 
 protected:

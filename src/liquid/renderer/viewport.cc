@@ -31,7 +31,7 @@ Viewport::Viewport(HTMLElement* body)
 
   render_tree = construct_render_tree(body, nullptr);
   Dimensions dims = render_tree->compute_dimensions(WIDTH);
-  render_tree->layout({});
+  render_tree->layout({.xref=0.f, .yref=0.f, .margin_top_applied=0.f});
 
   render_tree->print(0);
   std::cout << "Total height: " << dims.height << std::endl;
