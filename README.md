@@ -4,6 +4,7 @@ Just a simple browser, developed for learning purposes.
 
 ## Requirements
 * SFML 2.5.1
+* cpr (https://github.com/libcpr/cpr)
 
 ## How to build
 Create build directory to store binaries and build files and enter it:
