@@ -5,9 +5,10 @@ namespace liquid {
 RenderBoxText::RenderBoxText(Text* text, RenderBox* parent)
   : text(text), RenderBox((HTMLElement*)text, parent)
 {
+  display = RenderBoxDisplay::Inline;
 }
 
-Dimensions RenderBoxText::compute_dimensions(float)
+AppliedDimensions RenderBoxText::compute_dimensions(float)
 {
   sf::Font font;
   if (not font.loadFromFile("../src/gui/Fonts/LiberationSans-Regular.ttf"))
@@ -20,7 +21,7 @@ Dimensions RenderBoxText::compute_dimensions(float)
   content_width = width = content_width = t.getGlobalBounds().width;
   content_height = height = margin_height = t.getGlobalBounds().height;
 
-  return {.width=width, .height=height};
+  return {.width=true, .height=true};
 }
 
 // RenderBox::LayoutResult RenderBoxText::layout(LayoutParameters params)

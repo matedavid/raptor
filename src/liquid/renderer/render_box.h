@@ -10,10 +10,10 @@
 namespace liquid {
 
 // TODO: Shouldn't be here
-struct Dimensions
+struct AppliedDimensions
 {
-  float width;
-  float height;
+  bool width  = false;
+  bool height = false;
 };
 // // // 
 
@@ -66,8 +66,6 @@ protected:
   {
     bool horizontal;
     std::vector<RenderBox*> elements;
-
-    float height;
   };
 
   // Constructs a line representation of the RenderBox's children
@@ -78,6 +76,7 @@ protected:
   {
     float xref, yref;
     float margin_top_applied = 0.f;
+    float container_width;
   };
 
   // Result struct from Layout function 
@@ -92,7 +91,6 @@ protected:
     float resulting_margin_bottom = 0.f;
   };
 
-protected:
   // display css property
   RenderBoxDisplay  display;
   // position css property
@@ -141,7 +139,7 @@ public:
   RenderBox(HTMLElement* node, RenderBox* parent);
 
   // Computes the height of the RenderBox
-  virtual Dimensions compute_dimensions(float container_width);
+  virtual AppliedDimensions compute_dimensions(float container_width);
 
   // Computes x & y position of the RenderBox
   virtual LayoutResult layout(LayoutParameters params);

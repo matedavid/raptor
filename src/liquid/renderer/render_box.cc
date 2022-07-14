@@ -43,46 +43,26 @@ RenderBox::RenderBox(HTMLElement* node, RenderBox* parent)
   margin.right = node->style.margin_right;
 }
 
-Dimensions RenderBox::compute_dimensions(float container_width)
+AppliedDimensions RenderBox::compute_dimensions(float container_width)
 {
-  float accumulated_height = 0.f;
-  float accumulated_width  = 0.f;
-  RenderBoxDisplay prev_display = RenderBoxDisplay::None;
-  for (RenderBox* child : children)
-  {
-    Dimensions dims = child->compute_dimensions(container_width);
-
-    // height
-    accumulated_height += dims.height;
-
-    // width 
-    if (child->display == RenderBoxDisplay::Inline and prev_display == RenderBoxDisplay::Inline)
-      accumulated_width += dims.width;
-    else
-      accumulated_width = dims.width;
-
-    prev_display = child->display;
-  }
+  AppliedDimensions applied;
 
   float height_val = node->style.height;
   float width_val  = node->style.width;
 
-  // NOTE: Every alternative should give value to:
-  // - content_height, height, margin_height 
-  // - content_width, width, margin_width
   if (display == RenderBoxDisplay::Block)
   {
-    content_height = height_val == -1.f ? accumulated_height : height_val;
-    height = content_height + padding.top + padding.bottom + border_width.top + border_width.bottom;
-    margin_height = height + margin.top + margin.bottom;
-
-    margin_width = container_width;
+    if (height_val != -1.f)
+    {
+      content_height = height_val;
+      height = content_height + padding.top + padding.bottom + border_width.top + border_width.bottom;
+    }
 
     // If width = auto, width and content width are constrained by the container_width.
     // If width is set to a value the reverse happens, width and content_width expand based on the specified value.
     if (width_val == -1)
     {
-      width = margin_width - margin.left - margin.right;
+      width = container_width - margin.left - margin.right;
       content_width = width - padding.left - padding.right - border_width.left - border_width.right;
     } 
     else
@@ -90,21 +70,17 @@ Dimensions RenderBox::compute_dimensions(float container_width)
       content_width = width_val;
       width = content_width + padding.left + padding.right + border_width.left + border_width.right;
     }
+
+    applied.height = (height_val != -1.f);
+    applied.width  = true;
   }
   else if (display == RenderBoxDisplay::Inline)
   {
-    // NOTE: Even tho vertical height and padding are applied (border_width works different), 
-    // they do not push away other elements
-    content_height = accumulated_height;
-    height = content_height + padding.top + padding.bottom + border_width.top + border_width.bottom;
-    margin_height = height + margin.top + margin.bottom;
-
-    content_width = accumulated_width;
-    width = content_width + padding.left + padding.right + border_width.left + border_width.right;
-    margin_width = width + margin.left + margin.right;
+    applied.height = false;
+    applied.width  = false;
   }
 
-  return Dimensions{.width=width, .height=height};
+  return applied;
 }
 
 std::vector<RenderBox::Line> RenderBox::layout_lines() const
@@ -114,7 +90,7 @@ std::vector<RenderBox::Line> RenderBox::layout_lines() const
   {
     if (child->display == RenderBoxDisplay::Block)
     {
-      Line new_line = Line{.horizontal=false, .elements={child}, .height=child->height};
+      Line new_line = Line{.horizontal=false, .elements={child}};
       lines.push_back(new_line);
     }
     else if (child->display == RenderBoxDisplay::Inline)
@@ -122,11 +98,10 @@ std::vector<RenderBox::Line> RenderBox::layout_lines() const
       if (not lines.empty() && lines[lines.size()-1].horizontal)
       {
         lines[lines.size()-1].elements.push_back(child);
-        lines[lines.size()-1].height = std::max<float>(child->height, lines[lines.size()-1].height);
       }
       else
       {
-        Line new_line = Line{.horizontal=true, .elements={child}, .height=child->height};
+        Line new_line = Line{.horizontal=true, .elements={child}};
         lines.push_back(new_line);
       }
     }
@@ -141,6 +116,8 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
   x = params.xref;
   y = params.yref;
 
+  AppliedDimensions applied_dims = this->compute_dimensions(params.container_width);
+
   // Get the line representation of the render_box's children
   std::vector<Line> lines = layout_lines();
 
@@ -151,7 +128,7 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
   LayoutResult result;
   
   // First child margin collapsing
-  if (parent == nullptr)
+  if (parent == nullptr and display == RenderBoxDisplay::Block)
   {
     y += margin.top;
     params.margin_top_applied = margin.top;
@@ -170,6 +147,7 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
   for (int idx = 0; idx < lines.size(); ++idx)
   {
     Line line = lines[idx];
+    float line_height = 0.f;
 
     LayoutResult child_result;
     if (not line.horizontal)
@@ -177,6 +155,7 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
       RenderBox* child = line.elements[0];
       params.xref = x;
       params.yref = y + height_offset;
+      params.container_width = content_width;
 
       child_result = child->layout(params);
       // Propagate margin collapsing upstream
@@ -188,26 +167,45 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
       // Propagate the resulting margin top/bottom upwards 
       result.resulting_margin_top = child_result.resulting_margin_top;
       result.resulting_margin_bottom = child_result.resulting_margin_bottom;
+
+      line_height = child->height;
     }
     else
     {
       float width_offset = 0.f;
-      for (RenderBox* child : line.elements)
+      for (int child_id = 0; child_id < line.elements.size(); ++child_id)
       {
+        RenderBox* child = line.elements[child_id];
+
         params.xref = x + width_offset;
         params.yref = y + height_offset;
         child_result = child->layout(params);
 
-        // TODO: This logic should be in another file, for example, a utils file
-        sf::Font font;
-        if (not font.loadFromFile("../src/gui/Fonts/LiberationSans-Regular.ttf"))
-        {
-          std::cout << "Error loading font: compute_height" << std::endl;
-          exit(0);
-        }
-        float space_width = sf::Text(" ", font, child->node->style.font_size).getGlobalBounds().width;
+        line_height = std::max<float>(child->height, line_height);
+        width_offset += child->width;
 
-        width_offset += child->width + space_width;
+        // If element is not the last element in the line, add to the offset
+        // the size of a space as a separator
+        if (child_id == line.elements.size()-1)
+        {
+          // TODO: This logic should be in another file, for example, a utils file
+          sf::Font font;
+          if (not font.loadFromFile("../src/gui/Fonts/LiberationSans-Regular.ttf"))
+          {
+            std::cout << "Error loading font: compute_height" << std::endl;
+            exit(0);
+          }
+          float space_width = sf::Text(" ", font, child->node->style.font_size).getGlobalBounds().width;
+
+          width_offset += space_width;
+        }
+      }
+
+      // Give value to width if couldn't be done in compute_dimensions
+      if (not applied_dims.width)
+      {
+        content_width = width_offset;
+        width = content_width + padding.left + padding.right + border_width.left + border_width.right;
       }
     }
 
@@ -237,16 +235,19 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
         adjacent_siblings_margin = next_line_margin_top;
     }
 
-    height_offset += line.height + adjacent_siblings_margin;
+    height_offset += line_height + adjacent_siblings_margin;
 
     // To prevent next sibling from applying margin top again, as it's already been applied 
     // with the adjacent sibling.
     params.margin_top_applied = adjacent_siblings_margin;
   }
 
-  // TODO: Check if height property needs to be modified
-  std::cout << node->id << ": " << height_offset << std::endl;
-  /// 
+  // Give value to height if couldn't be done in compute_dimensions
+  if (not applied_dims.height)
+  {
+    content_height = height_offset;
+    height = content_height + padding.top + padding.bottom + border_width.top + border_width.bottom;
+  }
 
   result.resulting_margin_top = std::max<float>(margin.top, result.resulting_margin_top);
   result.resulting_margin_bottom = std::max<float>(margin.bottom, result.resulting_margin_bottom);
@@ -264,10 +265,10 @@ void RenderBox::print(int n_tabs)
   for (int i = 0; i < n_tabs; ++i)
     std::cout << "  ";
 
-  printf("[RenderBox (%s) pos=(%.1f, %.1f) w=(%.1f,%.1f,%.1f) h=(%.1f,%.1f,%.1f)]\n", node->element_value.c_str(),
+  printf("[RenderBox (%s) pos=(%.1f, %.1f) w=(%.1f,%.1f) h=(%.1f,%.1f)]\n", node->element_value.c_str(),
           x, y,
-          margin_width, width, content_width, 
-          margin_height, height, content_height
+          width, content_width, 
+          height, content_height
         );
   
   for (auto child : children) 

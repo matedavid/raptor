@@ -21,7 +21,7 @@ public:
   RenderBoxText(Text* text, RenderBox* parent);
 
   // Computes the height of the Text RenderBox
-  Dimensions compute_dimensions(float) override;
+  AppliedDimensions compute_dimensions(float) override;
 
   // Computes x & y position of the RenderBox
   //LayoutResult layout(LayoutParameters params) override;
