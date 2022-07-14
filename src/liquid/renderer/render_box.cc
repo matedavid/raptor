@@ -182,22 +182,16 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
         child_result = child->layout(params);
 
         line_height = std::max<float>(child->height, line_height);
-        width_offset += child->width;
+        width_offset += child->width + child->margin.left + child->margin.right;
 
         // If element is not the last element in the line, add to the offset
-        // the size of a space as a separator
-        if (child_id == line.elements.size()-1)
+        // the needed separation between elements
+        if (child_id != line.elements.size()-1)
         {
-          // TODO: This logic should be in another file, for example, a utils file
-          sf::Font font;
-          if (not font.loadFromFile("../src/gui/Fonts/LiberationSans-Regular.ttf"))
-          {
-            std::cout << "Error loading font: compute_height" << std::endl;
-            exit(0);
-          }
-          float space_width = sf::Text(" ", font, child->node->style.font_size).getGlobalBounds().width;
-
-          width_offset += space_width;
+          // Default value is based on the width of a space character (" ")
+          // with 16px font size
+          float SPACE_WIDTH = 4.f;
+          width_offset += SPACE_WIDTH;
         }
       }
 
