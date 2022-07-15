@@ -30,6 +30,7 @@ enum RenderBoxDisplay
   Block,
   Inline,
   ListItem,
+  InlineBlock,
   // TODO: Missing values...
 };
 

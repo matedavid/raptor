@@ -14,6 +14,8 @@ RenderBox::RenderBox(HTMLElement* node, RenderBox* parent)
     display = RenderBoxDisplay::Inline;
   else if (n_display == "list-item")
     display = RenderBoxDisplay::ListItem;
+  else if (n_display == "inline-block")
+    display = RenderBoxDisplay::InlineBlock;
   
   std::string n_position = node->style.position;
   if (n_position == "static")
@@ -50,7 +52,7 @@ AppliedDimensions RenderBox::compute_dimensions(float container_width)
   float height_val = node->style.height;
   float width_val  = node->style.width;
 
-  if (display == RenderBoxDisplay::Block)
+  if (display == RenderBoxDisplay::Block || display == RenderBoxDisplay::InlineBlock)
   {
     if (height_val != -1.f)
     {
@@ -93,7 +95,7 @@ std::vector<RenderBox::Line> RenderBox::layout_lines() const
       Line new_line = Line{.horizontal=false, .elements={child}};
       lines.push_back(new_line);
     }
-    else if (child->display == RenderBoxDisplay::Inline)
+    else if (child->display == RenderBoxDisplay::Inline or child->display == RenderBoxDisplay::InlineBlock)
     {
       if (not lines.empty() && lines[lines.size()-1].horizontal)
       {
@@ -141,6 +143,10 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
     params.margin_top_applied = margin.top;
     result.margin_top_remaining = remaining;
   }
+  else if (display == RenderBoxDisplay::InlineBlock)
+  {
+    y += margin.top;
+  }
 
   // Compute position
   float height_offset = 0.f;
@@ -182,6 +188,17 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
         child_result = child->layout(params);
 
         line_height = std::max<float>(child->height, line_height);
+
+        // TODO: This is a temporal solution
+        // As InlineBlock elements apply their own margin-top, if they do apply it they'll position
+        // themselves correctly, but the parent element (the current element) won't know that it has 
+        // pushed himself down, therefore the height_offset wont have the correct value to position
+        // the next element. Adding the margin-top to the line_height to correct the height_offset
+        if (child->display == RenderBoxDisplay::InlineBlock)
+        {
+          line_height += child->margin.top;
+        }
+
         width_offset += child->width + child->margin.left + child->margin.right;
 
         // If element is not the last element in the line, add to the offset
@@ -209,10 +226,10 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
     {
       Line next_line = lines[idx+1];
 
-      RenderBoxDisplay display_current_line  = line.elements[0]->display;
+      RenderBoxDisplay display_current_line = line.elements[0]->display;
       RenderBoxDisplay display_next_line = next_line.elements[0]->display;
-
-      float current_line_margin_bottom = std::max<float>(child_result.resulting_margin_bottom, margin.bottom);
+      
+      float current_line_margin_bottom = child_result.resulting_margin_bottom;
 
       float next_line_margin_top = next_line.elements[0]->margin.top;
       if (display_next_line == RenderBoxDisplay::Block)
@@ -227,6 +244,10 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
         adjacent_siblings_margin = current_line_margin_bottom;
       else if (display_current_line == RenderBoxDisplay::Inline and display_next_line == RenderBoxDisplay::Block)
         adjacent_siblings_margin = next_line_margin_top;
+      else if (display_current_line == RenderBoxDisplay::InlineBlock and display_next_line == RenderBoxDisplay::Block)
+        adjacent_siblings_margin = current_line_margin_bottom + next_line_margin_top;
+      else if (display_current_line == RenderBoxDisplay::Block and display_next_line == RenderBoxDisplay::InlineBlock)
+        adjacent_siblings_margin = current_line_margin_bottom; // InlineBlock elements apply their own margin-top
     }
 
     height_offset += line_height + adjacent_siblings_margin;

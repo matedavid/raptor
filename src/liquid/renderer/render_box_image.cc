@@ -5,7 +5,6 @@ namespace liquid {
 RenderBoxImage::RenderBoxImage(HTMLImageElement* image, RenderBox* parent)
   : image(image), RenderBox((HTMLElement*)image, parent)
 {
-  display = RenderBoxDisplay::Inline;
 }
 
 AppliedDimensions RenderBoxImage::compute_dimensions(float)
