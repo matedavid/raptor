@@ -23,6 +23,9 @@ public:
   // Computes the height of the Text RenderBox
   AppliedDimensions compute_dimensions(float) override;
 
+  float get_width()  const { return width;  }
+  float get_height() const { return height; }
+
   void print(int n_tabs) override;
 };
 
