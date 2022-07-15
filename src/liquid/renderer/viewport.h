@@ -3,6 +3,7 @@
 #include "liquid/html/html_element.h"
 #include "liquid/renderer/render_box.h"
 #include "liquid/renderer/render_box_text.h"
+#include "liquid/renderer/render_box_image.h"
 
 namespace liquid {
 

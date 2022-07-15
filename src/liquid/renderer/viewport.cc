@@ -12,7 +12,9 @@ RenderBox* Viewport::construct_render_tree(HTMLElement* element, RenderBox* pare
   }
   else if (element->element_value == "img")
   {
-    // TODO: Generate RenderBoxImage + return 
+    HTMLImageElement* image = dynamic_cast<HTMLImageElement*>(element);
+    RenderBoxImage* render_box_image = new RenderBoxImage(image, parent);
+    return render_box_image;
   }
 
   RenderBox* render_box = new RenderBox(element, parent);
@@ -30,8 +32,6 @@ Viewport::Viewport(HTMLElement* body)
   const float WIDTH = 960.f;
 
   render_tree = construct_render_tree(body, nullptr);
-  //Dimensions dims = render_tree->compute_dimensions(WIDTH);
-
   render_tree->layout({
     .xref=0.f,
     .yref=0.f,
