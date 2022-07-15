@@ -18,18 +18,11 @@ AppliedDimensions RenderBoxText::compute_dimensions(float)
   }
 
   sf::Text t(content(), font, text->style.font_size);
-  content_width = width = content_width = t.getGlobalBounds().width;
-  content_height = height = margin_height = t.getGlobalBounds().height;
+  content_width = width = t.getGlobalBounds().width;
+  content_height = height = t.getGlobalBounds().height;
 
   return {.width=true, .height=true};
 }
-
-// RenderBox::LayoutResult RenderBoxText::layout(LayoutParameters params)
-// {
-//   x = params.xref;
-//   y = params.yref;
-//   return {};
-// }
 
 std::string RenderBoxText::content() const
 {

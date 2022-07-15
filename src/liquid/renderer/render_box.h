@@ -122,7 +122,7 @@ protected:
   // Height of the complete render box (box_height + margin)
   // NOTE: Maybe not necessary, as margin only pushes other elements way instead of contributing to height
   //       could create get_margin() function instead that returns the margin values and then push other elements
-  float margin_height;
+  // float margin_height;
   
   // Width of the content box
   float content_width;
@@ -130,7 +130,7 @@ protected:
   float width;
   // Height of the complete render box (box_height + margin)
   // NOTE: Idem margin_height
-  float margin_width;
+  // float margin_width;
 
 public:
   virtual RenderBoxType type() const { return RenderBoxType::Default; }
