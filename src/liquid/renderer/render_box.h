@@ -70,7 +70,7 @@ protected:
   };
 
   // Constructs a line representation of the RenderBox's children
-  std::vector<Line> layout_lines() const;
+  void layout_lines(std::vector<Line>& lines, std::vector<RenderBox*>& not_in_flow) const;
 
   // Input struct for Layout function
   struct LayoutParameters
@@ -96,6 +96,8 @@ protected:
   RenderBoxDisplay  display;
   // position css property
   RenderBoxPosition position;
+  // If the element is positioned according to the normal document flow
+  bool in_document_flow;
 
   // The HTML element that the RenderBox encapsulates  
   HTMLElement* node;
@@ -132,6 +134,18 @@ protected:
   // Height of the complete render box (box_height + margin)
   // NOTE: Idem margin_height
   // float margin_width;
+
+private:
+  // Returns if child is the first child element in_document_flow
+  bool is_first_child(RenderBox* child)
+  {
+    for (auto c : children)
+    {
+      if (c->in_document_flow)
+        return child == c;
+    }
+    return false;
+  }
 
 public:
   virtual RenderBoxType type() const { return RenderBoxType::Default; }
