@@ -38,9 +38,6 @@ Viewport::Viewport(HTMLElement* body)
     .margin_top_applied=0.f,
     .container_width=WIDTH
   });
-
-  render_tree->print(0);
-  //std::cout << "Total height: " << render_tree.height << std::endl;
 }
 
 }

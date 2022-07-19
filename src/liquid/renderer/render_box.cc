@@ -138,8 +138,14 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
   // Position
   if (position == RenderBoxPosition::Relative)
   {
-    x += node->style.left - node->style.right;
-    y += node->style.top - node->style.bottom;
+  	// left has priority over right
+  	float horizontal_offset = node->style.left != 0.f ? node->style.left : -node->style.right;
+
+  	// top has priority over bottom
+  	float vertical_offset = node->style.top != 0.f ? node->style.top : -node->style.bottom;
+
+    x += horizontal_offset;
+    y += vertical_offset;
   }
   else if (position == RenderBoxPosition::Absolute)
   {

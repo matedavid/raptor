@@ -32,6 +32,7 @@ int main(int argc, char* argv[])
   window.setTitle(document.title);
 
   liquid::Viewport viewport(document.body);
+  viewport.render_tree->print(0);
 
   window.clear(sf::Color::White);
   paint(window, viewport.render_tree);

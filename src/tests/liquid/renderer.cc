@@ -42,7 +42,7 @@ TEST_CASE("Correct layout single body")
   REQUIRE(render_tree->get_y() == 8.f);
 }
 
-TEST_CASE("First-child margin collapsing")
+TEST_CASE("First child margin collapsing")
 {
   {
     std::string single_p_content = R"(
@@ -89,4 +89,220 @@ TEST_CASE("First-child margin collapsing")
     REQUIRE(p->get_x() == 8.f);
     REQUIRE(p->get_y() == 20.f);
   }
+}
+
+TEST_CASE("Adjacent siblings margin collapsing")
+{
+  {
+    std::string content = R"(
+      <body>
+        <p id='p1'>Hello world 1</p>
+        <div>
+          <p id='p2'>Hello world 2</p>
+        </div>
+        <p id='p3'>Hello world 3</p>
+      </body>
+    )";
+
+    auto body = get_render_box(content);
+    auto p1 = get_render_box_by_id(body, "p1");
+    auto p2 = get_render_box_by_id(body, "p2");
+    auto p3 = get_render_box_by_id(body, "p3");
+
+    REQUIRE(p1->get_y() == 16.f);
+    REQUIRE(p2->get_y() == p1->get_y() + p1->get_height() + 16.f);
+    REQUIRE(p3->get_y() == p2->get_y() + p2->get_height() + 16.f);
+  }
+
+  {
+    std::string content = R"(
+      <body>
+        <p id='p1'>Hello world 1</p>
+        <div id='div1'>
+          <p id='p2'>Hello world 2</p>
+        </div>
+        <p id='p3'>Hello world 3</p>
+      </body>
+    )";
+
+    std::string style = R"(
+      #div1 {
+        margin-top: 20px;
+      }
+
+      #p2 {
+        margin-bottom: 22px;
+      }
+    )";
+
+    auto body = get_render_box(content, style);
+    auto p1 = get_render_box_by_id(body, "p1");
+    auto p2 = get_render_box_by_id(body, "p2");
+    auto p3 = get_render_box_by_id(body, "p3");
+
+    REQUIRE(p1->get_y() == 16.f);
+    REQUIRE(p2->get_y() == p1->get_y() + p1->get_height() + 20.f);
+    REQUIRE(p3->get_y() == p2->get_y() + p2->get_height() + 22.f);
+  }
+}
+
+TEST_CASE("Inline elements")
+{
+	std::string content = R"(
+		<body>
+			<p id='p1'>Hello world</p>
+			<p id='p2'>Hello world</p>
+			<p id='p3'>Hello world</p>
+		</body>
+	)";
+
+	std::string style = R"(
+		#p1 {
+			display: inline;
+			margin-right: 10px;
+		}
+
+		#p2 {
+			display: inline;
+			margin-top: 200px;
+			margin-left: 11px;
+		}
+	)";
+
+	auto body = get_render_box(content, style);
+	auto p1 = get_render_box_by_id(body, "p1");
+	auto p2 = get_render_box_by_id(body, "p2");
+	auto p3 = get_render_box_by_id(body, "p3");
+
+	REQUIRE(p1->get_x() == 8.f);
+	REQUIRE(p1->get_y() == 8.f);
+
+	REQUIRE(p2->get_x() == 8.f + p1->get_width() + 4.f + 10.f + 11.f);
+	REQUIRE(p2->get_y() == p1->get_y());
+
+	REQUIRE(p3->get_y() == 8.f + p1->get_height() + 16.f);
+}
+
+TEST_CASE("InlineBlock elements")
+{
+
+}
+
+TEST_CASE("Relative position")
+{
+	{
+		std::string content = R"(
+			<body>
+				<p id='p1'>Hello world</p>
+				<p id='p2'>Hello world</p>
+				<p id='p3'>Hello world</p>
+			</body>
+		)";
+
+		std::string style = R"(
+			#p2 {
+				position: relative;
+				left: 15px;
+				right: 7px;
+				top: 20px;
+				bottom: 10px;
+			}
+		)";
+
+		auto body = get_render_box(content, style);
+		auto p1 = get_render_box_by_id(body, "p1");
+		auto p2 = get_render_box_by_id(body, "p2");
+		auto p3 = get_render_box_by_id(body, "p3");
+
+		REQUIRE(p2->get_x() == 8.f + 15.f);
+		REQUIRE(p2->get_y() == p1->get_y() + p1->get_height() + 16.f + 20.f);
+
+		REQUIRE(p3->get_y() == p1->get_y() + p1->get_height() + 16.f + p2->get_height() + 16.f);
+	}
+
+	{
+		std::string content = R"(
+			<body>
+				<p id='p1'>Hello world</p>
+				<p id='p2'>Hello world</p>
+				<p id='p3'>Hello world</p>
+			</body>
+		)";
+
+		std::string style = R"(
+			#p2 {
+				position: relative;
+				right: 7px;
+				bottom: 10px;
+			}
+		)";
+
+		auto body = get_render_box(content, style);
+		auto p1 = get_render_box_by_id(body, "p1");
+		auto p2 = get_render_box_by_id(body, "p2");
+		auto p3 = get_render_box_by_id(body, "p3");
+
+		REQUIRE(p2->get_x() == 8.f - 7.f);
+		REQUIRE(p2->get_y() == p1->get_y() + p1->get_height() + 16.f - 10.f);
+
+		REQUIRE(p3->get_y() == p1->get_y() + p1->get_height() + 16.f + p2->get_height() + 16.f);
+	}
+}
+
+
+TEST_CASE("Absolute position")
+{
+	{
+		std::string content = R"(
+			<body>
+				<p id='p1'>Hello world</p>
+				<p id='p2'>Hello world</p>
+				<p id='p3'>Hello world</p>
+			</body>
+		)";
+
+		std::string style = R"(
+			#p2 {
+				position: absolute;
+			}
+		)";
+
+		auto body = get_render_box(content, style);
+		auto p1 = get_render_box_by_id(body, "p1");
+		auto p2 = get_render_box_by_id(body, "p2");
+		auto p3 = get_render_box_by_id(body, "p3");
+
+		REQUIRE(p2->get_x() == 8.f);
+		REQUIRE(p2->get_y() == p1->get_y() + p1->get_height() + 16.f + 16.f);
+
+		REQUIRE(p3->get_y() == p1->get_y() + p1->get_height() + 16.f);
+	}
+
+	{
+		std::string content = R"(
+			<body>
+				<p id='p1'>Hello world</p>
+				<p id='p2'>Hello world</p>
+				<p id='p3'>Hello world</p>
+			</body>
+		)";
+
+		std::string style = R"(
+			#p1 {
+				position: absolute;
+			}
+		)";
+
+		auto body = get_render_box(content, style);
+		auto p1 = get_render_box_by_id(body, "p1");
+		auto p2 = get_render_box_by_id(body, "p2");
+		auto p3 = get_render_box_by_id(body, "p3");
+
+		REQUIRE(p1->get_x() == 8.f);
+		REQUIRE(p1->get_y() == body->get_y() + 16.f);
+
+		REQUIRE(p2->get_y() == 16.f);
+
+		REQUIRE(p3->get_y() == 16.f + p2->get_height() + 16.f);
+	}
 }
