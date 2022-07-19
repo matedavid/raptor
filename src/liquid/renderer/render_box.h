@@ -156,8 +156,11 @@ public:
 
   std::vector<RenderBox*> get_children() const { return children; }
 
-  float get_x() { return x; }
-  float get_y() { return y; }
+  float get_x() const { return x; }
+  float get_y() const { return y; }
+
+  float get_width()  const { return width; }
+  float get_height() const { return height; }
 
   // DEBUG
   std::string get_node_id() const { return node->id; }
