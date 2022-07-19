@@ -1,37 +1,32 @@
 #pragma once
 
-#include "render_box.h"
-
-#include "liquid/html/html_element.h"
-#include "liquid/html/text.h"
+#include <iostream>
 
 #include <SFML/Graphics/Text.hpp>
+
+#include "liquid/renderer/render_box.h"
+#include "liquid/html/text.h"
 
 namespace liquid {
 
 class RenderBoxText : public RenderBox
 {
-private:
-  std::string content;
+public:
+  Text* text;
 
 public:
-  bool is_printable() const override { return true; }
   RenderBoxType type() const override { return RenderBoxType::Txt; }
+  bool is_printable()  const override { return true; }
 
-private:
-  static float get_text_width(const std::string& content, float font_size);
+  RenderBoxText(Text* text, RenderBox* parent);
 
-public:
-  RenderBoxText();
-  RenderBoxText(Text* text_element, RenderBox* parent);
+  // Computes the height of the Text RenderBox
+  AppliedDimensions compute_dimensions(float) override;
 
-  void layout(float container_width) override;
+  // Returns the content of the text
+  std::string content() const;
 
-  std::string split_content(float container_width);
-
-  std::string get_content() const;
-  void set_content(const std::string& new_content);
-  float get_font_size() const;
+  void print(int n_tabs) override;
 };
 
 }

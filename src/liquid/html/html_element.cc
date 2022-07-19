@@ -546,12 +546,19 @@ void HTMLElement::set_style_property(const std::string& property, const std::vec
   {
     for (int i = 0; i < value.size(); ++i)
     {
-      std::string border_width_value = value[i];
-      if (is_value_css_number(value[i]))
-      {
-        CSSNumber number = parse_number(value[i]);
-        border_width_value = std::to_string(get_css_number(number, style.font_size));
-      }
+      //std::string border_width_value = value[i];
+			float border_width_value = 0.f;
+			if (value[i] == "thin")
+				border_width_value = BORDER_WIDTH_THIN;
+			else if (value[i] == "medium")
+				border_width_value = BORDER_WIDTH_MEDIUM;
+			else if (value[i] == "thick")
+				border_width_value = BORDER_WIDTH_THICK;
+			else
+			{
+				CSSNumber number = parse_number(value[i]);
+				border_width_value = get_css_number(number, style.font_size);
+			}
 
       if (i == 0)
 			{

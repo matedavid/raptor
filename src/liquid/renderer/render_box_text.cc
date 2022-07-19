@@ -2,71 +2,39 @@
 
 namespace liquid {
 
-float RenderBoxText::get_text_width(const std::string& content, float font_size)
+RenderBoxText::RenderBoxText(Text* text, RenderBox* parent)
+  : text(text), RenderBox((HTMLElement*)text, parent)
 {
-  // TODO: Find better way to do this?
+  display = RenderBoxDisplay::Inline;
+}
+
+AppliedDimensions RenderBoxText::compute_dimensions(float)
+{
   sf::Font font;
-  if (not font.loadFromFile("../src/gui/Fonts/LiberationSans-Regular.ttf"))
-    std::cout << "Error loading font" << std::endl;
+  if (not font.loadFromFile("/home/david/workspace/raptor/src/gui/Fonts/LiberationSans-Regular.ttf"))
+  {
+    std::cout << "Error loading font: compute_height" << std::endl;
+    exit(0);
+  }
 
-  sf::Text t(content, font, (uint)font_size);
-  return t.getLocalBounds().width;
+  sf::Text t(content(), font, text->style.font_size);
+  content_width = width = t.getGlobalBounds().width;
+  content_height = height = t.getGlobalBounds().height;
+
+  return {.width=true, .height=true};
 }
 
-RenderBoxText::RenderBoxText()
+std::string RenderBoxText::content() const
 {
+  return text->content();
 }
 
-RenderBoxText::RenderBoxText(Text* text_element, RenderBox* parent)
+void RenderBoxText::print(int n_tabs)
 {
-  this->parent = parent;
-  this->node = text_element;
-  content = text_element->content();
-}
+  for (int i = 0; i < n_tabs; ++i)
+    std::cout << "  ";
 
-void RenderBoxText::layout(float container_width)
-{
-  auto [_xref, _yref] = compute_xy_reference();
-  x = xref = _xref;
-  y = yref = _yref;
-
-  // Compute width
-  content_width = get_text_width(content, node->style.font_size);
-
-  // Compute height (approximation)
-  content_height = node->style.font_size * 1.25f;
-}
-
-std::string RenderBoxText::split_content(float container_width)
-{
-  float character_width = content_width/float(content.size());
-  int n = container_width/character_width;
-
-  while (n >= 0 and (content[n] != ' ' or get_text_width(content.substr(0, n), node->style.font_size) >= container_width))
-    --n;
-
-  std::string actual_content = content.substr(0, n);
-  std::string split_content = content.substr(n+1, content.size());
-
-  set_content(actual_content);
-  return split_content;
-}
-
-std::string RenderBoxText::get_content() const 
-{
-  return content;
-}
-
-void RenderBoxText::set_content(const std::string& new_content)
-{
-  content = new_content;
-
-  content_width = get_text_width(content, node->style.font_size);
-}
-
-float RenderBoxText::get_font_size() const
-{
-  return node->style.font_size;
+  printf("[Text pos=(%.1f, %.1f)]: %s\n", x, y, content().c_str());
 }
 
 }

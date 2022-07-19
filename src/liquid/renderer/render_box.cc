@@ -1,402 +1,363 @@
 #include "render_box.h"
 
-namespace liquid 
+namespace liquid {
+
+RenderBox::RenderBox(HTMLElement* node, RenderBox* parent)
+  : node(node), parent(parent)
 {
-
-/* ===== UTIL ===== */
-float space_width(float font_size) 
-{
-  sf::Font font;
-  if (not font.loadFromFile("../src/gui/Fonts/LiberationSans-Regular.ttf"))
-    std::cout << "Error loading font" << std::endl;
-
-  sf::Text t(" ", font, (uint)font_size);
-  return t.getLocalBounds().width;
-}
-
-// Returns if a children is blocking the parent/first-child margin collapsing
-bool has_child_blocking_mc(const std::vector<RenderBox*>& children)
-{
-  if (children.empty())
-    return false;
-
-  for (auto child : children)
-    if (child->in_document_flow() and child->get_content_height() != 0.f) return true;
-
-  return false;
-}
-
-// Returns the first children that is in the normal document flow from vector
-RenderBox* first_children_in_flow(const std::vector<RenderBox*>& children)
-{
-  for (auto iter = children.rbegin(); iter != children.rend(); ++iter)
-  {
-    if ((*iter)->in_document_flow()) return *iter;
-  }
-  return nullptr;
-}
-/* ===== ==== ===== */
-
-
-RenderBox::RenderBox()
-{
-}
-
-RenderBox::RenderBox(HTMLElement* element, RenderBox* parent)
-  : node(element), parent(parent)
-{
-}
-
-std::pair<float, float> RenderBox::compute_xy_reference() const
-{
-  if (parent == nullptr)
-    return { 0, 0 };
-
-  std::vector<RenderBox*> siblings = parent->children;
-  if (siblings.empty())
-    return { parent->get_x(), parent->get_y() };
-
-  RenderBox* last_sibling = siblings[siblings.size()-1];
-  if (last_sibling->display_type == RenderBoxDisplayType::Inline and display_type == RenderBoxDisplayType::Inline)
-  {
-    // If current element and nearest sibling are inline
-    // Should display elements horizontally (one next to the other)
-    float xref = last_sibling->get_x() + last_sibling->get_box_width() + space_width(node->style.font_size);
-    float yref = last_sibling->get_ref_y();
-
-    return { xref, yref };
-  }
-  else if (not last_sibling->in_flow)
-  {
-    // If last_sibling is not in the normal document flow, get the next direct sibling that it's in the document flow 
-    // if exists, otherwise, use the parent as reference
-    int idx = siblings.size()-1;
-    while (idx >= 0)
-    {
-      RenderBox* sibling = siblings[idx--];
-      if (not sibling->in_flow)
-        continue;
-
-      //float xref = sibling->get_x() + sibling->get_box_width();
-      float xref = sibling->xref;
-      float yref = sibling->yref + sibling->get_box_height();
-
-      return { xref, yref };
-    }
-
-    // Using parent as reference
-    return { parent->get_x(), parent->get_y() };
-  }
-
-  // If last_sibling or current render_box has display_type = block, block starts in new line,
-  // so yref has to take into account height of last_sibling
-  float xref = last_sibling->get_ref_x();
-  float yref = last_sibling->get_y() + last_sibling->get_vertical_separation();
-
-  return { xref, yref };
-}
-
-void RenderBox::layout(float container_width)
-{
-  // Specify and set display_type
-  if (node->style.display == "none")
-    display_type = RenderBoxDisplayType::None;
-  else if (node->style.display == "block")
-    display_type = RenderBoxDisplayType::Block;
-  else if (node->style.display == "inline")
-    display_type = RenderBoxDisplayType::Inline;
-  else if (node->style.display == "list-item")
-    display_type = RenderBoxDisplayType::ListItem;
-
-  // Specify and set position
-  if (node->style.position == "static")
+  std::string n_display = node->style.display;
+  if (n_display == "none")
+    display = RenderBoxDisplay::None;
+  else if (n_display == "block")
+    display = RenderBoxDisplay::Block;
+  else if (n_display == "inline")
+    display = RenderBoxDisplay::Inline;
+  else if (n_display == "list-item")
+    display = RenderBoxDisplay::ListItem;
+  else if (n_display == "inline-block")
+    display = RenderBoxDisplay::InlineBlock;
+  
+  std::string n_position = node->style.position;
+  if (n_position == "static")
     position = RenderBoxPosition::Static;
-  else if (node->style.position == "relative")
+  else if (n_position == "relative")
     position = RenderBoxPosition::Relative;
-  else if (node->style.position == "absolute")
+  else if (n_position == "absolute")
     position = RenderBoxPosition::Absolute;
-  else if (node->style.position == "fixed")
+  else if (n_position == "fixed")
     position = RenderBoxPosition::Fixed;
-  else if (node->style.position == "sticky")
+  else if (n_position == "sticky")
     position = RenderBoxPosition::Sticky;
 
-  // Set if render_box is in the normal document flow
-  in_flow = position != RenderBoxPosition::Absolute and position != RenderBoxPosition::Fixed;
+  in_document_flow = (position == RenderBoxPosition::Static or 
+                      position == RenderBoxPosition::Relative or 
+                      position == RenderBoxPosition::Sticky);
 
-  // Compute border-width values (only top, right and left because bottom can't be used until height is computed)
-  float border_top_value = node->style.border_style.top != "none" ? resolve_border_width(node->style.border_width.top) : 0.f;
-  float border_right_value = node->style.border_style.right != "none" ? resolve_border_width(node->style.border_width.right) : 0.f;
-  float border_left_value = node->style.border_style.left != "none" ? resolve_border_width(node->style.border_width.left) : 0.f;
+  padding.top = node->style.padding_top;
+  padding.bottom = node->style.padding_bottom;
+  padding.left = node->style.padding_left;
+  padding.right = node->style.padding_right;
 
-  // Compute width and height
-  if (display_type == RenderBoxDisplayType::Block or display_type == RenderBoxDisplayType::ListItem) 
+  border_width.top = node->style.border_style.top != "none" ? node->style.border_width.top : 0.f;
+  border_width.bottom = node->style.border_style.bottom != "none" ? node->style.border_width.bottom : 0.f;
+  border_width.left = node->style.border_style.left != "none" ? node->style.border_width.left : 0.f;
+  border_width.right = node->style.border_style.right != "none" ? node->style.border_width.right : 0.f;
+
+  margin.top = node->style.margin_top;
+  margin.bottom = node->style.margin_bottom;
+  margin.left = node->style.margin_left;
+  margin.right = node->style.margin_right;
+
+  x = y = 0.f;
+}
+
+AppliedDimensions RenderBox::compute_dimensions(float container_width)
+{
+  AppliedDimensions applied;
+
+  float height_val = node->style.height;
+  float width_val  = node->style.width;
+
+  if (display == RenderBoxDisplay::Block || display == RenderBoxDisplay::InlineBlock)
   {
-    // If display = block, the width occupies all the possible space
-    // We have to account for margin, padding and border width to compute content_width
-    if (node->style.width == -1) 
+    if (height_val != -1.f)
     {
-      // width is set to auto => computed automatically
-      content_width = container_width - node->style.margin_right - border_right_value - node->style.padding_right
-                                      - node->style.margin_left - border_left_value - node->style.padding_left;
+      content_height = height_val;
+      height = content_height + padding.top + padding.bottom + border_width.top + border_width.bottom;
+    }
+
+    // If width = auto, width and content width are constrained by the container_width.
+    // If width is set to a value the reverse happens, width and content_width expand based on the specified value.
+    if (width_val == -1)
+    {
+      width = container_width - margin.left - margin.right;
+      content_width = width - padding.left - padding.right - border_width.left - border_width.right;
     } 
     else
     {
-      content_width = node->style.width;
+      content_width = width_val;
+      width = content_width + padding.left + padding.right + border_width.left + border_width.right;
     }
 
-    // To compute height we need to wait for compute_height() call, except if it's specified
-    if (node->style.height != -1) 
-    {
-      content_height = node->style.height;
-    }
+    applied.height = (height_val != -1.f);
+    applied.width  = true;
   }
-  else if (display_type == RenderBoxDisplayType::Inline)
+  else if (display == RenderBoxDisplay::Inline)
   {
-    // If display = inline, the width is computed  based on the children's width, which can't
-    // be computed yet (printable objects have not been layed out). To compute values, we have to wait for the reflow()
+    applied.height = false;
+    applied.width  = false;
   }
 
-  // Determine (x,y) position
-  auto [_xref, _yref] = compute_xy_reference();
-  xref = _xref;
-  yref = _yref;
+  return applied;
+}
 
-  if (position == RenderBoxPosition::Absolute)
+void RenderBox::layout_lines(std::vector<Line>& lines, std::vector<RenderBox*>& not_in_flow) const
+{
+  for (RenderBox* child : children)
   {
-    x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
-    y = yref + node->style.margin_top + border_top_value + node->style.padding_top;
-
-    y += node->style.top;
-    y -= node->style.bottom;
-    x += node->style.left;
-    x -= node->style.right;
-    return;
-  }
-
-  float margin_top_apply = node->style.margin_top;
-  // Margin collapsing for adjacent siblings
-  if (display_type != RenderBoxDisplayType::Inline)
-  {
-    float adj_margin_bottom = 0.f;
-
-    // Get top element in the render tree
-    RenderBox* top_render_box = this;
-    while (top_render_box->parent != nullptr)
-      top_render_box = top_render_box->parent;
-
-    // Get the direct sibling reference value
-    RenderBox* direct_sibling = this;
-    // TODO: look for better solution to check if first_children_in_flow is nullptr instead of calling the same function twice
-    if (parent != nullptr and not parent->children.empty() and first_children_in_flow(parent->children) != nullptr)
+    if (not child->in_document_flow)
     {
-      // Adjacent sibling under same container
-      direct_sibling = first_children_in_flow(parent->children);
-      adj_margin_bottom = direct_sibling->node->style.margin_bottom;
+      not_in_flow.push_back(child);
     }
-    else if (parent != top_render_box and not top_render_box->children.empty() and first_children_in_flow(top_render_box->children) != nullptr)
+    else if (child->display == RenderBoxDisplay::Block)
     {
-      // Adjacent sibling in all the tree (different containers)
-      direct_sibling = first_children_in_flow(top_render_box->children);
-      adj_margin_bottom = direct_sibling->node->style.margin_bottom;
+      Line new_line = Line{.horizontal=false, .elements={child}};
+      lines.push_back(new_line);
     }
-
-    // Compute the adj_margin_bottom_value from the direct sibling (maximum of all the margins of all the margins)
-    while (not direct_sibling->children.empty() and direct_sibling->children[direct_sibling->children.size()-1]->type() == RenderBoxType::Default)
+    else if (child->display == RenderBoxDisplay::Inline or child->display == RenderBoxDisplay::InlineBlock)
     {
-      adj_margin_bottom = std::max<float>(adj_margin_bottom, direct_sibling->node->style.margin_bottom);
-      direct_sibling = direct_sibling->children[direct_sibling->children.size()-1];
-    }
-
-    float distance = yref - (direct_sibling->get_y()+direct_sibling->get_height());
-
-    float max = std::max<float>(adj_margin_bottom, node->style.margin_top);
-    float translate = max-distance;
-
-    if (this != direct_sibling and direct_sibling->in_flow)
-    {
-      adjacent_sibling_mc = true;
-      margin_top_apply = translate;
+      if (not lines.empty() && lines[lines.size()-1].horizontal)
+      {
+        lines[lines.size()-1].elements.push_back(child);
+      }
+      else
+      {
+        Line new_line = Line{.horizontal=true, .elements={child}};
+        lines.push_back(new_line);
+      }
     }
   }
+}
 
-  // Margin collapsing for parent and first/last child elements
-  if (display_type != RenderBoxDisplayType::Inline and node->style.margin_top != 0.f 
-      and parent != nullptr and not has_child_blocking_mc(parent->children) 
-      and parent->node->style.padding_top == 0.f and parent->node->style.border_style.top == "none")
-  {
-    float parent_mt = parent->node->style.margin_top;
+RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
+{
+  // Initialize x and y values
+  x = params.xref;
+  y = params.yref;
 
-    RenderBox* p = parent;
-    while (p != nullptr)
-    {
-      if (not p->children.empty() and first_children_in_flow(p->children) != nullptr)
-        break;
+  AppliedDimensions applied_dims = this->compute_dimensions(params.container_width);
 
-      parent_mt = std::max<float>(parent_mt, p->node->style.margin_top);
-      p = p->parent;
-    }
+  // Get the line representation of the render_box's children
+  std::vector<Line> lines;
+  std::vector<RenderBox*> not_in_flow;
+  layout_lines(lines, not_in_flow);
 
-    margin_top_apply = margin_top_apply-parent_mt; // TODO: Not sure this is ok
+  // Apply horizontal margin offset
+  x += margin.left;
 
-    // Apply margin collapsing to parents
-    p = parent;
-    while (p != nullptr and p->children.empty())
-    {
-      parent_first_child_mc = true;
-
-      p->y += margin_top_apply;
-      p = p->parent;
-    }
-  }
-
-  if (display_type == RenderBoxDisplayType::Inline)
-  {
-    x = xref + border_left_value;
-    y = yref + border_top_value;
-  }
-  else
-  {
-    x = xref + node->style.margin_left + border_left_value + node->style.padding_left;
-    y = yref + margin_top_apply + border_top_value + node->style.padding_top;
-  }
-
-  // position = relative
+  // Position
   if (position == RenderBoxPosition::Relative)
   {
-    y += node->style.top;
-    y -= node->style.bottom;
-    x += node->style.left;
-    x -= node->style.right;
+    x += node->style.left - node->style.right;
+    y += node->style.top - node->style.bottom;
   }
-}
-
-void RenderBox::reflow(float upstream_width)
-{
-  if (display_type == RenderBoxDisplayType::Inline)
+  else if (position == RenderBoxPosition::Absolute)
   {
-    float border_right_value = node->style.border_style.right != "none" ? resolve_border_width(node->style.border_width.right) : 0.f;
-    float border_left_value = node->style.border_style.left != "none" ? resolve_border_width(node->style.border_width.left) : 0.f;
+    if (parent == nullptr)
+    {
+      x = 0.f;
+      y = 0.f;
+    }
+    else if (not parent->children.empty() and parent->children[0] != this)
+    {
+      // Find the direct sibling of the current element
+      RenderBox* sibling = parent->children[0];
+      int idx = 0;
+      while (idx+1 < parent->children.size() and parent->children[idx+1] != this)
+      {
+        sibling = parent->children[idx+1];
+        ++idx;
+      }
+      if (display == RenderBoxDisplay::Inline and sibling->display == RenderBoxDisplay::Inline)
+      {
+        x = sibling->x + sibling->width;
+        y = sibling->y;
+      }
+      else 
+      {
+        float sibling_margin_bottom = sibling->display != RenderBoxDisplay::Inline ? sibling->margin.bottom : 0.f;
+        x = sibling->x;
+        y = sibling->y + sibling->height + sibling_margin_bottom;
+      }
+    }
+    else
+    {
+      x = parent->x;
+      y = parent->y;
+    }
 
-    content_width = upstream_width;
+    // TODO: implement top, bottom, left, right css attributes
+
+    x += margin.left + border_width.left + padding.left;
+    y += margin.top + border_width.top + padding.top;
   }
-}
-
-void RenderBox::compute_height(float accumulated_height)
-{
-
-  if (content_height != -1)
-    return;
-
-  float border_top_value = node->style.border_style.top != "none" ? resolve_border_width(node->style.border_width.top) : 0.f;
-  float border_bottom_value = node->style.border_style.bottom != "none" ? resolve_border_width(node->style.border_width.bottom) : 0.f;
-
-  content_height = accumulated_height;
-}
-
-float RenderBox::get_border_x() const
-{
-  float border_left_value = node->style.border_style.left != "none" ? resolve_border_width(node->style.border_width.left) : 0.f;
-  return x - node->style.padding_left - border_left_value;
-}
-
-float RenderBox::get_border_y() const
-{
-  float border_top_value = node->style.border_style.top != "none" ? resolve_border_width(node->style.border_width.top) : 0.f;
-  return y - node->style.padding_top - border_top_value;
-}
-
-float RenderBox::get_box_width() const
-{ 
-  float border_right_value = node->style.border_style.right != "none" ? resolve_border_width(node->style.border_width.right) : 0.f;
-  float border_left_value = node->style.border_style.left != "none" ? resolve_border_width(node->style.border_width.left) : 0.f;
-
-  return content_width + node->style.margin_left + border_left_value + node->style.padding_left
-                       + node->style.margin_right + border_right_value + node->style.padding_right;
-}
-
-float RenderBox::get_box_height() const
-{
-  float border_top_value = node->style.border_style.top != "none" ? resolve_border_width(node->style.border_width.top) : 0.f;
-  float border_bottom_value = node->style.border_style.bottom != "none" ? resolve_border_width(node->style.border_width.bottom) : 0.f;
-
-  // Apparently, in Inline elements, margin and padding top/bottom are not applied
-  // thus not modifying the height of box
-  if (display_type == RenderBoxDisplayType::Inline)
-    return content_height + border_top_value + border_bottom_value;
-  else if (adjacent_sibling_mc)
-    return content_height + border_top_value + node->style.padding_top
-                          + node->style.margin_bottom + border_bottom_value + node->style.padding_bottom;
-
-  return content_height + node->style.margin_top + border_top_value + node->style.padding_top
-                        + node->style.margin_bottom + border_bottom_value + node->style.padding_bottom;
-}
-
-float RenderBox::get_width() const
-{
-  float border_right_value = node->style.border_style.right != "none" ? resolve_border_width(node->style.border_width.right) : 0.f;
-  float border_left_value = node->style.border_style.left != "none" ? resolve_border_width(node->style.border_width.left) : 0.f;
-
-  return content_width + node->style.padding_left + node->style.padding_right + border_left_value + border_right_value;
-}
-
-float RenderBox::get_height() const
-{
-  float border_top_value = node->style.border_style.top != "none" ? resolve_border_width(node->style.border_width.top) : 0.f;
-  float border_bottom_value = node->style.border_style.bottom != "none" ? resolve_border_width(node->style.border_width.bottom) : 0.f;
-
-  return content_height + node->style.padding_top + node->style.padding_bottom + border_top_value + border_bottom_value;
-}
-
-std::vector<std::pair<float, float>> RenderBox::get_border_edges() const
-{
-  float border_top_value = node->style.border_style.top != "none" ? resolve_border_width(node->style.border_width.top) : 0.f;
-  float border_bottom_value = node->style.border_style.bottom != "none" ? resolve_border_width(node->style.border_width.bottom) : 0.f;
-  float border_right_value = node->style.border_style.right != "none" ? resolve_border_width(node->style.border_width.right) : 0.f;
-  float border_left_value = node->style.border_style.left != "none" ? resolve_border_width(node->style.border_width.left) : 0.f;
-
-  float x_left = x - node->style.padding_left - border_left_value;
-  float x_right = x + content_width + node->style.padding_right;
-
-  float y_top = y - node->style.padding_top - border_top_value;
-  float y_bottom = y + content_height + node->style.padding_bottom + border_bottom_value;
-
-  auto top_left = std::make_pair(x_left, y_top);
-  auto top_right = std::make_pair(x_right, y_top);
-  auto bottom_left = std::make_pair(x_left, y_bottom);
-  auto bottom_right = std::make_pair(x_right, y_bottom);
-
-  return { top_left, top_right, bottom_left, bottom_right };
-}
-
-float RenderBox::get_vertical_separation() const
-{
-  if (display_type == RenderBoxDisplayType::Inline)
-    return content_height;
-
-  float border_bottom_value = node->style.border_style.bottom != "none" ? resolve_border_width(node->style.border_width.bottom) : 0.f;
-  return content_height + node->style.padding_bottom + border_bottom_value + node->style.margin_bottom;
-}
-
-
-void RenderBox::print(int number_tabs)
-{
-  for (int i = 0; i < number_tabs; ++i)
+  else if (position == RenderBoxPosition::Fixed)
   {
+    // TODO: Implement
+  }
+  else if (position == RenderBoxPosition::Sticky)
+  {
+    // TODO: Implement
+  }
+
+  // Define result struct
+  LayoutResult result;
+
+  // First child margin collapsing
+  if (parent == nullptr and display == RenderBoxDisplay::Block)
+  {
+    y += margin.top;
+    params.margin_top_applied = margin.top;
+  }
+  else if (display == RenderBoxDisplay::Block and parent->is_first_child(this) and margin.top > params.margin_top_applied)
+  {
+    float remaining = margin.top - params.margin_top_applied;
+    y += remaining;
+
+    params.margin_top_applied = margin.top;
+    result.margin_top_remaining = remaining;
+  }
+  else if (display == RenderBoxDisplay::InlineBlock)
+  {
+    y += margin.top;
+  }
+
+  // Compute position
+  float height_offset = 0.f;
+  for (int idx = 0; idx < lines.size(); ++idx)
+  {
+    Line line = lines[idx];
+    float line_height = 0.f;
+
+    LayoutResult child_result;
+    if (not line.horizontal)
+    {
+      RenderBox* child = line.elements[0];
+      params.xref = x;
+      params.yref = y + height_offset;
+      params.container_width = content_width;
+
+      child_result = child->layout(params);
+      // Propagate margin collapsing upstream
+      if (child_result.margin_top_remaining != 0.f and idx == 0)
+      {
+        y += child_result.margin_top_remaining;
+        result.margin_top_remaining = child_result.margin_top_remaining;
+      }
+      // Propagate the resulting margin top/bottom upwards 
+      result.resulting_margin_top = child_result.resulting_margin_top;
+      result.resulting_margin_bottom = child_result.resulting_margin_bottom;
+
+      line_height = child->height;
+    }
+    else
+    {
+      float width_offset = 0.f;
+      for (int child_id = 0; child_id < line.elements.size(); ++child_id)
+      {
+        RenderBox* child = line.elements[child_id];
+
+        params.xref = x + width_offset;
+        params.yref = y + height_offset;
+        child_result = child->layout(params);
+
+        line_height = std::max<float>(child->height, line_height);
+
+        // TODO: This is a temporal solution
+        // As InlineBlock elements apply their own margin-top, if they do apply it they'll position
+        // themselves correctly, but the parent element (the current element) won't know that it has 
+        // pushed himself down, therefore the height_offset wont have the correct value to position
+        // the next element. Adding the margin-top to the line_height to correct the height_offset
+        if (child->display == RenderBoxDisplay::InlineBlock)
+        {
+          line_height += child->margin.top;
+        }
+
+        width_offset += child->width + child->margin.left + child->margin.right;
+
+        // If element is not the last element in the line, add to the offset
+        // the needed separation between elements
+        if (child_id != line.elements.size()-1)
+        {
+          // Default value is based on the width of a space character (" ")
+          // with 16px font size
+          float SPACE_WIDTH = 4.f;
+          width_offset += SPACE_WIDTH;
+        }
+      }
+
+      // Give value to width if couldn't be done in compute_dimensions
+      if (not applied_dims.width)
+      {
+        content_width = width_offset;
+        width = content_width + padding.left + padding.right + border_width.left + border_width.right;
+      }
+    }
+
+    // Adjacent siblings margin collapsing
+    float adjacent_siblings_margin = 0.f;
+    if (idx+1 < lines.size())
+    {
+      Line next_line = lines[idx+1];
+
+      RenderBoxDisplay display_current_line = line.elements[0]->display;
+      RenderBoxDisplay display_next_line = next_line.elements[0]->display;
+      
+      float current_line_margin_bottom = child_result.resulting_margin_bottom;
+
+      float next_line_margin_top = next_line.elements[0]->margin.top;
+      if (display_next_line == RenderBoxDisplay::Block)
+      {
+        LayoutResult tmp_res = next_line.elements[0]->layout({});
+        next_line_margin_top = std::max<float>(tmp_res.resulting_margin_top, next_line_margin_top);
+      }
+
+      if (display_current_line == RenderBoxDisplay::Block and display_next_line == RenderBoxDisplay::Block)
+        adjacent_siblings_margin = std::max<float>(current_line_margin_bottom, next_line_margin_top);
+      else if (display_current_line == RenderBoxDisplay::Block and display_next_line == RenderBoxDisplay::Inline)
+        adjacent_siblings_margin = current_line_margin_bottom;
+      else if (display_current_line == RenderBoxDisplay::Inline and display_next_line == RenderBoxDisplay::Block)
+        adjacent_siblings_margin = next_line_margin_top;
+      else if (display_current_line == RenderBoxDisplay::InlineBlock and display_next_line == RenderBoxDisplay::Block)
+        adjacent_siblings_margin = current_line_margin_bottom + next_line_margin_top;
+      else if (display_current_line == RenderBoxDisplay::Block and display_next_line == RenderBoxDisplay::InlineBlock)
+        adjacent_siblings_margin = current_line_margin_bottom; // InlineBlock elements apply their own margin-top
+    }
+
+    height_offset += line_height + adjacent_siblings_margin;
+
+    // To prevent the following lines from applying margin top again, 
+    // as it has already been applied with the adjacent sibling
+    params.margin_top_applied = adjacent_siblings_margin;
+  }
+
+  // Give value to height if couldn't be done in compute_dimensions
+  if (not applied_dims.height)
+  {
+    content_height = height_offset;
+    height = content_height + padding.top + padding.bottom + border_width.top + border_width.bottom;
+  }
+
+  // Layout elements not in the normal document flow
+  for (RenderBox* child : not_in_flow)
+  {
+    child->layout({});
+  }
+
+  result.resulting_margin_top = std::max<float>(margin.top, result.resulting_margin_top);
+  result.resulting_margin_bottom = std::max<float>(margin.bottom, result.resulting_margin_bottom);
+
+  return result;
+}
+
+void RenderBox::insert_child(RenderBox* child)
+{
+  children.push_back(child);
+}
+
+void RenderBox::print(int n_tabs)
+{
+  for (int i = 0; i < n_tabs; ++i)
     std::cout << "  ";
-  }
 
-  if (type() == RenderBoxType::Marker)
-  {
-    std::cout << ":marker" << std::endl;
-    return;
-  }
-
-  printf("(%s): (%.1f, %.1f) bw=%.1f bh=%.1f w=%.1f h=%.1f\n", node->element_value.c_str(), x, y, get_box_width(), get_box_height(), get_width(), get_height());
-
-  for (auto child : children)
-  {
-    child->print(number_tabs+1);
-  }
+  printf("[RenderBox (%s) pos=(%.1f, %.1f) w=(%.1f,%.1f) h=(%.1f,%.1f)]\n", node->element_value.c_str(),
+          x, y,
+          width, content_width, 
+          height, content_height
+        );
+  
+  for (auto child : children) 
+    child->print(n_tabs+1);
 }
 
 }

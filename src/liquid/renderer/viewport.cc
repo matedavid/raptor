@@ -2,55 +2,45 @@
 
 namespace liquid {
 
-void Viewport::compute_lowest_y(RenderBox* tree, float& min)
+RenderBox* Viewport::construct_render_tree(HTMLElement* element, RenderBox* parent)
 {
-  if (tree == nullptr)
-    return;
+  if (element->type() == HTMLElementType::TextType)
+  {
+    Text* text = dynamic_cast<Text*>(element);
+    RenderBoxText* render_box_text = new RenderBoxText(text, parent);
+    return render_box_text;
+  }
+  else if (element->element_value == "img")
+  {
+    HTMLImageElement* image = dynamic_cast<HTMLImageElement*>(element);
+    RenderBoxImage* render_box_image = new RenderBoxImage(image, parent);
+    return render_box_image;
+  }
 
-  float computed_y = tree->get_y() + tree->get_content_height();
-  min = std::max<float>(min, computed_y);
+  RenderBox* render_box = new RenderBox(element, parent);
+  for (HTMLElement* child : element->child_elements())
+  {
+    RenderBox* new_child = construct_render_tree(child, render_box);
+    render_box->insert_child(new_child);
+  }
 
-  for (auto child : tree->get_children())
-    compute_lowest_y(child, min);
+  return render_box;
 }
 
-Viewport::Viewport(HTMLElement* element, float width, float height)
-  : width(width), height(height), x(0.f), y(0.f), element_tree(element)
+Viewport::Viewport(HTMLElement* body)
 {
-  render();
-}
+  const float WIDTH = 960.f;
 
-void Viewport::render()
-{
-  auto cfg = liquid::RendererConfig{};
-  tree = generate_render_tree(element_tree, nullptr, width, cfg);
-  lowest_y = 0.f;
-  compute_lowest_y(tree, lowest_y);
+  render_tree = construct_render_tree(body, nullptr);
+  render_tree->layout({
+    .xref=0.f,
+    .yref=0.f,
+    .margin_top_applied=0.f,
+    .container_width=WIDTH
+  });
 
-  tree->print(0);
-}
-
-void Viewport::update_width(float new_width)
-{
-  width = new_width;
-  render();
-}
-
-void Viewport::update_height(float new_height)
-{
-  height = new_height;
-}
-
-void Viewport::scroll_up()
-{
-  if (y <= 0) return;
-  y -= scroll_factor;
-}
-
-void Viewport::scroll_down()
-{
-  if (y+height >= lowest_y) return;
-  y += scroll_factor;
+  render_tree->print(0);
+  //std::cout << "Total height: " << render_tree.height << std::endl;
 }
 
 }
