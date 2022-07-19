@@ -25,17 +25,17 @@ const float BORDER_WIDTH_THICK  = 5.f;
 struct HTMLElementCSSValues
 {
   Color color = Color{0, 0, 0}; // black
-  float width  = -1;  // -1 = auto
-  float height = -1;  // -1 = auto
+  float width  = -1.f;  // -1 = auto
+  float height = -1.f;  // -1 = auto
 
   std::string display = "inline";
   std::string position = "static";
 
   // Top,bottom,left,right
-  float top    = 0;
-  float bottom = 0;
-  float left   = 0;
-  float right  = 0;
+  float top    = 0.f;
+  float bottom = 0.f;
+  float left   = 0.f;
+  float right  = 0.f;
 
   // Font
   std::string font_style = "normal";
@@ -55,16 +55,16 @@ struct HTMLElementCSSValues
   std::string background_attachment = "scroll";
 
   // Margin
-  float margin_top    = 0.0;
-  float margin_bottom = 0.0;
-  float margin_right  = 0.0;
-  float margin_left   = 0.0;
+  float margin_top    = 0.f;
+  float margin_bottom = 0.f;
+  float margin_right  = 0.f;
+  float margin_left   = 0.f;
 
   // Padding
-  float padding_top    = 0.0;
-  float padding_bottom = 0.0;
-  float padding_right  = 0.0;
-  float padding_left   = 0.0;
+  float padding_top    = 0.f;
+  float padding_bottom = 0.f;
+  float padding_right  = 0.f;
+  float padding_left   = 0.f;
 
   // Text decoration
   std::vector<std::string> text_decoration_line = {"none"};
