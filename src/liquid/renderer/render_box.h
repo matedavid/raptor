@@ -119,21 +119,14 @@ protected:
   float x, y;
 
   // Height of the content box
-  float content_height;
+  float content_height = 0.f;
   // Height of the content box + padding + border_width
-  float height;
-  // Height of the complete render box (box_height + margin)
-  // NOTE: Maybe not necessary, as margin only pushes other elements way instead of contributing to height
-  //       could create get_margin() function instead that returns the margin values and then push other elements
-  // float margin_height;
+  float height = 0.f;
   
   // Width of the content box
-  float content_width;
+  float content_width = 0.f;
   // Width of the content box + padding + border_width
-  float width;
-  // Height of the complete render box (box_height + margin)
-  // NOTE: Idem margin_height
-  // float margin_width;
+  float width = 0.f;
 
 private:
   // Returns if child is the first child element in_document_flow

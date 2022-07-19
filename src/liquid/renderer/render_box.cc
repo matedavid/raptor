@@ -47,6 +47,8 @@ RenderBox::RenderBox(HTMLElement* node, RenderBox* parent)
   margin.bottom = node->style.margin_bottom;
   margin.left = node->style.margin_left;
   margin.right = node->style.margin_right;
+
+  x = y = 0.f;
 }
 
 AppliedDimensions RenderBox::compute_dimensions(float container_width)

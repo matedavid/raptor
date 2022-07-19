@@ -11,7 +11,7 @@ RenderBoxText::RenderBoxText(Text* text, RenderBox* parent)
 AppliedDimensions RenderBoxText::compute_dimensions(float)
 {
   sf::Font font;
-  if (not font.loadFromFile("../src/gui/Fonts/LiberationSans-Regular.ttf"))
+  if (not font.loadFromFile("/home/david/workspace/raptor/src/gui/Fonts/LiberationSans-Regular.ttf"))
   {
     std::cout << "Error loading font: compute_height" << std::endl;
     exit(0);

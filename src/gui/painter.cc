@@ -9,7 +9,7 @@ void paint_text(sf::RenderWindow& window, liquid::RenderBoxText* render_box_text
   std::string content = render_box_text->content();
 
   sf::Font font;
-  if (not font.loadFromFile("../src/gui/Fonts/LiberationSans-Regular.ttf"))
+  if (not font.loadFromFile("/home/david/workspace/raptor/src/gui/Fonts/LiberationSans-Regular.ttf"))
     return;
 
   sf::Text text;
