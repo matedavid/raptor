@@ -160,6 +160,7 @@ public:
   float get_y() { return y; }
 
   // DEBUG
+  std::string get_node_id() const { return node->id; }
   virtual void print(int n_tabs);
 };
 
