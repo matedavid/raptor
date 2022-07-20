@@ -51,7 +51,7 @@ RenderBox::RenderBox(HTMLElement* node, RenderBox* parent)
   x = y = 0.f;
 }
 
-AppliedDimensions RenderBox::compute_dimensions(float container_width)
+AppliedDimensions RenderBox::compute_dimensions(float container_width, float container_height)
 {
   AppliedDimensions applied;
 
@@ -193,11 +193,9 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
     // TODO: implement top, bottom, left, right css attributes
     if (node->style.top != AUTO) // auto
     {
-      //y = top;
     }
     else if (node->style.bottom != AUTO)
     {
-      //y = params.container_height - bottom;
     }
 
     x += margin.left + border_width.left + padding.left;
@@ -248,6 +246,7 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
       params.xref = x;
       params.yref = y + height_offset;
       params.container_width = content_width;
+      params.container_height = content_height;
 
       child_result = child->layout(params);
       // Propagate margin collapsing upstream

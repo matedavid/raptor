@@ -16,7 +16,7 @@ private:
   static RenderBox* construct_render_tree(HTMLElement* element, RenderBox* parent);
 
 public:
-  Viewport(HTMLElement* body);
+  Viewport(HTMLElement* body, float width, float height);
 };
 
 }

@@ -5,6 +5,9 @@
 #include "liquid/renderer/viewport.h"
 #include "liquid/renderer/render_box.h"
 
+#define WIDTH 960.f
+#define HEIGHT 540.f
+
 // ========== UTILS ==========
 liquid::RenderBox* get_render_box(const std::string& content, const std::string& style="")
 {
@@ -13,7 +16,7 @@ liquid::RenderBox* get_render_box(const std::string& content, const std::string&
   liquid::HTMLDocument document;
   document.from_string(html_content);
 
-  liquid::Viewport viewport(document.body);
+  liquid::Viewport viewport(document.body, WIDTH, HEIGHT);
   return viewport.render_tree;
 }
 

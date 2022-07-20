@@ -7,7 +7,7 @@ RenderBoxImage::RenderBoxImage(HTMLImageElement* image, RenderBox* parent)
 {
 }
 
-AppliedDimensions RenderBoxImage::compute_dimensions(float)
+AppliedDimensions RenderBoxImage::compute_dimensions(float, float)
 {
   AppliedDimensions applied;
 

@@ -21,7 +21,7 @@ public:
   RenderBoxText(Text* text, RenderBox* parent);
 
   // Computes the height of the Text RenderBox
-  AppliedDimensions compute_dimensions(float) override;
+  AppliedDimensions compute_dimensions(float, float) override;
 
   // Returns the content of the text
   std::string content() const;

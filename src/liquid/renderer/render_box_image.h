@@ -21,7 +21,7 @@ public:
   RenderBoxImage(HTMLImageElement* image, RenderBox* parent);
 
   // Computes the height of the Text RenderBox
-  AppliedDimensions compute_dimensions(float) override;
+  AppliedDimensions compute_dimensions(float, float) override;
 
   float get_width()  const { return width;  }
   float get_height() const { return height; }

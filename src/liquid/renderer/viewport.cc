@@ -27,16 +27,17 @@ RenderBox* Viewport::construct_render_tree(HTMLElement* element, RenderBox* pare
   return render_box;
 }
 
-Viewport::Viewport(HTMLElement* body)
+Viewport::Viewport(HTMLElement* body, float width, float height)
 {
-  const float WIDTH = 960.f;
-
   render_tree = construct_render_tree(body, nullptr);
   render_tree->layout({
-    .xref=0.f,
-    .yref=0.f,
-    .margin_top_applied=0.f,
-    .container_width=WIDTH
+    .xref = 0.f,
+    .yref = 0.f,
+    .margin_top_applied = 0.f,
+    .container_width = width,
+		.container_height = height,
+    .viewport_width = width,
+    .viewport_height = height
   });
 }
 

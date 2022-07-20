@@ -77,7 +77,12 @@ protected:
   {
     float xref, yref;
     float margin_top_applied = 0.f;
+
     float container_width;
+    float container_height;
+
+    float viewport_width;
+    float viewport_height;
   };
 
   // Result struct from Layout function 
@@ -147,7 +152,7 @@ public:
   RenderBox(HTMLElement* node, RenderBox* parent);
 
   // Computes the height of the RenderBox
-  virtual AppliedDimensions compute_dimensions(float container_width);
+  virtual AppliedDimensions compute_dimensions(float container_width, float container_height);
 
   // Computes x & y position of the RenderBox
   virtual LayoutResult layout(LayoutParameters params);

@@ -8,7 +8,7 @@ RenderBoxText::RenderBoxText(Text* text, RenderBox* parent)
   display = RenderBoxDisplay::Inline;
 }
 
-AppliedDimensions RenderBoxText::compute_dimensions(float)
+AppliedDimensions RenderBoxText::compute_dimensions(float, float)
 {
   sf::Font font;
   if (not font.loadFromFile("/home/david/workspace/raptor/src/gui/Fonts/LiberationSans-Regular.ttf"))
