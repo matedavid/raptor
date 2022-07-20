@@ -60,7 +60,7 @@ AppliedDimensions RenderBox::compute_dimensions(float container_width)
 
   if (display == RenderBoxDisplay::Block || display == RenderBoxDisplay::InlineBlock)
   {
-    if (height_val != -1.f)
+    if (height_val != AUTO)
     {
       content_height = height_val;
       height = content_height + padding.top + padding.bottom + border_width.top + border_width.bottom;
@@ -68,7 +68,7 @@ AppliedDimensions RenderBox::compute_dimensions(float container_width)
 
     // If width = auto, width and content width are constrained by the container_width.
     // If width is set to a value the reverse happens, width and content_width expand based on the specified value.
-    if (width_val == -1)
+    if (width_val == AUTO)
     {
       width = container_width - margin.left - margin.right;
       content_width = width - padding.left - padding.right - border_width.left - border_width.right;
@@ -79,7 +79,7 @@ AppliedDimensions RenderBox::compute_dimensions(float container_width)
       width = content_width + padding.left + padding.right + border_width.left + border_width.right;
     }
 
-    applied.height = (height_val != -1.f);
+    applied.height = (height_val != AUTO);
     applied.width  = true;
   }
   else if (display == RenderBoxDisplay::Inline)
@@ -125,7 +125,7 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
   x = params.xref;
   y = params.yref;
 
-  AppliedDimensions applied_dims = this->compute_dimensions(params.container_width);
+  AppliedDimensions applied_dims = this->compute_dimensions(params.container_width, params.container_height);
 
   // Get the line representation of the render_box's children
   std::vector<Line> lines;
@@ -139,10 +139,18 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
   if (position == RenderBoxPosition::Relative)
   {
   	// left has priority over right
-  	float horizontal_offset = node->style.left != 0.f ? node->style.left : -node->style.right;
+    float horizontal_offset = 0.f;
+    if (node->style.left != AUTO)
+      horizontal_offset = node->style.left;
+    else if (node->style.right != AUTO)  
+      horizontal_offset = -node->style.right;  
 
   	// top has priority over bottom
-  	float vertical_offset = node->style.top != 0.f ? node->style.top : -node->style.bottom;
+    float vertical_offset = 0.f;
+    if (node->style.top != AUTO)
+      vertical_offset = node->style.top;
+    else if (node->style.bottom != AUTO)  
+      vertical_offset = -node->style.bottom;  
 
     x += horizontal_offset;
     y += vertical_offset;
@@ -183,6 +191,14 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
     }
 
     // TODO: implement top, bottom, left, right css attributes
+    if (node->style.top != AUTO) // auto
+    {
+      //y = top;
+    }
+    else if (node->style.bottom != AUTO)
+    {
+      //y = params.container_height - bottom;
+    }
 
     x += margin.left + border_width.left + padding.left;
     y += margin.top + border_width.top + padding.top;

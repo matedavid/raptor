@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <utility>
+#include <limits>
 
 #include "color.h"
 
@@ -18,6 +19,11 @@ struct EdgeValues
   T left;
 };
 
+// TODO: This is bad idea, should not do this
+// Temporal solution until I come up with better implementation on how to
+// represent css values
+const float AUTO = -std::numeric_limits<float>::max();
+
 const float BORDER_WIDTH_THIN   = 1.f;
 const float BORDER_WIDTH_MEDIUM = 3.f;
 const float BORDER_WIDTH_THICK  = 5.f;
@@ -25,17 +31,17 @@ const float BORDER_WIDTH_THICK  = 5.f;
 struct HTMLElementCSSValues
 {
   Color color = Color{0, 0, 0}; // black
-  float width  = -1.f;  // -1 = auto
-  float height = -1.f;  // -1 = auto
+  float width  = AUTO; // auto
+  float height = AUTO; // auto
 
   std::string display = "inline";
   std::string position = "static";
 
   // Top,bottom,left,right
-  float top    = 0.f;
-  float bottom = 0.f;
-  float left   = 0.f;
-  float right  = 0.f;
+  float top    = AUTO;
+  float bottom = AUTO; 
+  float left   = AUTO;
+  float right  = AUTO;
 
   // Font
   std::string font_style = "normal";
