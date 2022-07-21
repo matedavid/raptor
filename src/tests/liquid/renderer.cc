@@ -308,4 +308,50 @@ TEST_CASE("Absolute position")
 
 		REQUIRE(p3->get_y() == 16.f + p2->get_height() + 16.f);
 	}
+
+	{
+		std::string content = R"(
+			<body>
+				<p id='p1'>top</p>
+				<p id='p2'>bottom</p>
+				<p id='p3'>left</p>
+				<p id='p4'>right</p>
+			</body>
+		)";
+
+		std::string style = R"(
+			#p1 {
+				position: absolute;
+				top: 10px;
+				bottom: 100px;
+			}
+
+			#p2 {
+				position: absolute;
+				bottom: 13px;
+			}
+
+			#p3 {
+				position: absolute;
+				left: 9px;
+				right: 30px;
+			}
+
+			#p4 {
+				position: absolute;
+				right: 30px;
+			}
+		)";
+
+		auto body = get_render_box(content, style);
+		auto p1 = get_render_box_by_id(body, "p1");
+		auto p2 = get_render_box_by_id(body, "p2");
+		auto p3 = get_render_box_by_id(body, "p3");
+		auto p4 = get_render_box_by_id(body, "p4");
+
+		REQUIRE(p1->get_y() == 10.f + 16.f);
+		REQUIRE(p2->get_y() == HEIGHT - 13.f - 16.f - p2->get_height());
+		REQUIRE(p3->get_x() == 9.f);
+		REQUIRE(p4->get_x() == WIDTH - 30.f - p4->get_width());
+	}
 }

@@ -132,6 +132,14 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
   std::vector<RenderBox*> not_in_flow;
   layout_lines(lines, not_in_flow);
 
+  // Elements that are not in the document flow, even if display: box,
+  // compute their width/height as if they were inline
+  if (not in_document_flow)
+  {
+    applied_dims.width  = false;
+    applied_dims.height = false;
+  }
+
   // Apply horizontal margin offset
   x += margin.left;
 
@@ -190,16 +198,68 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
       y = parent->y;
     }
 
-    // TODO: implement top, bottom, left, right css attributes
-    if (node->style.top != AUTO) // auto
+    // Compute temporary height and val
+    float element_width = 0.f;
+    float element_height = 0.f;
+    for (auto child : children)
     {
+      child->layout({});
+      if (display == RenderBoxDisplay::Block)
+      {
+        element_height += child->height;
+        element_width = std::max<float>(child->width, element_width);
+      }
+      else if (display == RenderBoxDisplay::Inline)
+      {
+        element_width += child->width;
+        element_height = std::max<float>(child->height, element_height);
+      }
+    }
+
+    // top has priority over bottom
+    if (node->style.top != AUTO)
+    {
+      y = node->style.top;
+      y += margin.top + border_width.top + padding.top;
     }
     else if (node->style.bottom != AUTO)
     {
+      y = params.viewport_height - element_height - node->style.bottom;
+      y -= margin.bottom + border_width.bottom + padding.bottom;
     }
 
-    x += margin.left + border_width.left + padding.left;
-    y += margin.top + border_width.top + padding.top;
+    // left has priority over right
+    if (node->style.left != AUTO)
+    {
+      x = node->style.left;
+      x += margin.left + border_width.left + padding.left;
+    }
+    else if (node->style.right != AUTO)
+    {
+      x = params.viewport_width - element_width - node->style.right;
+      x -= margin.right + border_width.right + padding.right;
+    }
+
+    // If all values are AUTO, only apply margin, border_width and padding
+    if (node->style.top == AUTO and node->style.bottom == AUTO and node->style.left == AUTO and node->style.right == AUTO)
+    {
+      x += margin.left + border_width.left + padding.left;
+      y += margin.top + border_width.top + padding.top;
+    }
+
+
+    // Compute width and height for absolute positioned elements
+    content_width = node->style.right != AUTO and node->style.left != AUTO
+                      ? params.viewport_width - node->style.right - x - margin.right
+                      : element_width;
+    width = content_width + border_width.left + border_width.right + padding.left + padding.right;
+
+    content_height = node->style.bottom != AUTO and node->style.top != AUTO
+                      ? params.viewport_height - node->style.bottom - y - margin.bottom
+                      : element_height;
+    height = content_height + border_width.top + border_width.bottom + padding.top + padding.bottom;
+
+    applied_dims.width = applied_dims.height = true;
   }
   else if (position == RenderBoxPosition::Fixed)
   {
@@ -302,6 +362,8 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
       {
         content_width = width_offset;
         width = content_width + padding.left + padding.right + border_width.left + border_width.right;
+
+        applied_dims.width = true;
       }
     }
 
@@ -347,12 +409,14 @@ RenderBox::LayoutResult RenderBox::layout(LayoutParameters params)
   {
     content_height = height_offset;
     height = content_height + padding.top + padding.bottom + border_width.top + border_width.bottom;
+
+    applied_dims.height = true;
   }
 
   // Layout elements not in the normal document flow
   for (RenderBox* child : not_in_flow)
   {
-    child->layout({});
+    child->layout({.viewport_width=params.viewport_width, .viewport_height=params.viewport_height});
   }
 
   result.resulting_margin_top = std::max<float>(margin.top, result.resulting_margin_top);
