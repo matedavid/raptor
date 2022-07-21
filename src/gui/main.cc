@@ -7,8 +7,8 @@
 
 #include "network/network.h"
 
-#define WIDTH 960
-#define HEIGHT 540
+#define WIDTH 960.f
+#define HEIGHT 540.f
 
 liquid::HTMLDocument load_from_result(network::ResolveResult& result)
 {
@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
   sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Raptor", sf::Style::Default);
   window.setTitle(document.title);
 
-  liquid::Viewport viewport(document.body);
+  liquid::Viewport viewport(document.body, WIDTH, HEIGHT);
   viewport.render_tree->print(0);
 
   window.clear(sf::Color::White);

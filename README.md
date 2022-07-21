@@ -5,6 +5,7 @@ Just a simple browser, developed for learning purposes.
 ## Requirements
 * SFML 2.5.1
 * cpr (https://github.com/libcpr/cpr)
+* Catch2 v3.0.1 (https://github.com/catchorg/Catch2.git)
 
 ## How to build
 Create build directory to store binaries and build files and enter it:
