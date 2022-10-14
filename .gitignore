@@ -61,7 +61,7 @@ src/gui/Fonts/
 
 # Clion things
 .idea
-cmake-build-debug/
+Debug/
 
 # Eclipse things
 .project
