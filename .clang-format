@@ -29,7 +29,7 @@ Language: Cpp
 PenaltyReturnTypeOnItsOwnLine: '1000000'
 PointerAlignment: Left
 ReflowComments: 'true'
-SortIncludes: 'false'
+SortIncludes: Never
 SpaceAfterCStyleCast: 'false'
 SpaceAfterTemplateKeyword: 'false'
 SpaceBeforeAssignmentOperators: 'true'
@@ -47,5 +47,6 @@ SpacesInSquareBrackets: 'false'
 Standard: Auto
 TabWidth: '2'
 UseTab: Never
+ColumnLimit: 100
 
 ...

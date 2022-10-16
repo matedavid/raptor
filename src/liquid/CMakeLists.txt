@@ -9,6 +9,8 @@ add_library(${project_name} SHARED)
 
 # Sources
 target_sources(${project_name} PRIVATE
+        html/tokenizer.cc
+
         )
 
 # Include directories
