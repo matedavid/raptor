@@ -1,7 +1,8 @@
 #include <iostream>
 
+#include "html/tokenizer.h"
+
 int main()
 {
-  std::cout << "Hello, world!" << std::endl;
-  return 0;
+  auto tokenizer = liquid::html::Tokenizer("<html></html>");
 }

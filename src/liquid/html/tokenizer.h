@@ -98,14 +98,31 @@ public:
   Tokenizer(const std::string& content);
 
 private:
-  TokenizerState m_current_state;
-  std::stack<Token> open_elements;
+  TokenizerState current_state;
+  TokenizerState return_state;
+  std::vector<Ref<Token>> tokens;
+  std::stack<Ref<Token>> open_elements;
 
   std::string m_content;
-  int m_current_position;
+  int current_position;
 
-  char consume();
+  char consume_next_input_char();
   char reconsume();
+
+  void emit_DOCTYPE_token();
+  void emit_start_tag_token();
+  void emit_end_tag_token();
+  void emit_comment_token(const std::string& data);
+  void emit_character_token(char16_t c);
+  void emit_eof_token();
+
+  void data_state();
+  void RCDATA_state();
+  void RAWTEXT_state();
+  void script_data_state();
+  void PLAINTEXT_state();
+  void tag_open_state();
+  void end_tag_open_state();
 };
 
 } // namespace liquid::html
