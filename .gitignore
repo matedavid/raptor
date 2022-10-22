@@ -55,14 +55,14 @@ _deps
 
 # End of https://www.toptal.com/developers/gitignore/api/c++,cmake
 
+# Build folders
 build/
-.vscode
-src/gui/Fonts/
-
-# Clion things
-.idea
 Debug/
 
-# Eclipse things
-.project
-.cproject
+# Config folders
+.vscode
+.idea
+
+# External
+vendor/
+

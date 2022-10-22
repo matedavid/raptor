@@ -12,6 +12,6 @@ add_executable(${project_name} ${SOURCES})
 target_sources(${project_name} PRIVATE src/main.cc)
 
 # Add liquid to project
-add_subdirectory("src/liquid")
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/liquid)
 target_link_libraries(${project_name} liquid)
 
