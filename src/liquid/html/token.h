@@ -2,6 +2,7 @@
 
 #include "core.h"
 
+#include <iostream>
 #include <utility>
 #include <vector>
 
@@ -21,7 +22,9 @@ using TokenAttribute = std::pair<std::string, std::string>;
 
 class Token
 {
+public:
   virtual TokenType type() = 0;
+  virtual void print() = 0;
 };
 
 class DOCTYPEToken : public Token
@@ -47,6 +50,12 @@ public:
   std::string public_identifier;
   std::string system_identifier;
   bool force_quirks = false;
+
+  void print() override
+  {
+    std::cout << "[DOCTYPE]: " << name << " " << public_identifier << " " << system_identifier
+              << " " << force_quirks << std::endl;
+  }
 };
 
 class StartTagToken : public Token
@@ -59,6 +68,16 @@ public:
   std::string tag_name;
   bool self_closing = false;
   std::vector<TokenAttribute> attributes;
+
+  void print() override
+  {
+    std::cout << "[StartTag";
+    for (const auto& attr : attributes) {
+      std::cout << " " << attr.first << "=" << attr.second;
+    }
+
+    std::cout << "]: " << tag_name << " " << self_closing << std::endl;
+  }
 };
 
 class EndTagToken : public Token
@@ -71,15 +90,28 @@ public:
   std::string tag_name;
   bool self_closing = false;
   std::vector<TokenAttribute> attributes;
+
+  void print() override
+  {
+    std::cout << "[EndTag";
+    for (const auto& attr : attributes) {
+      std::cout << " " << attr.first << "=" << attr.second;
+    }
+
+    std::cout << "]: " << tag_name << " " << self_closing << std::endl;
+  }
 };
 
 class CommentToken : public Token
 {
 public:
+  CommentToken() = default;
   CommentToken(std::string data) : data(std::move(data)) {}
 
   TokenType type() override { return TokenType::Comment; }
   std::string data;
+
+  void print() override { std::cout << "[Comment]: " << data << std::endl; }
 };
 
 class CharacterToken : public Token
@@ -89,12 +121,16 @@ public:
 
   TokenType type() override { return TokenType::Character; }
   std::string data;
+
+  void print() override { std::cout << "[Character]: " << data << std::endl; }
 };
 
 class EOFToken : public Token
 {
 public:
   TokenType type() override { return TokenType::EndOfFile; }
+
+  void print() override { std::cout << "[EOF]" << std::endl; }
 };
 
 } // namespace liquid::html
