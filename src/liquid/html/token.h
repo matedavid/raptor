@@ -8,129 +8,115 @@
 
 namespace liquid::html {
 
-enum class TokenType
-{
-  DOCTYPE,
-  StartTag,
-  EndTag,
-  Comment,
-  Character,
-  EndOfFile
+enum class TokenType { DOCTYPE, StartTag, EndTag, Comment, Character, EndOfFile };
+
+struct TokenAttribute {
+    std::string name;
+    std::string value;
 };
 
-using TokenAttribute = std::pair<std::string, std::string>;
-
-class Token
-{
-public:
-  virtual TokenType type() = 0;
-  virtual void print() = 0;
+class Token {
+  public:
+    virtual TokenType type() = 0;
+    virtual void print() = 0;
 };
 
-class DOCTYPEToken : public Token
-{
-public:
-  DOCTYPEToken() {}
+class DOCTYPEToken : public Token {
+  public:
+    DOCTYPEToken() {}
 
-  DOCTYPEToken(std::string name,
-               std::string public_identifier,
-               std::string system_identifier,
-               bool force_quirks)
-      : name(std::move(name)),
-        public_identifier(std::move(public_identifier)),
-        system_identifier(std::move(system_identifier)),
-        force_quirks(force_quirks)
-  {
-  }
+    DOCTYPEToken(std::string name,
+                 std::string public_identifier,
+                 std::string system_identifier,
+                 bool force_quirks)
+        : name(std::move(name)),
+          public_identifier(std::move(public_identifier)),
+          system_identifier(std::move(system_identifier)),
+          force_quirks(force_quirks) {}
 
-  TokenType type() override { return TokenType::DOCTYPE; }
+    TokenType type() override { return TokenType::DOCTYPE; }
 
-  // FIXME: Should somehow mark name, public and system identifiers as "missing"
-  std::string name;
-  std::string public_identifier;
-  std::string system_identifier;
-  bool force_quirks = false;
+    std::string name;
+    std::string public_identifier;
+    std::string system_identifier;
+    bool force_quirks = false;
 
-  void print() override
-  {
-    std::cout << "[DOCTYPE]: " << name << " " << public_identifier << " " << system_identifier
-              << " " << force_quirks << std::endl;
-  }
-};
+    bool name_missing = true;
+    bool public_identifier_missing = true;
+    bool system_identifier_missing = true;
 
-class StartTagToken : public Token
-{
-public:
-  StartTagToken() {}
-
-  TokenType type() override { return TokenType::StartTag; }
-
-  std::string tag_name;
-  bool self_closing = false;
-  std::vector<TokenAttribute> attributes;
-
-  void print() override
-  {
-    std::cout << "[StartTag";
-    for (const auto& attr : attributes) {
-      std::cout << " " << attr.first << "=" << attr.second;
+    void print() override {
+        std::cout << "[DOCTYPE]: " << name << " public=" << public_identifier << " system=" << system_identifier
+                  << " force_quirks=" << force_quirks << std::endl;
     }
-
-    std::cout << "]: " << tag_name << " " << self_closing << std::endl;
-  }
 };
 
-class EndTagToken : public Token
-{
-public:
-  EndTagToken() {}
+class StartTagToken : public Token {
+  public:
+    StartTagToken() {}
 
-  TokenType type() override { return TokenType::EndTag; }
+    TokenType type() override { return TokenType::StartTag; }
 
-  std::string tag_name;
-  bool self_closing = false;
-  std::vector<TokenAttribute> attributes;
+    std::string tag_name;
+    bool self_closing = false;
+    std::vector<TokenAttribute> attributes;
 
-  void print() override
-  {
-    std::cout << "[EndTag";
-    for (const auto& attr : attributes) {
-      std::cout << " " << attr.first << "=" << attr.second;
+    void print() override {
+        std::cout << "[StartTag";
+        for (const auto& attr : attributes) {
+            std::cout << " " << attr.name << "=" << attr.value;
+        }
+
+        std::cout << "]: " << tag_name << " " << self_closing << std::endl;
     }
-
-    std::cout << "]: " << tag_name << " " << self_closing << std::endl;
-  }
 };
 
-class CommentToken : public Token
-{
-public:
-  CommentToken() = default;
-  CommentToken(std::string data) : data(std::move(data)) {}
+class EndTagToken : public Token {
+  public:
+    EndTagToken() {}
 
-  TokenType type() override { return TokenType::Comment; }
-  std::string data;
+    TokenType type() override { return TokenType::EndTag; }
 
-  void print() override { std::cout << "[Comment]: " << data << std::endl; }
+    std::string tag_name;
+    bool self_closing = false;
+    std::vector<TokenAttribute> attributes;
+
+    void print() override {
+        std::cout << "[EndTag";
+        for (const auto& attr : attributes) {
+            std::cout << " " << attr.name << "=" << attr.value;
+        }
+
+        std::cout << "]: " << tag_name << " " << self_closing << std::endl;
+    }
 };
 
-class CharacterToken : public Token
-{
-public:
-  CharacterToken(std::string data) : data(std::move(data)) {}
+class CommentToken : public Token {
+  public:
+    CommentToken() = default;
+    CommentToken(std::string data) : data(std::move(data)) {}
 
-  TokenType type() override { return TokenType::Character; }
-  std::string data;
+    TokenType type() override { return TokenType::Comment; }
+    std::string data;
 
-  void print() override { std::cout << "[Character]: " << data << std::endl; }
+    void print() override { std::cout << "[Comment]: " << data << std::endl; }
 };
 
-class EOFToken : public Token
-{
-public:
-  TokenType type() override { return TokenType::EndOfFile; }
+class CharacterToken : public Token {
+  public:
+    CharacterToken(std::string data) : data(std::move(data)) {}
 
-  void print() override { std::cout << "[EOF]" << std::endl; }
+    TokenType type() override { return TokenType::Character; }
+    std::string data;
+
+    void print() override { std::cout << "[Character]: " << data << std::endl; }
+};
+
+class EOFToken : public Token {
+  public:
+    TokenType type() override { return TokenType::EndOfFile; }
+
+    void print() override { std::cout << "[EOF]" << std::endl; }
 };
 
 } // namespace liquid::html

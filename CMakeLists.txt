@@ -13,5 +13,5 @@ target_sources(${project_name} PRIVATE src/main.cc)
 
 # Add liquid to project
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/liquid)
-target_link_libraries(${project_name} liquid)
+target_link_libraries(${project_name} PRIVATE liquid)
 
