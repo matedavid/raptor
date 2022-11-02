@@ -278,7 +278,7 @@ char Tokenizer::peek(int jump) {
 void Tokenizer::consume_jump(int jump) {
     int jump_position = m_current_position + jump;
     assert(jump_position >= 0 && jump_position < m_content.length());
-    // -1 because consume_next_input_char jumpes to the next
+    // -1 because consume_next_input_char jumps to the next
     m_current_position = jump_position - 1;
 }
 
@@ -434,17 +434,6 @@ void Tokenizer::emit_character_token(char16_t c) {
 }
 
 void Tokenizer::emit_DOCTYPE_token() {
-}
-
-void Tokenizer::emit_start_tag_token() {
-}
-
-void Tokenizer::emit_end_tag_token() {
-}
-
-void Tokenizer::emit_comment_token(const std::string& data) {
-    auto token = MakeRef(CommentToken, data);
-    m_tokens.push_back(token);
 }
 
 void Tokenizer::emit_eof_token() {
@@ -1640,7 +1629,7 @@ void Tokenizer::before_DOCTYPE_public_identifier_state() {
         set_doctype_public_identifier_not_missing();
         SwitchTo(DOCTYPEPublicIdentifierSingleQuoted);
     } else if (c == '>') {
-        TOKENIZER_ERROR("BeforeDOCTYPEPublicIdentifier", "MIssing DOCTYPE public identifier");
+        TOKENIZER_ERROR("BeforeDOCTYPEPublicIdentifier", "Missing DOCTYPE public identifier");
         set_doctype_force_quirks_flag();
         SwitchTo(Data);
         emit_current_token();

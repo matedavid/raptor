@@ -136,9 +136,6 @@ class Tokenizer {
     void emit_current_input_char();
     void emit_character_token(char16_t c);
     void emit_DOCTYPE_token();
-    void emit_start_tag_token();
-    void emit_end_tag_token();
-    void emit_comment_token(const std::string& data);
     void emit_eof_token();
 
 #pragma region TokenizationStates
